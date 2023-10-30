@@ -12,13 +12,12 @@ export function resolvingPromise<T = any>() {
   return ret;
 }
 
-export function when(promises: Promise<any> | (Promise<any>[])) {
+export function when(promises: Promise<any> | (Promise<any>[]), ...others: Promise<any>[]) {
   let objects: Promise<any>[];
   const arrayArgument = Array.isArray(promises);
   if (arrayArgument) {
     objects = promises;
   } else {
-    // TODO: Why do we need *this* to make it work?
     objects = arguments as any as Promise<any>[];
   }
 
