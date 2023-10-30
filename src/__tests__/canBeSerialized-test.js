@@ -15,10 +15,10 @@ mockFile.prototype.url = function () {
 };
 jest.setMock('../ParseFile', mockFile);
 
-const canBeSerialized = require('../canBeSerialized').default;
+const canBeSerialized = require('../canBeSerialized');
 const ParseFile = require('../ParseFile');
 const ParseObject = require('../ParseObject');
-const ParseRelation = require('../ParseRelation').default;
+const ParseRelation = require('../ParseRelation');
 
 describe('canBeSerialized', () => {
   it('returns true for anything that is not a ParseObject', () => {

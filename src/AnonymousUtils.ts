@@ -120,4 +120,5 @@ const AnonymousUtils = {
   },
 };
 
+module.exports = AnonymousUtils;
 export default AnonymousUtils;

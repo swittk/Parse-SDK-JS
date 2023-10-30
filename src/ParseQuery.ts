@@ -2162,4 +2162,5 @@ const DefaultController = {
 
 CoreManager.setQueryController(DefaultController);
 
+module.exports = ParseQuery;
 export default ParseQuery;

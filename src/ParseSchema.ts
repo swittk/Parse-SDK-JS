@@ -503,5 +503,5 @@ const DefaultController = {
 };
 
 CoreManager.setSchemaController(DefaultController);
-
+module.exports = ParseSchema;
 export default ParseSchema;

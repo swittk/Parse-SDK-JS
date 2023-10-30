@@ -23,7 +23,7 @@ jest.setMock('../ParseCLP', mockCLP);
 
 const ParseObject = require('../ParseObject');
 const ParseCLP = require('../ParseCLP');
-const ParseSchema = require('../ParseSchema').default;
+const ParseSchema = require('../ParseSchema');
 const CoreManager = require('../CoreManager');
 
 const defaultController = CoreManager.getSchemaController();

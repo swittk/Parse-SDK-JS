@@ -51,3 +51,4 @@ function canBeSerializedHelper(value: any): boolean {
   }
   return true;
 }
+module.exports = canBeSerialized;

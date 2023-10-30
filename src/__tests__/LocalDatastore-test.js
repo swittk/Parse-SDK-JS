@@ -3,7 +3,7 @@
 jest.autoMockOff();
 jest.unmock('../LocalDatastoreUtils');
 
-const encode = require('../encode').default;
+const encode = require('../encode');
 
 let objectCount = 0;
 
@@ -91,7 +91,7 @@ const CoreManager = require('../CoreManager');
 const LocalDatastore = require('../LocalDatastore');
 const ParseObject = require('../ParseObject');
 const ParseQuery = require('../ParseQuery');
-const ParseUser = require('../ParseUser').default;
+const ParseUser = require('../ParseUser');
 const LocalDatastoreController = require('../LocalDatastoreController');
 const RNDatastoreController = require('../LocalDatastoreController.react-native');
 const BrowserStorageController = require('../StorageController.browser');

@@ -14,7 +14,7 @@ class MockUser {
 
 jest.setMock('../ParseUser', MockUser);
 
-const FacebookUtils = require('../FacebookUtils').default;
+const FacebookUtils = require('../FacebookUtils');
 
 describe('FacebookUtils', () => {
   beforeEach(() => {

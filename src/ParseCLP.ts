@@ -603,5 +603,5 @@ class ParseCLP {
     this.setProtectedFields(this._getRoleName(role), fields);
   }
 }
-
+module.exports = ParseCLP;
 export default ParseCLP;

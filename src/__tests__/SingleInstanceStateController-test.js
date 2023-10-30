@@ -14,8 +14,8 @@ mockObject.registerSubclass = function () {};
 jest.setMock('../ParseObject', mockObject);
 jest.useFakeTimers();
 
-const ParseFile = require('../ParseFile').default;
-const ParseGeoPoint = require('../ParseGeoPoint').default;
+const ParseFile = require('../ParseFile');
+const ParseGeoPoint = require('../ParseGeoPoint');
 const ParseOps = require('../ParseOp');
 const SingleInstanceStateController = require('../SingleInstanceStateController');
 const TaskQueue = require('../TaskQueue');

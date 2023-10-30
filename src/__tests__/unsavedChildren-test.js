@@ -19,10 +19,10 @@ mockObject.prototype = {
 };
 jest.setMock('../ParseObject', mockObject);
 
-const ParseFile = require('../ParseFile').default;
+const ParseFile = require('../ParseFile');
 const ParseObject = require('../ParseObject');
-const ParseRelation = require('../ParseRelation').default;
-const unsavedChildren = require('../unsavedChildren').default;
+const ParseRelation = require('../ParseRelation');
+const unsavedChildren = require('../unsavedChildren');
 
 describe('unsavedChildren', () => {
   it('finds unsaved files', () => {

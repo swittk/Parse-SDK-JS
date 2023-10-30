@@ -326,5 +326,5 @@ class ParseACL {
     this.setWriteAccess('role:' + role, allowed);
   }
 }
-
+module.exports = ParseACL;
 export default ParseACL;

@@ -3,7 +3,7 @@
  */
 
 import { RelationOp } from './ParseOp';
-import ParseObject from './ParseObject';
+import type ParseObject from './ParseObject';
 import ParseQuery from './ParseQuery';
 
 /**
@@ -147,5 +147,5 @@ class ParseRelation {
     return query;
   }
 }
-
+module.exports = ParseRelation;
 export default ParseRelation;

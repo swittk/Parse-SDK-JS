@@ -196,4 +196,5 @@ class ParseGeoPoint {
   }
 }
 
+module.exports = ParseGeoPoint;
 export default ParseGeoPoint;

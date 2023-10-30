@@ -221,5 +221,5 @@ const DefaultController = {
 };
 
 CoreManager.setConfigController(DefaultController);
-
+module.exports = ParseConfig;
 export default ParseConfig;

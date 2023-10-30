@@ -16,5 +16,5 @@ export default class Installation extends ParseObject {
     }
   }
 }
-
+module.exports = Installation;
 ParseObject.registerSubclass('_Installation', Installation);

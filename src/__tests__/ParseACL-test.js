@@ -8,8 +8,8 @@ mockRole.prototype.getName = function () {
 };
 jest.setMock('../ParseRole', mockRole);
 
-const ParseACL = require('../ParseACL').default;
-const ParseUser = require('../ParseUser').default;
+const ParseACL = require('../ParseACL');
+const ParseUser = require('../ParseUser');
 const ParseRole = require('../ParseRole');
 
 describe('ParseACL', () => {

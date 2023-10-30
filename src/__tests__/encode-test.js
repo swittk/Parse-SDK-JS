@@ -37,12 +37,12 @@ mockObject.prototype = {
 };
 jest.setMock('../ParseObject', mockObject);
 
-const encode = require('../encode').default;
-const ParseACL = require('../ParseACL').default;
-const ParseFile = require('../ParseFile').default;
-const ParseGeoPoint = require('../ParseGeoPoint').default;
+const encode = require('../encode');
+const ParseACL = require('../ParseACL');
+const ParseFile = require('../ParseFile');
+const ParseGeoPoint = require('../ParseGeoPoint');
 const ParseObject = require('../ParseObject');
-const ParseRelation = require('../ParseRelation').default;
+const ParseRelation = require('../ParseRelation');
 
 describe('encode', () => {
   it('ignores primitives', () => {

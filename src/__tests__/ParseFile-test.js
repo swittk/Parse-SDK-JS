@@ -4,11 +4,11 @@ jest.mock('http');
 jest.mock('https');
 jest.mock('../ParseACL');
 
-const ParseError = require('../ParseError').default;
-const ParseFile = require('../ParseFile').default;
+const ParseError = require('../ParseError');
+const ParseFile = require('../ParseFile');
 const b64Digit = require('../ParseFile').b64Digit;
 
-const ParseObject = require('../ParseObject').default;
+const ParseObject = require('../ParseObject');
 const CoreManager = require('../CoreManager');
 const EventEmitter = require('../EventEmitter');
 

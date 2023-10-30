@@ -144,16 +144,16 @@ jest.setMock('../LocalDatastore', mockLocalDatastore);
 
 const CoreManager = require('../CoreManager');
 const EventuallyQueue = require('../EventuallyQueue');
-const ParseACL = require('../ParseACL').default;
-const ParseError = require('../ParseError').default;
-const ParseFile = require('../ParseFile').default;
-const ParseGeoPoint = require('../ParseGeoPoint').default;
-const ParsePolygon = require('../ParsePolygon').default;
-const ParseObject = require('../ParseObject').default;
+const ParseACL = require('../ParseACL');
+const ParseError = require('../ParseError');
+const ParseFile = require('../ParseFile');
+const ParseGeoPoint = require('../ParseGeoPoint');
+const ParsePolygon = require('../ParsePolygon');
+const ParseObject = require('../ParseObject');
 const ParseOp = require('../ParseOp');
 const RESTController = require('../RESTController');
 const SingleInstanceStateController = require('../SingleInstanceStateController');
-const unsavedChildren = require('../unsavedChildren').default;
+const unsavedChildren = require('../unsavedChildren');
 
 const mockXHR = require('./test_helpers/mockXHR');
 const flushPromises = require('./test_helpers/flushPromises');

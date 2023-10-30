@@ -234,5 +234,5 @@ const FacebookUtils = {
     return provider;
   },
 };
-
+module.exports = FacebookUtils;
 export default FacebookUtils;

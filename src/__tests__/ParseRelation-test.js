@@ -55,7 +55,7 @@ mockQuery.prototype = {
 jest.setMock('../ParseQuery', mockQuery);
 
 const ParseObject = require('../ParseObject');
-const ParseRelation = require('../ParseRelation').default;
+const ParseRelation = require('../ParseRelation');
 
 describe('ParseRelation', () => {
   it('can be constructed with a reference parent and key', () => {

@@ -42,11 +42,11 @@ jest.setMock('../LocalDatastore', mockLocalDatastore);
 
 let CoreManager = require('../CoreManager');
 const EventEmitter = require('../EventEmitter');
-const ParseError = require('../ParseError').default;
-const ParseGeoPoint = require('../ParseGeoPoint').default;
+const ParseError = require('../ParseError');
+const ParseGeoPoint = require('../ParseGeoPoint');
 let ParseObject = require('../ParseObject');
-let ParseQuery = require('../ParseQuery').default;
-const LiveQuerySubscription = require('../LiveQuerySubscription').default;
+let ParseQuery = require('../ParseQuery');
+const LiveQuerySubscription = require('../LiveQuerySubscription');
 
 const MockRESTController = {
   request: jest.fn(),
@@ -2288,9 +2288,9 @@ describe('ParseQuery', () => {
   it('overrides cached object with query results', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject').default;
+    ParseObject = require('../ParseObject');
     CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery').default;
+    ParseQuery = require('../ParseQuery');
 
     ParseObject.enableSingleInstance();
 
@@ -2338,9 +2338,9 @@ describe('ParseQuery', () => {
   it('does not override unselected fields with select query results', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject').default;
+    ParseObject = require('../ParseObject');
     CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery').default;
+    ParseQuery = require('../ParseQuery');
 
     ParseObject.enableSingleInstance();
 
@@ -2413,9 +2413,9 @@ describe('ParseQuery', () => {
   it('overrides cached object with first() results', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject').default;
+    ParseObject = require('../ParseObject');
     CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery').default;
+    ParseQuery = require('../ParseQuery');
 
     ParseObject.enableSingleInstance();
 
@@ -2463,9 +2463,9 @@ describe('ParseQuery', () => {
   it('does not override unselected fields for first() on select query', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject').default;
+    ParseObject = require('../ParseObject');
     CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery').default;
+    ParseQuery = require('../ParseQuery');
 
     ParseObject.enableSingleInstance();
 
@@ -2878,9 +2878,9 @@ describe('ParseQuery', () => {
   it('selecting sub-objects does not inject objects when sub-object does not exist', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject').default;
+    ParseObject = require('../ParseObject');
     CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery').default;
+    ParseQuery = require('../ParseQuery');
 
     ParseObject.enableSingleInstance();
 
@@ -2925,9 +2925,9 @@ describe('ParseQuery', () => {
   it('removes missing sub objects from the cached object when they are selected', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject').default;
+    ParseObject = require('../ParseObject');
     CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery').default;
+    ParseQuery = require('../ParseQuery');
 
     ParseObject.enableSingleInstance();
 

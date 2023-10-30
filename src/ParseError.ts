@@ -556,4 +556,5 @@ class ParseError extends Error {
   static X_DOMAIN_REQUEST = 602;
 }
 
+module.exports = ParseError;
 export default ParseError;

@@ -35,11 +35,11 @@ const mockAsyncStorage = require('./test_helpers/mockAsyncStorage');
 const CoreManager = require('../CoreManager');
 const CryptoController = require('../CryptoController');
 const LocalDatastore = require('../LocalDatastore');
-const ParseObject = require('../ParseObject').default;
-const ParseUser = require('../ParseUser').default;
+const ParseObject = require('../ParseObject');
+const ParseUser = require('../ParseUser');
 const Storage = require('../Storage');
-const ParseError = require('../ParseError').default;
-const AnonymousUtils = require('../AnonymousUtils').default;
+const ParseError = require('../ParseError');
+const AnonymousUtils = require('../AnonymousUtils');
 
 CoreManager.set('APPLICATION_ID', 'A');
 CoreManager.set('JAVASCRIPT_KEY', 'B');

@@ -25,3 +25,4 @@ export default function parseDate(iso8601: string): Date | null {
 
   return new Date(Date.UTC(year, month, day, hour, minute, second, milli));
 }
+module.exports = parseDate;

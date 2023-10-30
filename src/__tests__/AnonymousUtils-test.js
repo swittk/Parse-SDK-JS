@@ -31,7 +31,7 @@ const mockProvider = {
   },
 };
 
-const AnonymousUtils = require('../AnonymousUtils').default;
+const AnonymousUtils = require('../AnonymousUtils');
 
 describe('AnonymousUtils', () => {
   beforeEach(() => {

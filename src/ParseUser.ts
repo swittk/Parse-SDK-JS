@@ -1291,5 +1291,5 @@ const DefaultController = {
 };
 
 CoreManager.setUserController(DefaultController);
-
+module.exports = ParseUser;
 export default ParseUser;

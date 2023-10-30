@@ -574,4 +574,5 @@ const DefaultController = {
 CoreManager.setFileController(DefaultController);
 
 export default ParseFile;
-exports.b64Digit = b64Digit;
+module.exports = ParseFile;
+module.exports.b64Digit = b64Digit;

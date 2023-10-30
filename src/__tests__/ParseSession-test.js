@@ -29,8 +29,8 @@ mockUser.current = function () {
 jest.setMock('../ParseUser', mockUser);
 
 const CoreManager = require('../CoreManager');
-const ParseObject = require('../ParseObject').default;
-const ParseSession = require('../ParseSession').default;
+const ParseObject = require('../ParseObject');
+const ParseSession = require('../ParseSession');
 
 CoreManager.set('APPLICATION_ID', 'A');
 CoreManager.set('JAVASCRIPT_KEY', 'B');

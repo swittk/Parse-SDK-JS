@@ -84,7 +84,7 @@ function encode(
 }
 
 /** Encodes values to storage type */
-export default function (
+export default function encodeValues (
   value: any,
   disallowObjects?: boolean,
   forcePointers?: boolean,
@@ -93,3 +93,4 @@ export default function (
 ): any {
   return encode(value, !!disallowObjects, !!forcePointers, seen || [], offline);
 }
+module.exports = encodeValues;

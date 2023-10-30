@@ -2,9 +2,9 @@
  * @flow
  */
 
+import ParseObject from './ParseObject';
 import ParseACL from './ParseACL';
 import ParseError from './ParseError';
-import ParseObject from './ParseObject';
 
 import type { AttributeMap } from './ObjectStateMutations';
 import type ParseRelation from './ParseRelation';
@@ -142,5 +142,5 @@ class ParseRole extends ParseObject {
 }
 
 ParseObject.registerSubclass('_Role', ParseRole);
-
+module.exports = ParseRole;
 export default ParseRole;

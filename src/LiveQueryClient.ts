@@ -192,7 +192,7 @@ class LiveQueryClient {
    */
   subscribe(query: ParseQuery, sessionToken?: string): LiveQuerySubscription {
     if (!query) {
-      throw new ParseError(ParseError.INCORRECT_TYPE, 'Subscribe requires a query.')
+      return undefined;
     }
     const className = query.className;
     const queryJSON = query.toJSON();
@@ -522,5 +522,5 @@ if (process.env.PARSE_BUILD === 'node') {
 } else if (process.env.PARSE_BUILD === 'react-native') {
   CoreManager.setWebSocketController(WebSocket as any);
 }
-
+module.exports = LiveQueryClient;
 export default LiveQueryClient;

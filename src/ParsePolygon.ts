@@ -161,5 +161,5 @@ class ParsePolygon {
     return points;
   }
 }
-
+module.exports = ParsePolygon;
 export default ParsePolygon;

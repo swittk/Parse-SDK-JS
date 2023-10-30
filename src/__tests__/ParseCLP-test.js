@@ -10,8 +10,8 @@ mockRole.prototype.getName = function () {
 
 jest.setMock('../ParseRole', mockRole);
 
-const ParseCLP = require('../ParseCLP').default;
-const ParseUser = require('../ParseUser').default;
+const ParseCLP = require('../ParseCLP');
+const ParseUser = require('../ParseUser');
 const ParseRole = require('../ParseRole');
 
 function generateReadCLP(key) {

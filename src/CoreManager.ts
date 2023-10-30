@@ -1,8 +1,8 @@
+import type ParseObject from './ParseObject';
 import type { AttributeMap, ObjectCache, OpsMap, State } from './ObjectStateMutations';
 import type ParseFile from './ParseFile';
 import type { FileSaveOptions, FileSource } from './ParseFile';
 import type { Op } from './ParseOp';
-import type ParseObject from './ParseObject';
 import type { QueryJSON } from './ParseQuery';
 import type ParseUser from './ParseUser';
 import type { AuthData } from './ParseUser';

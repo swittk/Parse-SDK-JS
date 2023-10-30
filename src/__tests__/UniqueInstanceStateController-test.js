@@ -15,8 +15,8 @@ const mockObject = function (className) {
 mockObject.registerSubclass = function () {};
 jest.setMock('../ParseObject', mockObject);
 
-const ParseFile = require('../ParseFile').default;
-const ParseGeoPoint = require('../ParseGeoPoint').default;
+const ParseFile = require('../ParseFile');
+const ParseGeoPoint = require('../ParseGeoPoint');
 const ParseObject = require('../ParseObject');
 const ParseOps = require('../ParseOp');
 const UniqueInstanceStateController = require('../UniqueInstanceStateController');

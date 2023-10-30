@@ -3,7 +3,7 @@
  */
 
 import CoreManager from './CoreManager';
-import canBeSerialized from './canBeSerialized';
+// import canBeSerialized from './canBeSerialized';
 import decode from './decode';
 import encode from './encode';
 import escape from './escape';
@@ -37,6 +37,51 @@ import type { AttributeMap, OpsMap } from './ObjectStateMutations';
 import type { RequestOptions, FullOptions } from './RESTController';
 
 import uuidv4 from './uuid';
+
+export function canBeSerialized(obj: ParseObject): boolean {
+  if (!(obj instanceof ParseObject)) {
+    return true;
+  }
+  const attributes = obj.attributes;
+  for (const attr in attributes) {
+    const val = attributes[attr];
+    if (!canBeSerializedHelper(val)) {
+      return false;
+    }
+  }
+  return true;
+}
+function canBeSerializedHelper(value: any): boolean {
+  if (typeof value !== 'object') {
+    return true;
+  }
+  if (value instanceof ParseRelation) {
+    return true;
+  }
+  if (value instanceof ParseObject) {
+    return !!value.id;
+  }
+  if (value instanceof ParseFile) {
+    if (value.url()) {
+      return true;
+    }
+    return false;
+  }
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      if (!canBeSerializedHelper(value[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  for (const k in value) {
+    if (!canBeSerializedHelper(value[k])) {
+      return false;
+    }
+  }
+  return true;
+}
 
 export type Pointer = {
   __type: string,
@@ -707,15 +752,15 @@ class ParseObject {
    *     The only supported option is <code>error</code>.
    * @returns {(ParseObject|boolean)} true if the set succeeded.
    */
-  set(keyOrAttributes: string | AttributeMap, valueOrOptions?: any, options?: any): ParseObject | boolean {
-    let changes: AttributeMap = {};
+  set(key: any, value?: any, options?: any): ParseObject | boolean {
+    // TODO: Improve types here without breaking stuff.
+    let changes = {};
     const newOps = {};
-    let key: string | undefined;
-    if (keyOrAttributes && typeof keyOrAttributes === 'object') {
-      changes = keyOrAttributes;
-      options = valueOrOptions;
+    if (key && typeof key === 'object') {
+      changes = key;
+      options = value;
     } else if (typeof key === 'string') {
-      changes[key] = valueOrOptions;
+      changes[key] = value;
     } else {
       // Key is weird; just return ourself
       return this;
@@ -2578,5 +2623,5 @@ const DefaultController = {
 };
 
 CoreManager.setObjectController(DefaultController);
-
+module.exports = ParseObject;
 export default ParseObject;

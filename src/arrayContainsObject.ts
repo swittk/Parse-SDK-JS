@@ -15,3 +15,4 @@ export default function arrayContainsObject(array: Array<any>, object: ParseObje
   }
   return false;
 }
+module.exports = arrayContainsObject;

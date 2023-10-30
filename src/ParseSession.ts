@@ -105,5 +105,5 @@ const DefaultController = {
 };
 
 CoreManager.setSessionController(DefaultController);
-
+module.exports = ParseSession;
 export default ParseSession;

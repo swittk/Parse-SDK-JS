@@ -57,3 +57,4 @@ export default function decode(value: any): any {
   }
   return copy;
 }
+module.exports = decode;

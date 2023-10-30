@@ -3,12 +3,12 @@ jest.dontMock('../ParseFile');
 jest.dontMock('../ParseGeoPoint');
 jest.dontMock('../ParsePolygon');
 
-const decode = require('../decode').default;
+const decode = require('../decode');
 
-const ParseFile = require('../ParseFile').default;
-const ParseGeoPoint = require('../ParseGeoPoint').default;
-const ParseObject = require('../ParseObject').default;
-const ParsePolygon = require('../ParsePolygon').default;
+const ParseFile = require('../ParseFile');
+const ParseGeoPoint = require('../ParseGeoPoint');
+const ParseObject = require('../ParseObject');
+const ParsePolygon = require('../ParsePolygon');
 
 describe('decode', () => {
   it('ignores primitives', () => {

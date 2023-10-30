@@ -10,7 +10,7 @@ jest.dontMock('../Storage');
 jest.dontMock('crypto-js/aes');
 jest.setMock('../EventuallyQueue', { poll: jest.fn() });
 
-const ParseError = require('../ParseError').default;
+const ParseError = require('../ParseError');
 const EventuallyQueue = require('../EventuallyQueue');
 
 class XMLHttpRequest {}
