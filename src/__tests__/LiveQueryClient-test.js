@@ -32,13 +32,13 @@ const mockLocalDatastore = {
   isEnabled: false,
   _updateObjectIfPinned: jest.fn(),
 };
-jest.setMock('../LocalDatastore', mockLocalDatastore);
+jest.setMock('../LocalDatastore', { default: mockLocalDatastore });
 
-const CoreManager = require('../CoreManager');
-const EventEmitter = require('../EventEmitter');
-const LiveQueryClient = require('../LiveQueryClient');
-const ParseObject = require('../ParseObject');
-const ParseQuery = require('../ParseQuery');
+const CoreManager = require('../CoreManager').default;
+const EventEmitter = require('../EventEmitter').default;
+const LiveQueryClient = require('../LiveQueryClient').default;
+const ParseObject = require('../ParseObject').default;
+const ParseQuery = require('../ParseQuery').default;
 const { resolvingPromise } = require('../promiseUtils');
 const events = require('events');
 
@@ -919,7 +919,7 @@ describe('LiveQueryClient', () => {
 
     const subscription = liveQueryClient.subscribe(query);
     liveQueryClient.connectPromise.reject(new Error('Unable to connect'));
-    liveQueryClient.connectPromise.catch(() => {});
+    liveQueryClient.connectPromise.catch(() => { });
     try {
       await subscription.subscribePromise;
       expect(true).toBeFalse();

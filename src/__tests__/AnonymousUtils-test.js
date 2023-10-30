@@ -5,10 +5,10 @@ class MockUser {
     this.className = '_User';
     this.attributes = {};
   }
-  _isLinked() {}
-  linkWith() {}
-  static _registerAuthenticationProvider() {}
-  static logInWith() {}
+  _isLinked() { }
+  linkWith() { }
+  static _registerAuthenticationProvider() { }
+  static logInWith() { }
 }
 
 jest.setMock('../ParseUser', MockUser);
@@ -31,7 +31,7 @@ const mockProvider = {
   },
 };
 
-const AnonymousUtils = require('../AnonymousUtils');
+const AnonymousUtils = require('../AnonymousUtils').default;
 
 describe('AnonymousUtils', () => {
   beforeEach(() => {

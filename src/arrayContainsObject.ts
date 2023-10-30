@@ -1,4 +1,4 @@
-import ParseObject from './ParseObject';
+import type ParseObject from './ParseObject';
 
 export default function arrayContainsObject(array: Array<any>, object: ParseObject): boolean {
   if (array.indexOf(object) > -1) {
@@ -6,7 +6,7 @@ export default function arrayContainsObject(array: Array<any>, object: ParseObje
   }
   for (let i = 0; i < array.length; i++) {
     if (
-      array[i] instanceof ParseObject &&
+      (!!array[i] && typeof array[i] == 'object' && 'isParseObject' in array[i]) &&
       array[i].className === object.className &&
       array[i]._getId() === object._getId()
     ) {
@@ -15,4 +15,3 @@ export default function arrayContainsObject(array: Array<any>, object: ParseObje
   }
   return false;
 }
-module.exports = arrayContainsObject;

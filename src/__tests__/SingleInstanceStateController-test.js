@@ -9,16 +9,16 @@ jest.dontMock('../SingleInstanceStateController');
 jest.dontMock('../TaskQueue');
 jest.dontMock('./test_helpers/flushPromises');
 
-const mockObject = function () {};
-mockObject.registerSubclass = function () {};
-jest.setMock('../ParseObject', mockObject);
+const mockObject = function () { };
+mockObject.registerSubclass = function () { };
+jest.setMock('../ParseObject', { default: mockObject });
 jest.useFakeTimers();
 
-const ParseFile = require('../ParseFile');
-const ParseGeoPoint = require('../ParseGeoPoint');
+const ParseFile = require('../ParseFile').default;
+const ParseGeoPoint = require('../ParseGeoPoint').default;
 const ParseOps = require('../ParseOp');
 const SingleInstanceStateController = require('../SingleInstanceStateController');
-const TaskQueue = require('../TaskQueue');
+const TaskQueue = require('../TaskQueue').default;
 const flushPromises = require('./test_helpers/flushPromises');
 
 describe('SingleInstanceStateController', () => {

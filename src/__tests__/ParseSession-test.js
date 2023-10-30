@@ -26,11 +26,11 @@ mockUser.prototype.getSessionToken = function () {
 mockUser.current = function () {
   return null;
 };
-jest.setMock('../ParseUser', mockUser);
+jest.setMock('../ParseUser', { default: mockUser });
 
 const CoreManager = require('../CoreManager');
 const ParseObject = require('../ParseObject');
-const ParseSession = require('../ParseSession');
+const ParseSession = require('../ParseSession').default;
 
 CoreManager.set('APPLICATION_ID', 'A');
 CoreManager.set('JAVASCRIPT_KEY', 'B');
@@ -115,7 +115,7 @@ describe('ParseSession', () => {
           sessionToken: 'abc123',
         });
       },
-      ajax() {},
+      ajax() { },
     });
 
     mockUser.currentAsync = function () {

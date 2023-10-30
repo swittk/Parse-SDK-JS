@@ -2,13 +2,13 @@
  * @flow
  */
 
-import ParseACL from './ParseACL';
-import ParseFile from './ParseFile';
-import ParseGeoPoint from './ParseGeoPoint';
-import ParsePolygon from './ParsePolygon';
-import ParseObject from './ParseObject';
-import { Op } from './ParseOp';
-import ParseRelation from './ParseRelation';
+// import type ParseACL from './ParseACL';
+import type ParseFile from './ParseFile';
+// import type ParseGeoPoint from './ParseGeoPoint';
+// import type ParsePolygon from './ParsePolygon';
+import type ParseObject from './ParseObject';
+import type { Op } from './ParseOp';
+// import ParseRelation from './ParseRelation';
 
 /** Encodes values to storage type */
 function encode(
@@ -18,36 +18,37 @@ function encode(
   seen: Array<any>,
   offline?: boolean
 ): any {
-  if (value instanceof ParseObject) {
+  if (!!value && typeof value == 'object' && 'isParseObject' in value) {
     if (disallowObjects) {
       throw new Error('Parse Objects not allowed here');
     }
-    const seenEntry = value.id ? value.className + ':' + value.id : value;
+    const objValue = value as ParseObject;
+    const seenEntry = objValue.id ? objValue.className + ':' + objValue.id : objValue;
     if (
       forcePointers ||
       !seen ||
       seen.indexOf(seenEntry) > -1 ||
-      value.dirty() ||
-      Object.keys(value._getServerData()).length < 1
+      objValue.dirty() ||
+      Object.keys(objValue._getServerData()).length < 1
     ) {
-      if (offline && value._getId().startsWith('local')) {
-        return value.toOfflinePointer();
+      if (offline && objValue._getId().startsWith('local')) {
+        return objValue.toOfflinePointer();
       }
-      return value.toPointer();
+      return objValue.toPointer();
     }
     seen = seen.concat(seenEntry);
-    return value._toFullJSON(seen, offline);
+    return objValue._toFullJSON(seen, offline);
   }
   if (
-    value instanceof Op ||
-    value instanceof ParseACL ||
-    value instanceof ParseGeoPoint ||
-    value instanceof ParsePolygon ||
-    value instanceof ParseRelation
+    (!!value && typeof value == 'object' && 'isOp' in value) ||
+    (!!value && typeof value == 'object' && 'isParseACL' in value) ||
+    (!!value && typeof value == 'object' && 'isParseGeoPoint' in value) ||
+    (!!value && typeof value == 'object' && 'isParsePolygon' in value) ||
+    (!!value && typeof value == 'object' && 'isParseRelation' in value)
   ) {
     return value.toJSON();
   }
-  if (value instanceof ParseFile) {
+  if ((!!value && typeof value == 'object' && 'isParseFile' in value)) {
     if (!value.url()) {
       throw new Error('Tried to encode an unsaved file.');
     }
@@ -84,7 +85,7 @@ function encode(
 }
 
 /** Encodes values to storage type */
-export default function encodeValues (
+export default function encodeValues(
   value: any,
   disallowObjects?: boolean,
   forcePointers?: boolean,
@@ -93,4 +94,3 @@ export default function encodeValues (
 ): any {
   return encode(value, !!disallowObjects, !!forcePointers, seen || [], offline);
 }
-module.exports = encodeValues;

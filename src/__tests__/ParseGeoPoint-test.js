@@ -1,6 +1,6 @@
 jest.autoMockOff();
 
-const ParseGeoPoint = require('../ParseGeoPoint');
+const ParseGeoPoint = require('../ParseGeoPoint').default;
 global.navigator.geolocation = {
   getCurrentPosition: cb => {
     return cb({

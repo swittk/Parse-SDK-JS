@@ -8,7 +8,7 @@ function mockObject({ className, localId, id, attributes, dirty }) {
   this.attributes = attributes;
   this._dirty = !!dirty;
 }
-mockObject.registerSubclass = function () {};
+mockObject.registerSubclass = function () { };
 mockObject.prototype = {
   _getId() {
     return this.id || this.localId;
@@ -17,12 +17,12 @@ mockObject.prototype = {
     return this._dirty;
   },
 };
-jest.setMock('../ParseObject', mockObject);
+jest.setMock('../ParseObject', { default: mockObject });
 
-const ParseFile = require('../ParseFile');
-const ParseObject = require('../ParseObject');
-const ParseRelation = require('../ParseRelation');
-const unsavedChildren = require('../unsavedChildren');
+const ParseFile = require('../ParseFile').default;
+const ParseObject = require('../ParseObject').default;
+const ParseRelation = require('../ParseRelation').default;
+const unsavedChildren = require('../unsavedChildren').default;
 
 describe('unsavedChildren', () => {
   it('finds unsaved files', () => {

@@ -1,7 +1,7 @@
 jest.autoMockOff();
 
-const ParseGeoPoint = require('../ParseGeoPoint');
-const ParsePolygon = require('../ParsePolygon');
+const ParseGeoPoint = require('../ParseGeoPoint').default;
+const ParsePolygon = require('../ParsePolygon').default;
 
 const points = [
   [0, 0],

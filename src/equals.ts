@@ -1,7 +1,7 @@
-import ParseACL from './ParseACL';
-import ParseFile from './ParseFile';
-import ParseGeoPoint from './ParseGeoPoint';
-import ParseObject from './ParseObject';
+import type ParseACL from './ParseACL';
+import type ParseFile from './ParseFile';
+import type ParseGeoPoint from './ParseGeoPoint';
+import type ParseObject from './ParseObject';
 
 export default function equals(a: any, b: any): boolean {
   const toString = Object.prototype.toString;
@@ -36,14 +36,18 @@ export default function equals(a: any, b: any): boolean {
   }
 
   if (
-    a instanceof ParseACL ||
-    a instanceof ParseFile ||
-    a instanceof ParseGeoPoint ||
-    a instanceof ParseObject
+    (!!a && typeof a == 'object' && 'isParseACL' in a) ||
+    // a instanceof ParseACL ||
+    (!!a && typeof a == 'object' && 'isParseFile' in a) ||
+    // a instanceof ParseFile ||
+    (!!a && typeof a == 'object' && 'isParseGeoPoint' in a) ||
+    // a instanceof ParseGeoPoint ||
+    (!!a && typeof a == 'object' && 'isParseObject' in a)
+    // a instanceof ParseObject
   ) {
     return a.equals(b);
   }
-  if (b instanceof ParseObject) {
+  if (!!b && typeof b == 'object' && 'isParseObject' in b) {
     if (a.__type === 'Object' || a.__type === 'Pointer') {
       return a.objectId === b.id && a.className === b.className;
     }
@@ -58,4 +62,3 @@ export default function equals(a: any, b: any): boolean {
   }
   return true;
 }
-module.exports = equals;

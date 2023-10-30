@@ -6,7 +6,7 @@ jest.dontMock('../ParseGeoPoint');
 const mockObject = function (className) {
   this.className = className;
 };
-mockObject.registerSubclass = function () {};
+mockObject.registerSubclass = function () { };
 mockObject.prototype = {
   _getServerData() {
     return this._serverData;
@@ -20,7 +20,7 @@ mockObject.prototype = {
   _getId() {
     return 'local1234';
   },
-  dirty() {},
+  dirty() { },
   toJSON() {
     return this.attributes;
   },
@@ -35,14 +35,14 @@ mockObject.prototype = {
     return json;
   },
 };
-jest.setMock('../ParseObject', mockObject);
+jest.setMock('../ParseObject', { default: mockObject });
 
-const encode = require('../encode');
-const ParseACL = require('../ParseACL');
-const ParseFile = require('../ParseFile');
-const ParseGeoPoint = require('../ParseGeoPoint');
-const ParseObject = require('../ParseObject');
-const ParseRelation = require('../ParseRelation');
+const encode = require('../encode').default;
+const ParseACL = require('../ParseACL').default;
+const ParseFile = require('../ParseFile').default;
+const ParseGeoPoint = require('../ParseGeoPoint').default;
+const ParseObject = require('../ParseObject').default;
+const ParseRelation = require('../ParseRelation').default;
 
 describe('encode', () => {
   it('ignores primitives', () => {

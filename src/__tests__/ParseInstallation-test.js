@@ -8,7 +8,7 @@ jest.dontMock('../ParseInstallation');
 jest.dontMock('../SingleInstanceStateController');
 jest.dontMock('../UniqueInstanceStateController');
 
-const ParseInstallation = require('../ParseInstallation');
+const ParseInstallation = require('../ParseInstallation').default;
 
 describe('ParseInstallation', () => {
   it('can create ParseInstallation', () => {

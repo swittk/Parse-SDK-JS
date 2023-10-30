@@ -5,8 +5,8 @@ jest.mock('../uuid', () => {
   return () => (value++).toString();
 });
 
-const CoreManager = require('../CoreManager');
-const RESTController = require('../RESTController');
+const CoreManager = require('../CoreManager').default;
+const RESTController = require('../RESTController').default;
 const flushPromises = require('./test_helpers/flushPromises');
 const mockXHR = require('./test_helpers/mockXHR');
 const mockWeChat = require('./test_helpers/mockWeChat');
@@ -174,10 +174,10 @@ describe('RESTController', () => {
   });
 
   it('handles invalid responses', done => {
-    const XHR = function () {};
+    const XHR = function () { };
     XHR.prototype = {
-      open: function () {},
-      setRequestHeader: function () {},
+      open: function () { },
+      setRequestHeader: function () { },
       send: function () {
         this.status = 200;
         this.responseText = '{';
@@ -194,10 +194,10 @@ describe('RESTController', () => {
   });
 
   it('handles invalid errors', done => {
-    const XHR = function () {};
+    const XHR = function () { };
     XHR.prototype = {
-      open: function () {},
-      setRequestHeader: function () {},
+      open: function () { },
+      setRequestHeader: function () { },
       send: function () {
         this.status = 400;
         this.responseText = '{';
@@ -214,10 +214,10 @@ describe('RESTController', () => {
   });
 
   it('handles x-parse-job-status-id header', async () => {
-    const XHR = function () {};
+    const XHR = function () { };
     XHR.prototype = {
-      open: function () {},
-      setRequestHeader: function () {},
+      open: function () { },
+      setRequestHeader: function () { },
       getResponseHeader: function (header) {
         return headers[header];
       },
@@ -234,10 +234,10 @@ describe('RESTController', () => {
   });
 
   it('handles x-parse-push-status-id header', async () => {
-    const XHR = function () {};
+    const XHR = function () { };
     XHR.prototype = {
-      open: function () {},
-      setRequestHeader: function () {},
+      open: function () { },
+      setRequestHeader: function () { },
       getResponseHeader: function (header) {
         return headers[header];
       },
@@ -254,10 +254,10 @@ describe('RESTController', () => {
   });
 
   it('handles invalid header', async () => {
-    const XHR = function () {};
+    const XHR = function () { };
     XHR.prototype = {
-      open: function () {},
-      setRequestHeader: function () {},
+      open: function () { },
+      setRequestHeader: function () { },
       getResponseHeader: function () {
         return null;
       },
@@ -341,10 +341,10 @@ describe('RESTController', () => {
   });
 
   it('handles aborted requests', done => {
-    const XHR = function () {};
+    const XHR = function () { };
     XHR.prototype = {
-      open: function () {},
-      setRequestHeader: function () {},
+      open: function () { },
+      setRequestHeader: function () { },
       send: function () {
         this.status = 0;
         this.responseText = '{"foo":"bar"}';
@@ -364,18 +364,18 @@ describe('RESTController', () => {
       currentUserAsync() {
         return Promise.resolve({ getSessionToken: () => '5678' });
       },
-      setCurrentUser() {},
-      currentUser() {},
-      signUp() {},
-      logIn() {},
-      become() {},
-      logOut() {},
-      me() {},
-      requestPasswordReset() {},
-      upgradeToRevocableSession() {},
-      linkWith() {},
-      requestEmailVerification() {},
-      verifyPassword() {},
+      setCurrentUser() { },
+      currentUser() { },
+      signUp() { },
+      logIn() { },
+      become() { },
+      logOut() { },
+      me() { },
+      requestPasswordReset() { },
+      upgradeToRevocableSession() { },
+      linkWith() { },
+      requestEmailVerification() { },
+      verifyPassword() { },
     });
 
     const xhr = {
@@ -404,18 +404,18 @@ describe('RESTController', () => {
       currentUserAsync() {
         return Promise.resolve(null);
       },
-      setCurrentUser() {},
-      currentUser() {},
-      signUp() {},
-      logIn() {},
-      become() {},
-      logOut() {},
-      me() {},
-      requestPasswordReset() {},
-      upgradeToRevocableSession() {},
-      linkWith() {},
-      requestEmailVerification() {},
-      verifyPassword() {},
+      setCurrentUser() { },
+      currentUser() { },
+      signUp() { },
+      logIn() { },
+      become() { },
+      logOut() { },
+      me() { },
+      requestPasswordReset() { },
+      upgradeToRevocableSession() { },
+      linkWith() { },
+      requestEmailVerification() { },
+      verifyPassword() { },
     });
 
     const xhr = {
@@ -539,7 +539,7 @@ describe('RESTController', () => {
     RESTController._setXHR(xhr);
 
     const options = {
-      progress: function () {},
+      progress: function () { },
     };
     jest.spyOn(options, 'progress');
 
@@ -583,7 +583,7 @@ describe('RESTController', () => {
     RESTController._setXHR(xhr);
 
     const options = {
-      progress: function () {},
+      progress: function () { },
     };
     jest.spyOn(options, 'progress');
 

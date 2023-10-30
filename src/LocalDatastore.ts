@@ -391,12 +391,11 @@ const LocalDatastore = {
   },
 };
 
-module.exports = LocalDatastore;
 export default LocalDatastore;
 
 if (process.env.PARSE_BUILD === 'react-native') {
-  CoreManager.setLocalDatastoreController(require('./LocalDatastoreController.react-native'));
+  CoreManager.setLocalDatastoreController(require('./LocalDatastoreController.react-native').default);
 } else {
-  CoreManager.setLocalDatastoreController(require('./LocalDatastoreController'));
+  CoreManager.setLocalDatastoreController(require('./LocalDatastoreController').default);
 }
 CoreManager.setLocalDatastore(LocalDatastore);

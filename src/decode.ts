@@ -1,7 +1,7 @@
 /**
  * @flow
  */
-import ParseACL from './ParseACL'; // eslint-disable-line no-unused-vars
+import type ParseACL from './ParseACL'; // eslint-disable-line no-unused-vars
 import ParseFile from './ParseFile';
 import ParseGeoPoint from './ParseGeoPoint';
 import ParsePolygon from './ParsePolygon';
@@ -32,7 +32,7 @@ export default function decode(value: any): any {
   }
   if (value.__type === 'Relation') {
     // The parent and key fields will be populated by the parent
-    const relation = new ParseRelation(undefined, undefined);
+    const relation = new ParseRelation(null, null);
     relation.targetClassName = value.className;
     return relation;
   }
@@ -57,4 +57,3 @@ export default function decode(value: any): any {
   }
   return copy;
 }
-module.exports = decode;

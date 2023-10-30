@@ -3,7 +3,7 @@
  */
 
 import Storage from './Storage';
-const uuidv4 = require('./uuid');
+import uuidv4 from './uuid';
 
 let iidCache: string|null = null;
 
@@ -35,5 +35,4 @@ const InstallationController = {
   },
 };
 
-module.exports = InstallationController;
 export default InstallationController;

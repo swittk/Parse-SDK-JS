@@ -147,5 +147,4 @@ class ParseRelation {
     return query;
   }
 }
-module.exports = ParseRelation;
 export default ParseRelation;

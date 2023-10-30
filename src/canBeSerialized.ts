@@ -3,11 +3,11 @@
  */
 
 import ParseFile from './ParseFile';
-import ParseObject from './ParseObject';
+import type ParseObject from './ParseObject';
 import ParseRelation from './ParseRelation';
 
 export default function canBeSerialized(obj: ParseObject): boolean {
-  if (!(obj instanceof ParseObject)) {
+  if (!!obj && typeof obj == 'object' && !('isParseObject' in obj)) {
     return true;
   }
   const attributes = obj.attributes;
@@ -27,8 +27,8 @@ function canBeSerializedHelper(value: any): boolean {
   if (value instanceof ParseRelation) {
     return true;
   }
-  if (value instanceof ParseObject) {
-    return !!value.id;
+  if (!!value && 'isParseObject' in value) {
+    return !!(value as ParseObject).id;
   }
   if (value instanceof ParseFile) {
     if (value.url()) {
@@ -51,4 +51,3 @@ function canBeSerializedHelper(value: any): boolean {
   }
   return true;
 }
-module.exports = canBeSerialized;

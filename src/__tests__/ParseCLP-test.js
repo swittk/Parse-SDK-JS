@@ -8,11 +8,11 @@ mockRole.prototype.getName = function () {
   return this.name;
 };
 
-jest.setMock('../ParseRole', mockRole);
+jest.setMock('../ParseRole', { default: mockRole });
 
-const ParseCLP = require('../ParseCLP');
-const ParseUser = require('../ParseUser');
-const ParseRole = require('../ParseRole');
+const ParseCLP = require('../ParseCLP').default;
+const ParseUser = require('../ParseUser').default;
+const ParseRole = require('../ParseRole').default;
 
 function generateReadCLP(key) {
   return {
@@ -108,7 +108,7 @@ describe('ParseCLP', () => {
 
   it('throws a helpful error when constructed with a function', () => {
     expect(function () {
-      new ParseCLP(function () {});
+      new ParseCLP(function () { });
     }).toThrow('ParseCLP constructed with a function. Did you forget ()?');
   });
 

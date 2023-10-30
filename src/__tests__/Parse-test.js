@@ -5,12 +5,12 @@ jest.dontMock('../encode');
 jest.dontMock('../Parse');
 jest.dontMock('../LocalDatastore');
 jest.dontMock('crypto-js/aes');
-jest.setMock('../EventuallyQueue', { poll: jest.fn() });
+jest.setMock('../EventuallyQueue', { default: { poll: jest.fn() } });
 
 global.indexedDB = require('./test_helpers/mockIndexedDB');
-const CoreManager = require('../CoreManager');
-const EventuallyQueue = require('../EventuallyQueue');
-const Parse = require('../Parse');
+const CoreManager = require('../CoreManager').default;
+const EventuallyQueue = require('../EventuallyQueue').default;
+const Parse = require('../Parse').default;
 
 describe('Parse module', () => {
   it('can be initialized with keys', () => {
@@ -31,7 +31,7 @@ describe('Parse module', () => {
   });
 
   it('should not start eventually queue poll in node build', () => {
-    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => { });
     Parse.initialize('A', 'B');
     expect(EventuallyQueue.poll).toHaveBeenCalledTimes(0);
   });
@@ -79,11 +79,11 @@ describe('Parse module', () => {
 
   it('can set LocalDatastoreController', () => {
     const controller = {
-      fromPinWithName: function () {},
-      pinWithName: function () {},
-      unPinWithName: function () {},
-      getAllContents: function () {},
-      clear: function () {},
+      fromPinWithName: function () { },
+      pinWithName: function () { },
+      unPinWithName: function () { },
+      getAllContents: function () { },
+      clear: function () { },
     };
     Parse.setLocalDatastoreController(controller);
     expect(CoreManager.getLocalDatastoreController()).toBe(controller);
@@ -91,13 +91,13 @@ describe('Parse module', () => {
 
   it('can set AsyncStorage', () => {
     const controller = {
-      getItem: function () {},
-      setItem: function () {},
-      removeItem: function () {},
-      getItemAsync: function () {},
-      setItemAsync: function () {},
-      removeItemAsync: function () {},
-      clear: function () {},
+      getItem: function () { },
+      setItem: function () { },
+      removeItem: function () { },
+      getItemAsync: function () { },
+      setItemAsync: function () { },
+      removeItemAsync: function () { },
+      clear: function () { },
     };
 
     Parse.setAsyncStorage(controller);
@@ -105,8 +105,8 @@ describe('Parse module', () => {
   });
 
   it('can enable LocalDatastore', () => {
-    jest.spyOn(console, 'log').mockImplementationOnce(() => {});
-    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => {});
+    jest.spyOn(console, 'log').mockImplementationOnce(() => { });
+    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => { });
 
     Parse.initialize(null, null);
     Parse.enableLocalDatastore();
@@ -130,20 +130,20 @@ describe('Parse module', () => {
   });
 
   it('can dump LocalDatastore', async () => {
-    jest.spyOn(console, 'log').mockImplementationOnce(() => {});
+    jest.spyOn(console, 'log').mockImplementationOnce(() => { });
     Parse.LocalDatastore.isEnabled = false;
     let LDS = await Parse.dumpLocalDatastore();
     expect(console.log).toHaveBeenCalledWith('Parse.enableLocalDatastore() must be called first');
     expect(LDS).toEqual({});
     Parse.LocalDatastore.isEnabled = true;
     const controller = {
-      fromPinWithName: function () {},
-      pinWithName: function () {},
-      unPinWithName: function () {},
+      fromPinWithName: function () { },
+      pinWithName: function () { },
+      unPinWithName: function () { },
       getAllContents: function () {
         return Promise.resolve({ key: 'value' });
       },
-      clear: function () {},
+      clear: function () { },
     };
     Parse.setLocalDatastoreController(controller);
     LDS = await Parse.dumpLocalDatastore();
@@ -151,7 +151,7 @@ describe('Parse module', () => {
   });
 
   it('can enable encrypter CurrentUser', () => {
-    jest.spyOn(console, 'log').mockImplementationOnce(() => {});
+    jest.spyOn(console, 'log').mockImplementationOnce(() => { });
     process.env.PARSE_BUILD = 'browser';
     Parse.encryptedUser = false;
     Parse.enableEncryptedUser();
@@ -236,7 +236,7 @@ describe('Parse module', () => {
     jest.isolateModules(() => {
       expect(Parse.IndexedDB).toBeUndefined();
       process.env.PARSE_BUILD = 'browser';
-      const ParseInstance = require('../Parse');
+      const ParseInstance = require('../Parse').default;
       ParseInstance.initialize('test', 'test');
       expect(ParseInstance.IndexedDB).toBeDefined();
       CoreManager.setStorageController(ParseInstance.IndexedDB);

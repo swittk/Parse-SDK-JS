@@ -12,15 +12,15 @@ jest.useFakeTimers();
 const mockObject = function (className) {
   this.className = className;
 };
-mockObject.registerSubclass = function () {};
-jest.setMock('../ParseObject', mockObject);
+mockObject.registerSubclass = function () { };
+jest.setMock('../ParseObject', { default: mockObject });
 
-const ParseFile = require('../ParseFile');
-const ParseGeoPoint = require('../ParseGeoPoint');
-const ParseObject = require('../ParseObject');
+const ParseFile = require('../ParseFile').default;
+const ParseGeoPoint = require('../ParseGeoPoint').default;
+const ParseObject = require('../ParseObject').default;
 const ParseOps = require('../ParseOp');
 const UniqueInstanceStateController = require('../UniqueInstanceStateController');
-const TaskQueue = require('../TaskQueue');
+const TaskQueue = require('../TaskQueue').default;
 const { resolvingPromise } = require('../promiseUtils');
 
 describe('UniqueInstanceStateController', () => {

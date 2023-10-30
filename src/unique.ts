@@ -20,4 +20,3 @@ export default function unique<T>(arr: Array<T>): Array<T> {
   });
   return uniques;
 }
-module.exports = unique;

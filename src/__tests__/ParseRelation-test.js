@@ -8,7 +8,7 @@ const mockObject = function (className) {
   this.className = className;
   this.ops = {};
 };
-mockObject.registerSubclass = function () {};
+mockObject.registerSubclass = function () { };
 mockObject.prototype = {
   _getId() {
     return this.id;
@@ -39,7 +39,7 @@ mockObject.prototype = {
     return finalOp;
   },
 };
-jest.setMock('../ParseObject', mockObject);
+jest.setMock('../ParseObject', { default: mockObject });
 
 const mockQuery = function (className) {
   this.className = className;
@@ -52,10 +52,10 @@ mockQuery.prototype = {
     this.where[key][comparison] = value;
   },
 };
-jest.setMock('../ParseQuery', mockQuery);
+jest.setMock('../ParseQuery', { default: mockQuery });
 
-const ParseObject = require('../ParseObject');
-const ParseRelation = require('../ParseRelation');
+const ParseObject = require('../ParseObject').default;
+const ParseRelation = require('../ParseRelation').default;
 
 describe('ParseRelation', () => {
   it('can be constructed with a reference parent and key', () => {

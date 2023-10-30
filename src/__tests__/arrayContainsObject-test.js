@@ -11,10 +11,10 @@ const mockObject = function (className, id) {
 mockObject.prototype._getId = function () {
   return this.id || this._localId;
 };
-jest.setMock('../ParseObject', mockObject);
+jest.setMock('../ParseObject', { default: mockObject });
 
-const arrayContainsObject = require('../arrayContainsObject');
-const ParseObject = require('../ParseObject');
+const arrayContainsObject = require('../arrayContainsObject').default;
+const ParseObject = require('../ParseObject').default;
 
 describe('arrayContainsObject', () => {
   it('detects objects by their id', () => {

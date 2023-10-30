@@ -27,7 +27,8 @@ jest.dontMock('../LocalDatastore');
 jest.mock('../uuid', () => {
   let value = 0;
   return () => value++;
-});
+}
+);
 jest.dontMock('./test_helpers/mockXHR');
 jest.dontMock('./test_helpers/flushPromises');
 
@@ -70,7 +71,8 @@ mockRelation.prototype._ensureParentAndKey = function (parent, key) {
     this.parent = parent;
   }
 };
-jest.setMock('../ParseRelation', mockRelation);
+
+jest.setMock('../ParseRelation', { default: mockRelation });
 
 const mockQuery = function (className) {
   this.className = className;
@@ -101,7 +103,7 @@ mockQuery.prototype.get = function (id) {
   });
   return Promise.resolve(object);
 };
-jest.setMock('../ParseQuery', mockQuery);
+jest.setMock('../ParseQuery', { default: mockQuery });
 
 import { DEFAULT_PIN, PIN_PREFIX } from '../LocalDatastoreUtils';
 
@@ -140,20 +142,20 @@ const mockLocalDatastore = {
     return mockLocalDatastore.isEnabled;
   }),
 };
-jest.setMock('../LocalDatastore', mockLocalDatastore);
+jest.setMock('../LocalDatastore', { default: mockLocalDatastore });
 
-const CoreManager = require('../CoreManager');
-const EventuallyQueue = require('../EventuallyQueue');
-const ParseACL = require('../ParseACL');
-const ParseError = require('../ParseError');
-const ParseFile = require('../ParseFile');
-const ParseGeoPoint = require('../ParseGeoPoint');
-const ParsePolygon = require('../ParsePolygon');
-const ParseObject = require('../ParseObject');
+const CoreManager = require('../CoreManager').default;
+const EventuallyQueue = require('../EventuallyQueue').default;
+const ParseACL = require('../ParseACL').default;
+const ParseError = require('../ParseError').default;
+const ParseFile = require('../ParseFile').default;
+const ParseGeoPoint = require('../ParseGeoPoint').default;
+const ParsePolygon = require('../ParsePolygon').default;
+const ParseObject = require('../ParseObject').default;
 const ParseOp = require('../ParseOp');
-const RESTController = require('../RESTController');
+const RESTController = require('../RESTController').default;
 const SingleInstanceStateController = require('../SingleInstanceStateController');
-const unsavedChildren = require('../unsavedChildren');
+const unsavedChildren = require('../unsavedChildren').default;
 
 const mockXHR = require('./test_helpers/mockXHR');
 const flushPromises = require('./test_helpers/flushPromises');
@@ -1328,9 +1330,9 @@ describe('ParseObject', () => {
     const objectController = CoreManager.getObjectController();
     const spy = jest
       .spyOn(objectController, 'fetch')
-      .mockImplementationOnce(() => {})
-      .mockImplementationOnce(() => {})
-      .mockImplementationOnce(() => {});
+      .mockImplementationOnce(() => { })
+      .mockImplementationOnce(() => { })
+      .mockImplementationOnce(() => { });
 
     const parent = new ParseObject('Person');
     await parent.fetchWithInclude('child', {
@@ -1446,9 +1448,9 @@ describe('ParseObject', () => {
     const objectController = CoreManager.getObjectController();
     const spy = jest
       .spyOn(objectController, 'fetch')
-      .mockImplementationOnce(() => {})
-      .mockImplementationOnce(() => {})
-      .mockImplementationOnce(() => {});
+      .mockImplementationOnce(() => { })
+      .mockImplementationOnce(() => { })
+      .mockImplementationOnce(() => { });
 
     const parent = new ParseObject('Person');
     await ParseObject.fetchAllWithInclude([parent], 'child', {
@@ -1474,9 +1476,9 @@ describe('ParseObject', () => {
     const objectController = CoreManager.getObjectController();
     const spy = jest
       .spyOn(objectController, 'fetch')
-      .mockImplementationOnce(() => {})
-      .mockImplementationOnce(() => {})
-      .mockImplementationOnce(() => {});
+      .mockImplementationOnce(() => { })
+      .mockImplementationOnce(() => { })
+      .mockImplementationOnce(() => { });
 
     const parent = new ParseObject('Person');
     await ParseObject.fetchAllIfNeededWithInclude([parent], 'child', {
@@ -1573,7 +1575,7 @@ describe('ParseObject', () => {
   it('can save the object eventually on network failure', async () => {
     const p = new ParseObject('Person');
     jest.spyOn(EventuallyQueue, 'save').mockImplementationOnce(() => Promise.resolve());
-    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => { });
     jest.spyOn(p, 'save').mockImplementationOnce(() => {
       throw new ParseError(
         ParseError.CONNECTION_FAILED,
@@ -1588,7 +1590,7 @@ describe('ParseObject', () => {
   it('should not save the object eventually on error', async () => {
     const p = new ParseObject('Person');
     jest.spyOn(EventuallyQueue, 'save').mockImplementationOnce(() => Promise.resolve());
-    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => { });
     jest.spyOn(p, 'save').mockImplementationOnce(() => {
       throw new ParseError(ParseError.OTHER_CAUSE, 'Tried to save a batch with a cycle.');
     });
@@ -1796,12 +1798,12 @@ describe('ParseObject', () => {
     const p = new ParseObject('Per$on');
     expect(p._getPendingOps().length).toBe(1);
     p.increment('updates');
-    p.save().catch(() => {});
+    p.save().catch(() => { });
     jest.runAllTicks();
     await flushPromises();
     expect(p._getPendingOps().length).toBe(2);
     p.set('updates', 12);
-    p.save().catch(() => {});
+    p.save().catch(() => { });
     jest.runAllTicks();
     await flushPromises();
 
@@ -2912,7 +2914,7 @@ describe('ObjectController', () => {
   it('can destroy the object eventually on network failure', async () => {
     const p = new ParseObject('Person');
     jest.spyOn(EventuallyQueue, 'destroy').mockImplementationOnce(() => Promise.resolve());
-    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => { });
     jest.spyOn(p, 'destroy').mockImplementationOnce(() => {
       throw new ParseError(
         ParseError.CONNECTION_FAILED,
@@ -2927,7 +2929,7 @@ describe('ObjectController', () => {
   it('should not destroy object eventually on error', async () => {
     const p = new ParseObject('Person');
     jest.spyOn(EventuallyQueue, 'destroy').mockImplementationOnce(() => Promise.resolve());
-    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => { });
     jest.spyOn(p, 'destroy').mockImplementationOnce(() => {
       throw new ParseError(ParseError.OTHER_CAUSE, 'Unable to delete.');
     });

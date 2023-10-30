@@ -12,10 +12,10 @@ const mockObject = function (className, id) {
 mockObject.prototype._getId = function () {
   return this.id || this._localId;
 };
-jest.setMock('../ParseObject', mockObject);
+jest.setMock('../ParseObject', { default: mockObject });
 
-const unique = require('../unique');
-const ParseObject = require('../ParseObject');
+const unique = require('../unique').default;
+const ParseObject = require('../ParseObject').default;
 
 describe('unique', () => {
   it('produces an array with unique elements', () => {

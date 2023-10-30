@@ -121,15 +121,14 @@ const Storage = {
   },
 };
 
-module.exports = Storage;
 export default Storage;
 
 if (process.env.PARSE_BUILD === 'react-native') {
-  CoreManager.setStorageController(require('./StorageController.react-native'));
+  CoreManager.setStorageController(require('./StorageController.react-native').default);
 } else if (process.env.PARSE_BUILD === 'browser') {
-  CoreManager.setStorageController(require('./StorageController.browser'));
+  CoreManager.setStorageController(require('./StorageController.browser').default);
 } else if (process.env.PARSE_BUILD === 'weapp') {
-  CoreManager.setStorageController(require('./StorageController.weapp'));
+  CoreManager.setStorageController(require('./StorageController.weapp').default);
 } else {
-  CoreManager.setStorageController(require('./StorageController.default'));
+  CoreManager.setStorageController(require('./StorageController.default').default);
 }

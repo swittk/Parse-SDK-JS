@@ -8,15 +8,15 @@ jest.dontMock('../Parse');
 jest.dontMock('../RESTController');
 jest.dontMock('../Storage');
 jest.dontMock('crypto-js/aes');
-jest.setMock('../EventuallyQueue', { poll: jest.fn() });
+jest.setMock('../EventuallyQueue', { default: { poll: jest.fn() } });
 
-const ParseError = require('../ParseError');
-const EventuallyQueue = require('../EventuallyQueue');
+const ParseError = require('../ParseError').default;
+const EventuallyQueue = require('../EventuallyQueue').default;
 
-class XMLHttpRequest {}
+class XMLHttpRequest { }
 class XDomainRequest {
-  open() {}
-  send() {}
+  open() { }
+  send() { }
 }
 global.XMLHttpRequest = XMLHttpRequest;
 global.XDomainRequest = XDomainRequest;
@@ -32,9 +32,9 @@ describe('Browser', () => {
   });
 
   it('warning initializing parse/node in browser', () => {
-    const Parse = require('../Parse');
-    jest.spyOn(console, 'log').mockImplementationOnce(() => {});
-    jest.spyOn(Parse, '_initialize').mockImplementationOnce(() => {});
+    const Parse = require('../Parse').default;
+    jest.spyOn(console, 'log').mockImplementationOnce(() => { });
+    jest.spyOn(Parse, '_initialize').mockImplementationOnce(() => { });
     Parse.initialize('A', 'B');
     expect(console.log).toHaveBeenCalledWith(
       "It looks like you're using the browser version of the SDK in a node.js environment. You should require('parse/node') instead."
@@ -44,26 +44,26 @@ describe('Browser', () => {
 
   it('initializing parse/node in browser with server rendering', () => {
     process.env.SERVER_RENDERING = true;
-    const Parse = require('../Parse');
-    jest.spyOn(console, 'log').mockImplementationOnce(() => {});
-    jest.spyOn(Parse, '_initialize').mockImplementationOnce(() => {});
+    const Parse = require('../Parse').default;
+    jest.spyOn(console, 'log').mockImplementationOnce(() => { });
+    jest.spyOn(Parse, '_initialize').mockImplementationOnce(() => { });
     Parse.initialize('A', 'B');
     expect(console.log).toHaveBeenCalledTimes(0);
     expect(Parse._initialize).toHaveBeenCalledTimes(1);
   });
 
   it('should start eventually queue poll on initialize', () => {
-    const Parse = require('../Parse');
-    jest.spyOn(console, 'log').mockImplementationOnce(() => {});
-    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => {});
+    const Parse = require('../Parse').default;
+    jest.spyOn(console, 'log').mockImplementationOnce(() => { });
+    jest.spyOn(EventuallyQueue, 'poll').mockImplementationOnce(() => { });
     Parse.initialize('A', 'B');
     expect(EventuallyQueue.poll).toHaveBeenCalledTimes(0);
   });
 
   it('load StorageController', () => {
-    const StorageController = require('../StorageController.browser');
+    const StorageController = require('../StorageController.browser').default;
     jest.spyOn(StorageController, 'setItem');
-    const storage = require('../Storage');
+    const storage = require('../Storage').default;
     storage.setItem('key', 'value');
     expect(StorageController.setItem).toHaveBeenCalledTimes(1);
   });
@@ -82,10 +82,10 @@ describe('Browser', () => {
     }
     global.XDomainRequest = XDomainRequest;
     console.log('hererer');
-    const RESTController = require('../RESTController');
+    const RESTController = require('../RESTController').default;
     const options = {
-      progress: () => {},
-      requestTask: () => {},
+      progress: () => { },
+      requestTask: () => { },
     };
     const { response } = await RESTController.ajax(
       'POST',
@@ -109,10 +109,10 @@ describe('Browser', () => {
         this.ontimeout();
       }
     }
-    class XMLHttpRequest {}
+    class XMLHttpRequest { }
     global.XDomainRequest = XDomainRequest;
     global.XMLHttpRequest = XMLHttpRequest;
-    const RESTController = require('../RESTController');
+    const RESTController = require('../RESTController').default;
     try {
       await RESTController.ajax('POST', 'classes/TestObject');
       expect(true).toBe(false);
@@ -137,10 +137,10 @@ describe('Browser', () => {
         this.onload();
       }
     }
-    class XMLHttpRequest {}
+    class XMLHttpRequest { }
     global.XDomainRequest = XDomainRequest;
     global.XMLHttpRequest = XMLHttpRequest;
-    const RESTController = require('../RESTController');
+    const RESTController = require('../RESTController').default;
     try {
       await RESTController.ajax('POST', 'classes/TestObject');
       expect(true).toBe(false);

@@ -32,14 +32,14 @@ jest.dontMock('./test_helpers/mockAsyncStorage');
 
 const flushPromises = require('./test_helpers/flushPromises');
 const mockAsyncStorage = require('./test_helpers/mockAsyncStorage');
-const CoreManager = require('../CoreManager');
-const CryptoController = require('../CryptoController');
-const LocalDatastore = require('../LocalDatastore');
-const ParseObject = require('../ParseObject');
-const ParseUser = require('../ParseUser');
-const Storage = require('../Storage');
-const ParseError = require('../ParseError');
-const AnonymousUtils = require('../AnonymousUtils');
+const CoreManager = require('../CoreManager').default;
+const CryptoController = require('../CryptoController').default;
+const LocalDatastore = require('../LocalDatastore').default;
+const ParseObject = require('../ParseObject').default;
+const ParseUser = require('../ParseUser').default;
+const Storage = require('../Storage').default;
+const ParseError = require('../ParseError').default;
+const AnonymousUtils = require('../AnonymousUtils').default;
 
 CoreManager.set('APPLICATION_ID', 'A');
 CoreManager.set('JAVASCRIPT_KEY', 'B');
@@ -170,7 +170,7 @@ describe('ParseUser', () => {
           201
         );
       },
-      ajax() {},
+      ajax() { },
     });
     ParseUser.signUp(null, 'password').then(
       () => {
@@ -226,7 +226,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     ParseUser.logIn('username', 'password').then(u => {
       expect(u.id).toBe('uid2');
@@ -263,7 +263,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const user = await ParseUser.logIn('username', 'password', {
       useMasterKey: true,
@@ -291,7 +291,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     ParseUser.logIn('username', 'password', { usePost: false }).then(u => {
       expect(u.id).toBe('uid2');
@@ -350,11 +350,11 @@ describe('ParseUser', () => {
             200
           );
         },
-        ajax() {},
+        ajax() { },
       });
-      const response = await ParseUser.logInWithAdditionalAuth('username', 'password', {mfa: {key:'1234'}});
+      const response = await ParseUser.logInWithAdditionalAuth('username', 'password', { mfa: { key: '1234' } });
       expect(response instanceof ParseUser).toBe(true);
-      expect(response.get('authDataResponse')).toEqual({mfa: { enabled: true }});
+      expect(response.get('authDataResponse')).toEqual({ mfa: { enabled: true } });
     });
 
     it('loginWithAdditonal fails with invalid payload', async () => {
@@ -392,7 +392,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const u = new ParseUser({
       username: 'username',
@@ -435,7 +435,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     const user = await ParseUser.loginAs('uid4');
@@ -464,7 +464,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     const user = await ParseUser.loginAs('uid5');
@@ -492,7 +492,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     ParseUser.become('123abc').then(u => {
@@ -523,7 +523,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     const u = await ParseUser.become('123abc', { useMasterKey: true });
@@ -595,7 +595,7 @@ describe('ParseUser', () => {
 
         return Promise.resolve({}, 200);
       },
-      ajax() {},
+      ajax() { },
     });
 
     ParseUser.requestPasswordReset('me@parse.com');
@@ -608,7 +608,7 @@ describe('ParseUser', () => {
         expect(options.useMasterKey).toBe(true);
         return Promise.resolve({}, 200);
       },
-      ajax() {},
+      ajax() { },
     });
 
     ParseUser.requestPasswordReset('me@parse.com', { useMasterKey: true });
@@ -628,7 +628,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     ParseUser.logIn('username', 'password')
       .then(u => {
@@ -639,7 +639,7 @@ describe('ParseUser', () => {
             expect(true).toBe(false);
             return Promise.resolve({}, 200);
           },
-          ajax() {},
+          ajax() { },
         });
         return ParseUser.logOut();
       })
@@ -663,7 +663,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     ParseUser.logIn('username', 'password')
       .then(u => {
@@ -677,7 +677,7 @@ describe('ParseUser', () => {
             });
             return Promise.resolve({}, 200);
           },
-          ajax() {},
+          ajax() { },
         });
         return ParseUser.logOut();
       })
@@ -702,7 +702,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     ParseUser.currentAsync()
@@ -803,7 +803,7 @@ describe('ParseUser', () => {
           201
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     ParseUser.signUp('updater', 'password')
@@ -814,7 +814,7 @@ describe('ParseUser', () => {
           request() {
             return Promise.resolve({}, 200);
           },
-          ajax() {},
+          ajax() { },
         });
         return u.save({ count: 12 });
       })
@@ -845,7 +845,7 @@ describe('ParseUser', () => {
           201
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     const u = await ParseUser.signUp('destroyed', 'password');
@@ -854,7 +854,7 @@ describe('ParseUser', () => {
       request() {
         return Promise.resolve({}, 200);
       },
-      ajax() {},
+      ajax() { },
     });
     await u.destroy();
 
@@ -878,7 +878,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     ParseUser.signUp('spot', 'fetch')
@@ -894,7 +894,7 @@ describe('ParseUser', () => {
               200
             );
           },
-          ajax() {},
+          ajax() { },
         });
         return u.fetch();
       })
@@ -925,7 +925,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const child = new ParseObject('TestObject');
     child.set('foo', 'bar');
@@ -944,7 +944,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     u = await u.fetchWithInclude('child');
 
@@ -971,7 +971,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const child = new ParseObject('TestObject');
     child.set('foo', 'bar');
@@ -991,7 +991,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const fetchedUser = await u.fetchWithInclude('child');
 
@@ -1014,7 +1014,7 @@ describe('ParseUser', () => {
           201
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     const path = Storage.generatePath('currentUser');
@@ -1027,7 +1027,7 @@ describe('ParseUser', () => {
           request() {
             return Promise.resolve({}, 200);
           },
-          ajax() {},
+          ajax() { },
         });
         return ParseUser.logOut();
       })
@@ -1056,7 +1056,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     const user = await ParseUser.me('123abc');
@@ -1083,7 +1083,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     const user = await ParseUser.me('123abc', { useMasterKey: true });
@@ -1100,7 +1100,7 @@ describe('ParseUser', () => {
       request() {
         return Promise.resolve({}, 200);
       },
-      ajax() {},
+      ajax() { },
     };
     jest.spyOn(RESTController, 'request');
     CoreManager.setRESTController(RESTController);
@@ -1130,7 +1130,7 @@ describe('ParseUser', () => {
         );
         return Promise.reject(error);
       },
-      ajax() {},
+      ajax() { },
     });
     const provider = {
       authenticate(options) {
@@ -1142,13 +1142,13 @@ describe('ParseUser', () => {
         }
       },
 
-      restoreAuthentication() {},
+      restoreAuthentication() { },
 
       getAuthType() {
         return 'test';
       },
 
-      deauthenticate() {},
+      deauthenticate() { },
     };
 
     ParseUser.logInWith(provider, {}).then(
@@ -1205,7 +1205,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const user = await AnonymousUtils.logIn();
 
@@ -1229,7 +1229,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const provider = {
       authenticate(options) {
@@ -1240,11 +1240,11 @@ describe('ParseUser', () => {
           });
         }
       },
-      restoreAuthentication() {},
+      restoreAuthentication() { },
       getAuthType() {
         return 'test';
       },
-      deauthenticate() {},
+      deauthenticate() { },
     };
 
     await user.linkWith(provider, null, { useMasterKey: true });
@@ -1272,7 +1272,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const user = await AnonymousUtils.logIn();
     expect(user.get('authData').anonymous).toBeDefined();
@@ -1288,11 +1288,11 @@ describe('ParseUser', () => {
           });
         }
       },
-      restoreAuthentication() {},
+      restoreAuthentication() { },
       getAuthType() {
         return 'test';
       },
-      deauthenticate() {},
+      deauthenticate() { },
     };
 
     const UserController = CoreManager.getUserController();
@@ -1301,18 +1301,18 @@ describe('ParseUser', () => {
         expect(user.get('authData').anonymous).toEqual(null);
         return Promise.reject('authentication error');
       },
-      currentUserAsync() {},
-      setCurrentUser() {},
-      currentUser() {},
-      signUp() {},
-      logIn() {},
-      become() {},
-      logOut() {},
-      me() {},
-      requestPasswordReset() {},
-      upgradeToRevocableSession() {},
-      requestEmailVerification() {},
-      verifyPassword() {},
+      currentUserAsync() { },
+      setCurrentUser() { },
+      currentUser() { },
+      signUp() { },
+      logIn() { },
+      become() { },
+      logOut() { },
+      me() { },
+      requestPasswordReset() { },
+      upgradeToRevocableSession() { },
+      requestEmailVerification() { },
+      verifyPassword() { },
     });
     try {
       await user.linkWith(provider, null, { useMasterKey: true });
@@ -1342,7 +1342,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const user = await AnonymousUtils.logIn();
     jest.spyOn(user, 'destroy');
@@ -1394,7 +1394,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const user = await AnonymousUtils.logIn();
     jest.spyOn(user, 'destroy');
@@ -1411,7 +1411,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     await ParseUser.logIn('username', 'password');
     expect(ParseUser.current().id).not.toBe(user.id);
@@ -1449,7 +1449,7 @@ describe('ParseUser', () => {
           201
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     ParseUser.signUp('temporary', 'password').then(u => {
@@ -1492,7 +1492,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const provider = {
       authenticate(options) {
@@ -1503,11 +1503,11 @@ describe('ParseUser', () => {
           });
         }
       },
-      restoreAuthentication() {},
+      restoreAuthentication() { },
       getAuthType() {
         return 'test';
       },
-      deauthenticate() {},
+      deauthenticate() { },
     };
 
     const user = new ParseUser();
@@ -1539,7 +1539,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const provider = {
       authenticate(options) {
@@ -1550,11 +1550,11 @@ describe('ParseUser', () => {
           });
         }
       },
-      restoreAuthentication() {},
+      restoreAuthentication() { },
       getAuthType() {
         return 'test';
       },
-      deauthenticate() {},
+      deauthenticate() { },
     };
 
     const user = new ParseUser();
@@ -1575,11 +1575,11 @@ describe('ParseUser', () => {
           });
         }
       },
-      restoreAuthentication() {},
+      restoreAuthentication() { },
       getAuthType() {
         return 'test';
       },
-      deauthenticate() {},
+      deauthenticate() { },
     };
 
     const user = new ParseUser();
@@ -1608,7 +1608,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const user = new ParseUser();
     await user._linkWith('testProvider', { authData: { id: 'test' } });
@@ -1720,7 +1720,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const provider = {
       authenticate(options) {
@@ -1731,11 +1731,11 @@ describe('ParseUser', () => {
           });
         }
       },
-      restoreAuthentication() {},
+      restoreAuthentication() { },
       getAuthType() {
         return 'test';
       },
-      deauthenticate() {},
+      deauthenticate() { },
     };
 
     const user = await ParseUser._logInWith(provider, null, {
@@ -1770,7 +1770,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     u = await ParseUser.logIn('username', 'password');
     // Clear cache to read from disk
@@ -1825,7 +1825,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const CustomCrypto = {
       encrypt(obj, secretKey) {
@@ -1876,7 +1876,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     const user = await ParseUser.signUp('username', 'password', null, {
@@ -1906,7 +1906,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
 
     const user = new ParseUser();
@@ -1920,7 +1920,7 @@ describe('ParseUser', () => {
 
   it('can signup with context', async () => {
     CoreManager.setRESTController({
-      ajax() {},
+      ajax() { },
       request() {
         return Promise.resolve(
           {
@@ -1944,7 +1944,7 @@ describe('ParseUser', () => {
 
   it('can login with context', async () => {
     CoreManager.setRESTController({
-      ajax() {},
+      ajax() { },
       request() {
         return Promise.resolve(
           {
@@ -1977,7 +1977,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const user = await ParseUser.verifyPassword('username', 'password');
     expect(user.objectId).toBe('uid2');
@@ -1999,7 +1999,7 @@ describe('ParseUser', () => {
         );
         return Promise.reject(parseError);
       },
-      ajax() {},
+      ajax() { },
     });
 
     try {
@@ -2032,7 +2032,7 @@ describe('ParseUser', () => {
 
         return Promise.resolve({}, 200);
       },
-      ajax() {},
+      ajax() { },
     });
 
     ParseUser.requestEmailVerification('me@parse.com');
@@ -2045,7 +2045,7 @@ describe('ParseUser', () => {
         expect(options.useMasterKey).toBe(true);
         return Promise.resolve({}, 200);
       },
-      ajax() {},
+      ajax() { },
     });
     ParseUser.requestEmailVerification('me@parse.com', { useMasterKey: true });
   });
@@ -2076,7 +2076,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const user = await ParseUser.logIn('username', 'password');
     jest.spyOn(user, '_upgradeToRevocableSession');
@@ -2105,7 +2105,7 @@ describe('ParseUser', () => {
           200
         );
       },
-      ajax() {},
+      ajax() { },
     });
     const user = await ParseUser.logIn('username', 'password');
     const upgradedUser = await user._upgradeToRevocableSession();

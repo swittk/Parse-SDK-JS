@@ -8,26 +8,26 @@ const memMap = {};
 const StorageController = {
   async: 0,
 
-  getItem(path: string): string | null {
+  getItem: (path: string): string | null => {
     if (memMap.hasOwnProperty(path)) {
       return memMap[path];
     }
     return null;
   },
 
-  setItem(path: string, value: string) {
+  setItem: (path: string, value: string) => {
     memMap[path] = String(value);
   },
 
-  removeItem(path: string) {
+  removeItem: (path: string) => {
     delete memMap[path];
   },
 
-  getAllKeys() {
+  getAllKeys: () => {
     return Object.keys(memMap);
   },
 
-  clear() {
+  clear: () => {
     for (const key in memMap) {
       if (memMap.hasOwnProperty(key)) {
         delete memMap[key];
@@ -36,5 +36,4 @@ const StorageController = {
   },
 };
 
-module.exports = StorageController;
 export default StorageController;

@@ -1,10 +1,10 @@
 jest.autoMockOff();
 
-const equals = require('../equals');
-const ParseACL = require('../ParseACL');
-const ParseFile = require('../ParseFile');
-const ParseGeoPoint = require('../ParseGeoPoint');
-const ParseObject = require('../ParseObject');
+const equals = require('../equals').default;
+const ParseACL = require('../ParseACL').default;
+const ParseFile = require('../ParseFile').default;
+const ParseGeoPoint = require('../ParseGeoPoint').default;
+const ParseObject = require('../ParseObject').default;
 
 describe('equals', () => {
   it('tests equality of primitives', () => {

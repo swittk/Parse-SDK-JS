@@ -12,10 +12,10 @@ mockQuery.prototype = {
     };
   },
 };
-jest.setMock('../ParseQuery', mockQuery);
+jest.setMock('../ParseQuery', { default: mockQuery });
 
-const CoreManager = require('../CoreManager');
-const ParseQuery = require('../ParseQuery');
+const CoreManager = require('../CoreManager').default;
+const ParseQuery = require('../ParseQuery').default;
 const Push = require('../Push');
 
 const defaultController = CoreManager.getPushController();
@@ -90,7 +90,7 @@ describe('PushController', () => {
     const request = jest.fn().mockReturnValue({ _headers: {} });
     CoreManager.setRESTController({
       request: request,
-      ajax: function () {},
+      ajax: function () { },
     });
 
     Push.send(

@@ -522,5 +522,4 @@ if (process.env.PARSE_BUILD === 'node') {
 } else if (process.env.PARSE_BUILD === 'react-native') {
   CoreManager.setWebSocketController(WebSocket as any);
 }
-module.exports = LiveQueryClient;
 export default LiveQueryClient;

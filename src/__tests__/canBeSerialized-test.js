@@ -4,8 +4,8 @@ function mockObject(id, attributes) {
   this.id = id;
   this.attributes = attributes;
 }
-mockObject.registerSubclass = function () {};
-jest.setMock('../ParseObject', mockObject);
+mockObject.registerSubclass = function () { };
+jest.setMock('../ParseObject', { default: mockObject });
 
 function mockFile(url) {
   this._url = url;
@@ -13,12 +13,12 @@ function mockFile(url) {
 mockFile.prototype.url = function () {
   return this._url;
 };
-jest.setMock('../ParseFile', mockFile);
+jest.setMock('../ParseFile', { default: mockFile });
 
-const canBeSerialized = require('../canBeSerialized');
-const ParseFile = require('../ParseFile');
-const ParseObject = require('../ParseObject');
-const ParseRelation = require('../ParseRelation');
+const canBeSerialized = require('../canBeSerialized').default;
+const ParseFile = require('../ParseFile').default;
+const ParseObject = require('../ParseObject').default;
+const ParseRelation = require('../ParseRelation').default;
 
 describe('canBeSerialized', () => {
   it('returns true for anything that is not a ParseObject', () => {

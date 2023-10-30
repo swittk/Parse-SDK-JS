@@ -1,13 +1,13 @@
 jest.autoMockOff();
 
-const matchesQuery = require('../OfflineQuery').matchesQuery;
-const validateQuery = require('../OfflineQuery').validateQuery;
-const ParseError = require('../ParseError');
-const ParseObject = require('../ParseObject');
-const ParseQuery = require('../ParseQuery');
-const ParseGeoPoint = require('../ParseGeoPoint');
-const ParsePolygon = require('../ParsePolygon');
-const ParseUser = require('../ParseUser');
+const matchesQuery = require('../OfflineQuery').default.matchesQuery;
+const validateQuery = require('../OfflineQuery').default.validateQuery;
+const ParseError = require('../ParseError').default;
+const ParseObject = require('../ParseObject').default;
+const ParseQuery = require('../ParseQuery').default;
+const ParseGeoPoint = require('../ParseGeoPoint').default;
+const ParsePolygon = require('../ParsePolygon').default;
+const ParseUser = require('../ParseUser').default;
 
 describe('OfflineQuery', () => {
   it('matches blank queries', () => {

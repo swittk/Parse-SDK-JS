@@ -27,6 +27,7 @@
  */
 /* global navigator */
 class ParseGeoPoint {
+  isParseGeoPoint = true;
   _latitude: number;
   _longitude: number;
 
@@ -196,5 +197,4 @@ class ParseGeoPoint {
   }
 }
 
-module.exports = ParseGeoPoint;
 export default ParseGeoPoint;

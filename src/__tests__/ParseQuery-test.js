@@ -21,7 +21,7 @@ const mockObject = function (className) {
   this.className = className;
   this.attributes = {};
 };
-mockObject.registerSubclass = function () {};
+mockObject.registerSubclass = function () { };
 mockObject.fromJSON = function (json) {
   const o = new mockObject(json.className);
   o.id = json.objectId;
@@ -40,13 +40,13 @@ const mockLocalDatastore = {
 };
 jest.setMock('../LocalDatastore', mockLocalDatastore);
 
-let CoreManager = require('../CoreManager');
-const EventEmitter = require('../EventEmitter');
-const ParseError = require('../ParseError');
-const ParseGeoPoint = require('../ParseGeoPoint');
-let ParseObject = require('../ParseObject');
-let ParseQuery = require('../ParseQuery');
-const LiveQuerySubscription = require('../LiveQuerySubscription');
+let CoreManager = require('../CoreManager').default;
+const EventEmitter = require('../EventEmitter').default;
+const ParseError = require('../ParseError').default;
+const ParseGeoPoint = require('../ParseGeoPoint').default;
+let ParseObject = require('../ParseObject').default;
+let ParseQuery = require('../ParseQuery').default;
+const LiveQuerySubscription = require('../LiveQuerySubscription').default;
 
 const MockRESTController = {
   request: jest.fn(),
@@ -93,7 +93,7 @@ describe('ParseQuery', () => {
   });
 
   it('can be constructed from a function prototype', () => {
-    function ObjectFunction() {}
+    function ObjectFunction() { }
     ObjectFunction.className = 'Item';
     const q = new ParseQuery(ObjectFunction);
     expect(q.className).toBe('Item');
@@ -1234,7 +1234,7 @@ describe('ParseQuery', () => {
 
   it('can get the first object of a query', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1267,7 +1267,7 @@ describe('ParseQuery', () => {
 
   it('can pass options to a first() query', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1298,7 +1298,7 @@ describe('ParseQuery', () => {
 
   it('can handle explain query', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1332,7 +1332,7 @@ describe('ParseQuery', () => {
 
   it('can get a single object by id', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1363,7 +1363,7 @@ describe('ParseQuery', () => {
 
   it('can return raw json from query', async () => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find() {
         return Promise.resolve({
           results: [
@@ -1410,7 +1410,7 @@ describe('ParseQuery', () => {
 
   it('will error when getting a nonexistent object', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1444,7 +1444,7 @@ describe('ParseQuery', () => {
   it('can pass options to a get() query', done => {
     const context = { a: 'a' };
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1474,7 +1474,7 @@ describe('ParseQuery', () => {
 
   it('can issue a count query', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1503,7 +1503,7 @@ describe('ParseQuery', () => {
 
   it('can pass options to a count query', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1536,7 +1536,7 @@ describe('ParseQuery', () => {
 
   it('can issue a query to the controller', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1590,7 +1590,7 @@ describe('ParseQuery', () => {
   it('can pass options to find()', done => {
     const context = { a: 'a' };
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1624,7 +1624,7 @@ describe('ParseQuery', () => {
 
   it('can receive both count and objects from find() using withCount flag', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1676,7 +1676,7 @@ describe('ParseQuery', () => {
         })
       );
       CoreManager.setQueryController({
-        aggregate() {},
+        aggregate() { },
         find: findMock,
       });
     });
@@ -1691,7 +1691,7 @@ describe('ParseQuery', () => {
       q.includeAll();
       q.hint('_id_');
 
-      await q.eachBatch(() => {});
+      await q.eachBatch(() => { });
 
       expect(findMock).toHaveBeenCalledTimes(1);
       const [className, params, options] = findMock.mock.calls[0];
@@ -1731,7 +1731,7 @@ describe('ParseQuery', () => {
         batchSize: 50,
       };
       const q = new ParseQuery('Item');
-      await q.eachBatch(() => {}, batchOptions);
+      await q.eachBatch(() => { }, batchOptions);
       expect(findMock).toHaveBeenCalledTimes(1);
       const [className, params, options] = findMock.mock.calls[0];
       expect(className).toBe('Item');
@@ -1746,13 +1746,13 @@ describe('ParseQuery', () => {
 
     it('only makes one request when the results fit in one page', async () => {
       const q = new ParseQuery('Item');
-      await q.eachBatch(() => {});
+      await q.eachBatch(() => { });
       expect(findMock).toHaveBeenCalledTimes(1);
     });
 
     it('makes more requests when the results do not fit in one page', async () => {
       const q = new ParseQuery('Item');
-      await q.eachBatch(() => {}, { batchSize: 2 });
+      await q.eachBatch(() => { }, { batchSize: 2 });
       expect(findMock).toHaveBeenCalledTimes(2);
     });
 
@@ -1763,7 +1763,7 @@ describe('ParseQuery', () => {
         return Promise.reject(new Error('Callback rejecting'));
       };
       const q = new ParseQuery('Item');
-      await q.eachBatch(callback, { batchSize: 2 }).catch(() => {});
+      await q.eachBatch(callback, { batchSize: 2 }).catch(() => { });
       expect(callCount).toBe(1);
     });
 
@@ -1804,7 +1804,7 @@ describe('ParseQuery', () => {
         })
       );
       CoreManager.setQueryController({
-        aggregate() {},
+        aggregate() { },
         find: findMock,
       });
     });
@@ -1892,7 +1892,7 @@ describe('ParseQuery', () => {
 
   it('can iterate over results with each()', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1948,7 +1948,7 @@ describe('ParseQuery', () => {
   it('can pass options to each()', done => {
     const context = { a: 'a' };
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -1999,7 +1999,7 @@ describe('ParseQuery', () => {
   it('can pass options to each() with hint', done => {
     const context = { a: 'a' };
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -2072,7 +2072,7 @@ describe('ParseQuery', () => {
   describe('iterating over results via .map()', () => {
     beforeEach(() => {
       CoreManager.setQueryController({
-        aggregate() {},
+        aggregate() { },
         find() {
           return Promise.resolve({
             results: [
@@ -2106,7 +2106,7 @@ describe('ParseQuery', () => {
           callCount++;
           return Promise.reject(new Error('Callback rejecting'));
         })
-        .catch(() => {});
+        .catch(() => { });
       expect(callCount).toEqual(1);
     });
   });
@@ -2114,7 +2114,7 @@ describe('ParseQuery', () => {
   describe('iterating over results with .reduce()', () => {
     beforeEach(() => {
       CoreManager.setQueryController({
-        aggregate() {},
+        aggregate() { },
         find() {
           return Promise.resolve({
             results: [
@@ -2148,7 +2148,7 @@ describe('ParseQuery', () => {
         return Promise.reject(new Error('Callback rejecting'));
       };
       const q = new ParseQuery('Item');
-      await q.reduce(callback, 0).catch(() => {});
+      await q.reduce(callback, 0).catch(() => { });
       expect(callCount).toBe(1);
     });
 
@@ -2168,7 +2168,7 @@ describe('ParseQuery', () => {
 
     it('rejects with a TypeError when there are no results and no initial value was provided', async () => {
       CoreManager.setQueryController({
-        aggregate() {},
+        aggregate() { },
         find() {
           return Promise.resolve({ results: [] });
         },
@@ -2186,7 +2186,7 @@ describe('ParseQuery', () => {
   describe('iterating over results with .filter()', () => {
     beforeEach(() => {
       CoreManager.setQueryController({
-        aggregate() {},
+        aggregate() { },
         find() {
           return Promise.resolve({
             results: [
@@ -2220,7 +2220,7 @@ describe('ParseQuery', () => {
         return Promise.reject(new Error('Callback rejecting'));
       };
       const q = new ParseQuery('Item');
-      await q.filter(callback).catch(() => {});
+      await q.filter(callback).catch(() => { });
       expect(callCount).toBe(1);
     });
   });
@@ -2228,7 +2228,7 @@ describe('ParseQuery', () => {
   it('returns an error when iterating over an invalid query', done => {
     const q = new ParseQuery('Item');
     q.limit(10);
-    q.each(() => {}).then(
+    q.each(() => { }).then(
       () => {
         // this should not be reached
         expect(true).toBe(false);
@@ -2252,7 +2252,7 @@ describe('ParseQuery', () => {
 
   it('does not override the className if it comes from the server', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find() {
         return Promise.resolve({
           results: [{ className: 'Product', objectId: 'P40', name: 'Product 40' }],
@@ -2269,7 +2269,7 @@ describe('ParseQuery', () => {
 
   it('can override the className with a name from the server', done => {
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find() {
         return Promise.resolve({
           results: [{ objectId: 'P41', name: 'Product 41' }],
@@ -2288,9 +2288,9 @@ describe('ParseQuery', () => {
   it('overrides cached object with query results', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject');
-    CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery');
+    ParseObject = require('../ParseObject').default;
+    CoreManager = require('../CoreManager').default;
+    ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
 
@@ -2303,7 +2303,7 @@ describe('ParseQuery', () => {
     };
 
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find() {
         return Promise.resolve({
           results: [objectToReturn],
@@ -2338,9 +2338,9 @@ describe('ParseQuery', () => {
   it('does not override unselected fields with select query results', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject');
-    CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery');
+    ParseObject = require('../ParseObject').default;
+    CoreManager = require('../CoreManager').default;
+    ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
 
@@ -2355,7 +2355,7 @@ describe('ParseQuery', () => {
     };
 
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find() {
         return Promise.resolve({
           results: [objectToReturn],
@@ -2413,9 +2413,9 @@ describe('ParseQuery', () => {
   it('overrides cached object with first() results', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject');
-    CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery');
+    ParseObject = require('../ParseObject').default;
+    CoreManager = require('../CoreManager').default;
+    ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
 
@@ -2428,7 +2428,7 @@ describe('ParseQuery', () => {
     };
 
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find() {
         return Promise.resolve({
           results: [objectToReturn],
@@ -2463,9 +2463,9 @@ describe('ParseQuery', () => {
   it('does not override unselected fields for first() on select query', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject');
-    CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery');
+    ParseObject = require('../ParseObject').default;
+    CoreManager = require('../CoreManager').default;
+    ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
 
@@ -2480,7 +2480,7 @@ describe('ParseQuery', () => {
     };
 
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find() {
         return Promise.resolve({
           results: [objectToReturn],
@@ -2564,7 +2564,7 @@ describe('ParseQuery', () => {
 
   it('can issue a distinct query', done => {
     CoreManager.setQueryController({
-      find() {},
+      find() { },
       aggregate(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -2592,7 +2592,7 @@ describe('ParseQuery', () => {
 
   it('can pass options to a distinct query', done => {
     CoreManager.setQueryController({
-      find() {},
+      find() { },
       aggregate(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -2623,7 +2623,7 @@ describe('ParseQuery', () => {
 
   it('can pass options to a distinct query with hint', done => {
     CoreManager.setQueryController({
-      find() {},
+      find() { },
       aggregate(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -2673,7 +2673,7 @@ describe('ParseQuery', () => {
   it('can issue an aggregate query with array pipeline', done => {
     const pipeline = [{ group: { objectId: '$name' } }];
     CoreManager.setQueryController({
-      find() {},
+      find() { },
       aggregate(className, params, options) {
         expect(className).toBe('Item');
         expect(params.pipeline).toEqual([{ group: { objectId: '$name' } }]);
@@ -2729,7 +2729,7 @@ describe('ParseQuery', () => {
       group: { objectId: '$name' },
     };
     CoreManager.setQueryController({
-      find() {},
+      find() { },
       aggregate(className, params, options) {
         expect(className).toBe('Item');
         expect(params.pipeline).toEqual({ group: { objectId: '$name' } });
@@ -2751,7 +2751,7 @@ describe('ParseQuery', () => {
   it('cannot issue an aggregate query with invalid pipeline', done => {
     const pipeline = 1234;
     CoreManager.setQueryController({
-      find() {},
+      find() { },
       aggregate(className, params, options) {
         expect(className).toBe('Item');
         expect(params).toEqual({
@@ -2767,7 +2767,7 @@ describe('ParseQuery', () => {
 
     try {
       const q = new ParseQuery('Item');
-      q.aggregate(pipeline).then(() => {});
+      q.aggregate(pipeline).then(() => { });
     } catch (e) {
       done();
     }
@@ -2776,7 +2776,7 @@ describe('ParseQuery', () => {
   it('can pass options to an aggregate query', done => {
     const pipeline = [{ group: { objectId: '$name' } }];
     CoreManager.setQueryController({
-      find() {},
+      find() { },
       aggregate(className, params, options) {
         expect(className).toBe('Item');
         expect(params.pipeline).toEqual([{ group: { objectId: '$name' } }]);
@@ -2800,7 +2800,7 @@ describe('ParseQuery', () => {
   it('can issue an aggregate query with read preference', async () => {
     // Override controller
     CoreManager.setQueryController({
-      find() {},
+      find() { },
       aggregate(className, params, options) {
         expect(className).toBe('Item');
         expect(params.readPreference).toEqual('SECONDARY');
@@ -2821,7 +2821,7 @@ describe('ParseQuery', () => {
   it('can pass options to an aggregate query with hint', done => {
     const pipeline = [{ group: { objectId: '$name' } }];
     CoreManager.setQueryController({
-      find() {},
+      find() { },
       aggregate(className, params, options) {
         expect(className).toBe('Item');
         expect(params.pipeline).toEqual([{ group: { objectId: '$name' } }]);
@@ -2847,7 +2847,7 @@ describe('ParseQuery', () => {
 
   it('can cancel query', async () => {
     const mockRequestTask = {
-      abort: () => {},
+      abort: () => { },
     };
 
     CoreManager.setQueryController({
@@ -2857,7 +2857,7 @@ describe('ParseQuery', () => {
           results: [],
         });
       },
-      aggregate: () => {},
+      aggregate: () => { },
     });
     const query = new ParseQuery('TestCancel');
     expect(query._xhrRequest).toBeDefined();
@@ -2878,9 +2878,9 @@ describe('ParseQuery', () => {
   it('selecting sub-objects does not inject objects when sub-object does not exist', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject');
-    CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery');
+    ParseObject = require('../ParseObject').default;
+    CoreManager = require('../CoreManager').default;
+    ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
 
@@ -2893,7 +2893,7 @@ describe('ParseQuery', () => {
     };
 
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find() {
         return Promise.resolve({
           results: [objectToReturn],
@@ -2925,9 +2925,9 @@ describe('ParseQuery', () => {
   it('removes missing sub objects from the cached object when they are selected', done => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
-    ParseObject = require('../ParseObject');
-    CoreManager = require('../CoreManager');
-    ParseQuery = require('../ParseQuery');
+    ParseObject = require('../ParseObject').default;
+    CoreManager = require('../CoreManager').default;
+    ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
 
@@ -2944,7 +2944,7 @@ describe('ParseQuery', () => {
     };
 
     CoreManager.setQueryController({
-      aggregate() {},
+      aggregate() { },
       find() {
         return Promise.resolve({
           results: [objectToReturn],
@@ -3739,7 +3739,7 @@ describe('ParseQuery LocalDatastore', () => {
       shouldOpen: function () {
         return true;
       },
-      open: function () {},
+      open: function () { },
       subscribe: function (query, sessionToken) {
         const subscription = new LiveQuerySubscription('0', query, sessionToken);
         subscription.subscribePromise.resolve();
@@ -3772,7 +3772,7 @@ describe('ParseQuery LocalDatastore', () => {
       shouldOpen: function () {
         return true;
       },
-      open: function () {},
+      open: function () { },
       subscribe: function (query, sessionToken) {
         const subscription = new LiveQuerySubscription('0', query, sessionToken);
         subscription.subscribePromise.resolve();
@@ -3801,7 +3801,7 @@ describe('ParseQuery LocalDatastore', () => {
       shouldOpen: function () {
         return true;
       },
-      open: function () {},
+      open: function () { },
       subscribe: function (query, sessionToken) {
         const subscription = new LiveQuerySubscription('0', query, sessionToken);
         subscription.subscribePromise.resolve();

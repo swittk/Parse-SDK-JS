@@ -24,6 +24,7 @@ import ParseGeoPoint from './ParseGeoPoint';
  * @alias Parse.Polygon
  */
 class ParsePolygon {
+  isParsePolygon = true;
   _coordinates: Array<[number, number]>;
 
   /**
@@ -161,5 +162,4 @@ class ParsePolygon {
     return points;
   }
 }
-module.exports = ParsePolygon;
 export default ParsePolygon;

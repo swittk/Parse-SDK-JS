@@ -11,7 +11,7 @@ const mockObject = function (className, id) {
     };
   };
 };
-jest.setMock('../ParseObject', mockObject);
+jest.setMock('../ParseObject', { default: mockObject });
 
 const mockCLP = function (clp) {
   this.permissionsMap = clp;
@@ -19,12 +19,12 @@ const mockCLP = function (clp) {
     return { ...this.permissionsMap };
   };
 };
-jest.setMock('../ParseCLP', mockCLP);
+jest.setMock('../ParseCLP', { default: mockCLP });
 
-const ParseObject = require('../ParseObject');
-const ParseCLP = require('../ParseCLP');
-const ParseSchema = require('../ParseSchema');
-const CoreManager = require('../CoreManager');
+const ParseObject = require('../ParseObject').default;
+const ParseCLP = require('../ParseCLP').default;
+const ParseSchema = require('../ParseSchema').default;
+const CoreManager = require('../CoreManager').default;
 
 const defaultController = CoreManager.getSchemaController();
 
@@ -278,11 +278,11 @@ describe('ParseSchema', () => {
 
   it('can save schema', done => {
     CoreManager.setSchemaController({
-      send() {},
-      get() {},
-      update() {},
-      delete() {},
-      purge() {},
+      send() { },
+      get() { },
+      update() { },
+      delete() { },
+      purge() { },
       create(className, params) {
         expect(className).toBe('SchemaTest');
         expect(params).toEqual({
@@ -305,11 +305,11 @@ describe('ParseSchema', () => {
 
   it('can update schema', done => {
     CoreManager.setSchemaController({
-      send() {},
-      get() {},
-      create() {},
-      delete() {},
-      purge() {},
+      send() { },
+      get() { },
+      create() { },
+      delete() { },
+      purge() { },
       update(className, params) {
         expect(className).toBe('SchemaTest');
         expect(params).toEqual({
@@ -332,11 +332,11 @@ describe('ParseSchema', () => {
 
   it('can delete schema', done => {
     CoreManager.setSchemaController({
-      send() {},
-      create() {},
-      update() {},
-      get() {},
-      purge() {},
+      send() { },
+      create() { },
+      update() { },
+      get() { },
+      purge() { },
       delete(className) {
         expect(className).toBe('SchemaTest');
         return Promise.resolve([]);
@@ -352,11 +352,11 @@ describe('ParseSchema', () => {
 
   it('can purge schema', done => {
     CoreManager.setSchemaController({
-      send() {},
-      create() {},
-      update() {},
-      get() {},
-      delete() {},
+      send() { },
+      create() { },
+      update() { },
+      get() { },
+      delete() { },
       purge(className) {
         expect(className).toBe('SchemaTest');
         return Promise.resolve([]);
@@ -372,11 +372,11 @@ describe('ParseSchema', () => {
 
   it('can get schema', done => {
     CoreManager.setSchemaController({
-      send() {},
-      create() {},
-      update() {},
-      delete() {},
-      purge() {},
+      send() { },
+      create() { },
+      update() { },
+      delete() { },
+      purge() { },
       get(className) {
         expect(className).toBe('SchemaTest');
         return Promise.resolve([]);
@@ -392,11 +392,11 @@ describe('ParseSchema', () => {
 
   it('cannot get empty schema', done => {
     CoreManager.setSchemaController({
-      send() {},
-      create() {},
-      update() {},
-      delete() {},
-      purge() {},
+      send() { },
+      create() { },
+      update() { },
+      delete() { },
+      purge() { },
       get(className) {
         expect(className).toBe('SchemaTest');
         return Promise.resolve(null);
@@ -419,11 +419,11 @@ describe('ParseSchema', () => {
 
   it('can get all schema', done => {
     CoreManager.setSchemaController({
-      send() {},
-      create() {},
-      update() {},
-      delete() {},
-      purge() {},
+      send() { },
+      create() { },
+      update() { },
+      delete() { },
+      purge() { },
       get(className) {
         expect(className).toBe('');
         return Promise.resolve({
@@ -440,11 +440,11 @@ describe('ParseSchema', () => {
 
   it('cannot get all schema when empty', done => {
     CoreManager.setSchemaController({
-      send() {},
-      create() {},
-      update() {},
-      delete() {},
-      purge() {},
+      send() { },
+      create() { },
+      update() { },
+      delete() { },
+      purge() { },
       get(className) {
         expect(className).toBe('');
         return Promise.resolve({

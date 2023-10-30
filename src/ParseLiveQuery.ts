@@ -73,7 +73,6 @@ class LiveQuery {
   }
 }
 
-module.exports = LiveQuery;
 export default LiveQuery;
 
 let defaultLiveQueryClient;

@@ -1,8 +1,8 @@
 jest.dontMock('../ParseError');
 jest.dontMock('../CoreManager');
 
-const ParseError = require('../ParseError');
-const CoreManager = require('../CoreManager');
+const ParseError = require('../ParseError').default;
+const CoreManager = require('../CoreManager').default;
 
 describe('ParseError', () => {
   it('have sensible string representation', () => {

@@ -43,7 +43,6 @@ export default function unsavedChildren(
   }
   return unsaved.concat(encountered.files);
 }
-module.exports = unsavedChildren;
 function traverse(
   obj: ParseObject | ParseFile | ParseRelation | Array<ParseObject | ParseFile | ParseRelation>,
   encountered: EncounterMap,

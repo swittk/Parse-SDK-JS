@@ -5,7 +5,7 @@ jest.dontMock('../encode');
 jest.dontMock('../ParseError');
 
 const Hooks = require('../ParseHooks');
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 
 const defaultController = CoreManager.getHooksController();
 const { sendRequest } = defaultController;

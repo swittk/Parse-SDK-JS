@@ -55,6 +55,7 @@ export function opFromJSON(json: { [key: string]: any }): Op | null {
 }
 
 export class Op {
+  isOp = true;
   __op?: string;
   objects?: any[];
   // Empty parent class

@@ -14,7 +14,7 @@ jest.dontMock('../uuid');
 jest.dontMock('crypto-js/aes');
 jest.dontMock('./test_helpers/mockWeChat');
 
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 const mockWeChat = require('./test_helpers/mockWeChat');
 
 global.wx = mockWeChat;
@@ -35,14 +35,14 @@ describe('WeChat', () => {
   it('load StorageController', () => {
     const StorageController = require('../StorageController.weapp');
     jest.spyOn(StorageController, 'setItem');
-    const storage = require('../Storage');
+    const storage = require('../Storage').default;
     storage.setItem('key', 'value');
     expect(StorageController.setItem).toHaveBeenCalledTimes(1);
   });
 
   it('load RESTController', () => {
     const XHR = require('../Xhr.weapp');
-    const RESTController = require('../RESTController');
+    const RESTController = require('../RESTController').default;
     expect(RESTController._getXHR()).toEqual(XHR);
   });
 
@@ -61,7 +61,7 @@ describe('WeChat', () => {
   });
 
   it('load uuid module', () => {
-    const uuidv4 = require('../uuid');
+    const uuidv4 = require('../uuid').default;
     expect(uuidv4()).not.toEqual(0);
     expect(uuidv4()).not.toEqual(uuidv4());
   });

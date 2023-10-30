@@ -5,16 +5,16 @@ class MockUser {
     this.className = '_User';
     this.attributes = {};
   }
-  _isLinked() {}
-  linkWith() {}
-  _unlinkFrom() {}
-  static _registerAuthenticationProvider() {}
-  static logInWith() {}
+  _isLinked() { }
+  linkWith() { }
+  _unlinkFrom() { }
+  static _registerAuthenticationProvider() { }
+  static logInWith() { }
 }
 
-jest.setMock('../ParseUser', MockUser);
+jest.setMock('../ParseUser', { default: MockUser });
 
-const FacebookUtils = require('../FacebookUtils');
+const FacebookUtils = require('../FacebookUtils').default;
 
 describe('FacebookUtils', () => {
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe('FacebookUtils', () => {
       expiresIn: 'test', // Should be unix timestamp
     };
     global.FB = {
-      init: () => {},
+      init: () => { },
       login: cb => {
         cb({ authResponse });
       },
@@ -75,7 +75,7 @@ describe('FacebookUtils', () => {
   it('can init with options', () => {
     jest.spyOn(console, 'warn').mockImplementationOnce(() => {
       return {
-        call: () => {},
+        call: () => { },
       };
     });
     FacebookUtils.init({ status: true });
@@ -190,8 +190,8 @@ describe('FacebookUtils provider', () => {
 
   it('restoreAuthentication with invalid authData', async () => {
     global.FB = {
-      init: () => {},
-      logout: () => {},
+      init: () => { },
+      logout: () => { },
       getAuthResponse: () => {
         return { userID: '5678' };
       },
@@ -204,7 +204,7 @@ describe('FacebookUtils provider', () => {
 
   it('restoreAuthentication with valid authData', async () => {
     global.FB = {
-      init: () => {},
+      init: () => { },
       getAuthResponse: () => {
         return { userID: '1234' };
       },
@@ -218,7 +218,7 @@ describe('FacebookUtils provider', () => {
 
   it('restoreAuthentication with valid authData', async () => {
     global.FB = {
-      init: () => {},
+      init: () => { },
       getAuthResponse: () => {
         return { userID: '1234' };
       },
@@ -233,7 +233,7 @@ describe('FacebookUtils provider', () => {
   it('authenticate without FB error', async () => {
     global.FB = undefined;
     const options = {
-      error: () => {},
+      error: () => { },
     };
     jest.spyOn(options, 'error');
     const provider = FacebookUtils._getAuthProvider();
@@ -251,13 +251,13 @@ describe('FacebookUtils provider', () => {
       expiresIn: '2000-01-01',
     };
     global.FB = {
-      init: () => {},
+      init: () => { },
       login: cb => {
         cb({ authResponse });
       },
     };
     const options = {
-      success: () => {},
+      success: () => { },
     };
     jest.spyOn(options, 'success');
     const provider = FacebookUtils._getAuthProvider();
@@ -271,13 +271,13 @@ describe('FacebookUtils provider', () => {
 
   it('authenticate with no FB response', async () => {
     global.FB = {
-      init: () => {},
+      init: () => { },
       login: cb => {
         cb({});
       },
     };
     const options = {
-      error: () => {},
+      error: () => { },
     };
     jest.spyOn(options, 'error');
     const provider = FacebookUtils._getAuthProvider();

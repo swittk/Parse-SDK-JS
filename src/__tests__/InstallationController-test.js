@@ -5,11 +5,12 @@ jest.dontMock('../StorageController.default');
 jest.mock('../uuid', () => {
   let value = 0;
   return () => value++ + '';
-});
+}
+);
 
-const CoreManager = require('../CoreManager');
-const InstallationController = require('../InstallationController');
-const Storage = require('../Storage');
+const CoreManager = require('../CoreManager').default;
+const InstallationController = require('../InstallationController').default;
+const Storage = require('../Storage').default;
 
 describe('InstallationController', () => {
   beforeEach(() => {

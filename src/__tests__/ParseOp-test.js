@@ -18,17 +18,17 @@ mockObject.prototype._getId = function () {
 mockObject.fromJSON = function (json) {
   return new mockObject(json.className, json.objectId);
 };
-mockObject.registerSubclass = function () {};
-jest.setMock('../ParseObject', mockObject);
+mockObject.registerSubclass = function () { };
+jest.setMock('../ParseObject', { default: mockObject });
 
 const mockRelation = function (parent, key) {
   this.parent = parent;
   this.key = key;
 };
-jest.setMock('../ParseRelation', mockRelation);
+jest.setMock('../ParseRelation', { default: mockRelation });
 
-const ParseRelation = require('../ParseRelation');
-const ParseObject = require('../ParseObject');
+const ParseRelation = require('../ParseRelation').default;
+const ParseObject = require('../ParseObject').default;
 const ParseOp = require('../ParseOp');
 const {
   Op,

@@ -4,13 +4,13 @@ jest.mock('http');
 jest.mock('https');
 jest.mock('../ParseACL');
 
-const ParseError = require('../ParseError');
-const ParseFile = require('../ParseFile');
+const ParseError = require('../ParseError').default;
+const ParseFile = require('../ParseFile').default;
 const b64Digit = require('../ParseFile').b64Digit;
 
-const ParseObject = require('../ParseObject');
-const CoreManager = require('../CoreManager');
-const EventEmitter = require('../EventEmitter');
+const ParseObject = require('../ParseObject').default;
+const CoreManager = require('../CoreManager').default;
+const EventEmitter = require('../EventEmitter').default;
 
 const mockHttp = require('http');
 const mockHttps = require('https');
@@ -32,7 +32,7 @@ const mockLocalDatastore = {
     return `${OBJECT_PREFIX}${object.className}_${objectId}`;
   }),
 };
-jest.setMock('../LocalDatastore', mockLocalDatastore);
+jest.setMock('../LocalDatastore', { default: mockLocalDatastore });
 
 function generateSaveMock(prefix) {
   return function (name, payload, options) {
@@ -288,7 +288,7 @@ describe('ParseFile', () => {
     const file = new ParseFile('progress.txt', new File(['Parse'], 'progress.txt'));
 
     const options = {
-      progress: function () {},
+      progress: function () { },
     };
     jest.spyOn(options, 'progress');
 
@@ -304,15 +304,15 @@ describe('ParseFile', () => {
 
   it('can cancel file upload', () => {
     const mockRequestTask = {
-      abort: () => {},
+      abort: () => { },
     };
     CoreManager.setFileController({
       saveFile: function (name, payload, options) {
         options.requestTask(mockRequestTask);
         return Promise.resolve({});
       },
-      saveBase64: () => {},
-      download: () => {},
+      saveBase64: () => { },
+      download: () => { },
     });
     const file = new ParseFile('progress.txt', new File(['Parse'], 'progress.txt'));
 
@@ -330,8 +330,8 @@ describe('ParseFile', () => {
   it('should save file with metadata and tag options', async () => {
     const fileController = {
       saveFile: jest.fn().mockResolvedValue({}),
-      saveBase64: () => {},
-      download: () => {},
+      saveBase64: () => { },
+      download: () => { },
     };
     CoreManager.setFileController(fileController);
     const file = new ParseFile('donald_duck.txt', new File(['Parse'], 'donald_duck.txt'));
@@ -490,7 +490,7 @@ describe('FileController', () => {
     defaultController._setXHR(null);
     const mockResponse = Object.create(EventEmitter.prototype);
     EventEmitter.call(mockResponse);
-    mockResponse.setEncoding = function () {};
+    mockResponse.setEncoding = function () { };
     mockResponse.headers = {
       'content-type': 'image/png',
     };
@@ -499,7 +499,7 @@ describe('FileController', () => {
       mockResponse.emit('data', 'base64String');
       mockResponse.emit('end');
       return {
-        on: function () {},
+        on: function () { },
       };
     });
 
@@ -517,7 +517,7 @@ describe('FileController', () => {
     const mockResponse = Object.create(EventEmitter.prototype);
     EventEmitter.call(mockRequest);
     EventEmitter.call(mockResponse);
-    mockResponse.setEncoding = function () {};
+    mockResponse.setEncoding = function () { };
     mockResponse.headers = {
       'content-type': 'image/png',
     };
@@ -526,7 +526,7 @@ describe('FileController', () => {
       return mockRequest;
     });
     const options = {
-      requestTask: () => {},
+      requestTask: () => { },
     };
     defaultController.download('http://example.com/image.png', options).then(data => {
       expect(data).toEqual({});
@@ -539,7 +539,7 @@ describe('FileController', () => {
     defaultController._setXHR(null);
     const mockResponse = Object.create(EventEmitter.prototype);
     EventEmitter.call(mockResponse);
-    mockResponse.setEncoding = function () {};
+    mockResponse.setEncoding = function () { };
     mockResponse.headers = {
       'content-type': 'image/png',
     };
@@ -548,7 +548,7 @@ describe('FileController', () => {
       mockResponse.emit('data', 'base64String');
       mockResponse.emit('end');
       return {
-        on: function () {},
+        on: function () { },
       };
     });
 
@@ -579,7 +579,7 @@ describe('FileController', () => {
     };
     defaultController._setXHR(mockXHR);
     const options = {
-      requestTask: () => {},
+      requestTask: () => { },
     };
     const data = await defaultController.download('https://example.com/image.png', options);
     expect(data.base64).toBe('ParseA==');
@@ -605,7 +605,7 @@ describe('FileController', () => {
     };
     defaultController._setXHR(mockXHR);
     const options = {
-      requestTask: () => {},
+      requestTask: () => { },
     };
     const data = await defaultController.download('https://example.com/image.png', options);
     expect(data).toEqual({});
@@ -653,7 +653,7 @@ describe('FileController', () => {
     };
     defaultController._setXHR(mockXHR);
     const options = {
-      requestTask: () => {},
+      requestTask: () => { },
     };
     try {
       await defaultController.download('https://example.com/image.png', options);
@@ -834,7 +834,7 @@ describe('FileController', () => {
   });
 
   it('saves files via object saveAll options', async () => {
-    const ajax = async () => {};
+    const ajax = async () => { };
     const request = jest.fn(async (method, path, data, options) => {
       if (path.indexOf('files/') === 0) {
         expect(options.sessionToken).toBe('testToken');
@@ -871,7 +871,7 @@ describe('FileController', () => {
   it('should delete file with masterKey', async () => {
     const file = new ParseFile('filename', [1, 2, 3]);
     const ajax = jest.fn().mockResolvedValueOnce({ foo: 'bar' });
-    CoreManager.setRESTController({ ajax, request: () => {} });
+    CoreManager.setRESTController({ ajax, request: () => { } });
     CoreManager.set('MASTER_KEY', 'masterKey');
     const result = await file.destroy({ useMasterKey: true });
     expect(result).toEqual(file);
@@ -885,7 +885,7 @@ describe('FileController', () => {
   it('should delete file', async () => {
     const file = new ParseFile('filename', [1, 2, 3]);
     const ajax = jest.fn().mockResolvedValueOnce({ foo: 'bar' });
-    CoreManager.setRESTController({ ajax, request: () => {} });
+    CoreManager.setRESTController({ ajax, request: () => { } });
     CoreManager.set('MASTER_KEY', 'masterKey');
     const result = await file.destroy({ useMasterKey: false });
     expect(result).toEqual(file);
@@ -901,7 +901,7 @@ describe('FileController', () => {
       .fn()
       .mockResolvedValueOnce(Promise.reject(new ParseError(403, 'Cannot delete file.')));
     const handleError = jest.fn();
-    CoreManager.setRESTController({ ajax, request: () => {}, handleError });
+    CoreManager.setRESTController({ ajax, request: () => { }, handleError });
     const result = await file.destroy();
     expect(result).toEqual(file);
     expect(ajax).toHaveBeenCalledWith('DELETE', 'https://api.parse.com/1/files/filename', '', {
@@ -916,7 +916,7 @@ describe('FileController', () => {
     const response = null;
     const ajax = jest.fn().mockResolvedValueOnce(Promise.reject(response));
     const handleError = jest.fn();
-    CoreManager.setRESTController({ ajax, request: () => {}, handleError });
+    CoreManager.setRESTController({ ajax, request: () => { }, handleError });
     const result = await file.destroy();
     expect(result).toEqual(file);
     expect(ajax).toHaveBeenCalledWith('DELETE', 'https://api.parse.com/1/files/filename', '', {
