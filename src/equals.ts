@@ -1,9 +1,8 @@
-import ParseACL from './ParseACL';
-import ParseFile from './ParseFile';
-import ParseGeoPoint from './ParseGeoPoint';
-import ParseObject from './ParseObject';
-
 export default function equals(a: any, b: any): boolean {
+  const ParseACL = require('./ParseACL').default || require('./ParseACL');
+  const ParseFile = require('./ParseFile').default || require('./ParseFile');
+  const ParseGeoPoint = require('./ParseGeoPoint').default || require('./ParseGeoPoint');
+  const ParseObject = require('./ParseObject').default || require('./ParseObject');
   const toString = Object.prototype.toString;
   if (toString.call(a) === '[object Date]' || toString.call(b) === '[object Date]') {
     const dateA = new Date(a);

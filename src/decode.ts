@@ -1,16 +1,18 @@
 /**
  * @flow
  */
-import ParseACL from './ParseACL'; // eslint-disable-line no-unused-vars
-import ParseFile from './ParseFile';
-import ParseGeoPoint from './ParseGeoPoint';
-import ParsePolygon from './ParsePolygon';
-import ParseObject from './ParseObject';
-import { opFromJSON } from './ParseOp';
-import ParseRelation from './ParseRelation';
 
 /** Decodes values from storage type */
 export default function decode(value: any): any {
+  const { opFromJSON } = require('./ParseOp').default || require('./ParseOp');
+
+  const ParseACL = require('./ParseACL').default || require('./ParseACL');
+  const ParseFile = require('./ParseFile').default || require('./ParseFile');
+  const ParseGeoPoint = require('./ParseGeoPoint').default || require('./ParseGeoPoint');
+  const ParsePolygon = require('./ParsePolygon').default || require('./ParsePolygon');
+  const ParseObject = require('./ParseObject').default || require('./ParseObject');
+  const ParseRelation = require('./ParseRelation').default || require('./ParseRelation');
+
   if (value === null || typeof value !== 'object' || value instanceof Date) {
     return value;
   }
@@ -32,7 +34,7 @@ export default function decode(value: any): any {
   }
   if (value.__type === 'Relation') {
     // The parent and key fields will be populated by the parent
-    const relation = new ParseRelation(undefined, undefined);
+    const relation = new ParseRelation(null, null);
     relation.targetClassName = value.className;
     return relation;
   }

@@ -3,11 +3,7 @@
  */
 
 import encode from './encode';
-import ParseFile from './ParseFile';
-import ParseObject from './ParseObject';
-import ParseRelation from './ParseRelation';
 import TaskQueue from './TaskQueue';
-import { RelationOp } from './ParseOp';
 
 import type { Op } from './ParseOp';
 
@@ -87,6 +83,7 @@ export function estimateAttribute(
   attr: string
 ): any {
   let value = serverData[attr];
+  const { RelationOp } = require('./ParseOp').default || require('./ParseOp');
   for (let i = 0; i < pendingOps.length; i++) {
     if (pendingOps[i][attr]) {
       if (pendingOps[i][attr] instanceof RelationOp) {
@@ -107,6 +104,7 @@ export function estimateAttributes(
   className: string,
   id?: string
 ): AttributeMap {
+  const { RelationOp } = require('./ParseOp').default || require('./ParseOp');
   const data = {};
   let attr;
   for (attr in serverData) {
@@ -174,6 +172,9 @@ export function commitServerChanges(
   objectCache: ObjectCache,
   changes: AttributeMap
 ) {
+  const ParseFile = require('./ParseFile').default || require('./ParseFile');
+  const ParseObject = require('./ParseObject').default || require('./ParseObject');
+  const ParseRelation = require('./ParseRelation').default || require('./ParseRelation');
   for (const attr in changes) {
     const val = changes[attr];
     nestedSet(serverData, attr, val);

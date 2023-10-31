@@ -27,7 +27,7 @@ class MockObject {
     return 'POINTER';
   }
 
-  dirty() {}
+  dirty() { }
 
   _toFullJSON() {
     const json = {
@@ -91,7 +91,6 @@ const CoreManager = require('../CoreManager');
 const LocalDatastore = require('../LocalDatastore');
 const ParseObject = require('../ParseObject');
 const ParseQuery = require('../ParseQuery');
-const ParseUser = require('../ParseUser').default;
 const LocalDatastoreController = require('../LocalDatastoreController');
 const RNDatastoreController = require('../LocalDatastoreController.react-native');
 const BrowserStorageController = require('../StorageController.browser');
@@ -130,7 +129,7 @@ describe('LocalDatastore', () => {
   });
 
   it('isDisabled', () => {
-    const spy = jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+    const spy = jest.spyOn(console, 'error').mockImplementationOnce(() => { });
     LocalDatastore.isEnabled = false;
     const isEnabled = LocalDatastore.checkIfEnabled();
     expect(isEnabled).toBe(false);
@@ -567,7 +566,7 @@ describe('LocalDatastore', () => {
 
   it('do not sync if disabled', async () => {
     LocalDatastore.isEnabled = false;
-    jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+    jest.spyOn(console, 'error').mockImplementationOnce(() => { });
     jest.spyOn(mockLocalStorageController, 'getAllContents');
 
     await LocalDatastore.updateFromServer();
@@ -624,10 +623,12 @@ describe('LocalDatastore', () => {
     expect(mockLocalStorageController.pinWithName).toHaveBeenCalledTimes(1);
   });
 
+  // Need to unmock here because `ParseUser` requires `registerSubclass` and actual `ParseObject` class to instantiate.
+  jest.unmock('../ParseObject');
   it('updateFromServer on user', async () => {
     LocalDatastore.isEnabled = true;
     LocalDatastore.isSyncing = false;
-
+    const ParseUser = require('../ParseUser').default;
     const user = new ParseUser();
     user.id = '1234';
     user._localId = null;
@@ -703,7 +704,7 @@ describe('LocalDatastore', () => {
       return Promise.reject('Unable to connect to the Parse API');
     });
 
-    jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+    jest.spyOn(console, 'error').mockImplementationOnce(() => { });
     await LocalDatastore.updateFromServer();
 
     expect(mockLocalStorageController.getAllContents).toHaveBeenCalledTimes(1);
@@ -793,7 +794,7 @@ describe('LocalDatastore (BrowserStorageController)', () => {
       .mockImplementationOnce(() => {
         return '[1, ]';
       });
-    const spy = jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+    const spy = jest.spyOn(console, 'error').mockImplementationOnce(() => { });
     const LDS = await LocalDatastore._getAllContents();
     expect(LDS).toEqual({});
     expect(spy).toHaveBeenCalled();
@@ -807,7 +808,7 @@ describe('LocalDatastore (BrowserStorageController)', () => {
       .mockImplementationOnce(() => {
         throw new Error('error thrown');
       });
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementationOnce(() => {});
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementationOnce(() => { });
     await LocalDatastore.pinWithName('myKey', [{ name: 'test' }]);
     expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
@@ -878,7 +879,7 @@ describe('LocalDatastore (RNDatastoreController)', () => {
         throw new Error('error thrown');
       },
     };
-    jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+    jest.spyOn(console, 'error').mockImplementationOnce(() => { });
     CoreManager.setAsyncStorage(mockStorageError);
     try {
       await LocalDatastore.pinWithName('myKey', [{ name: 'test' }]);
@@ -910,7 +911,7 @@ describe('LocalDatastore (RNDatastoreController)', () => {
         cb(undefined, [KEY1, 'DO_NOT_CLEAR']);
       },
     };
-    jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+    jest.spyOn(console, 'error').mockImplementationOnce(() => { });
     CoreManager.setAsyncStorage(mockStorageError);
     await LocalDatastore._clear();
   });
@@ -924,7 +925,7 @@ describe('LocalDatastore (RNDatastoreController)', () => {
         cb(undefined, [KEY1, 'DO_NOT_CLEAR']);
       },
     };
-    jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+    jest.spyOn(console, 'error').mockImplementationOnce(() => { });
     CoreManager.setAsyncStorage(mockStorageError);
     const LDS = await LocalDatastore._getAllContents();
     expect(LDS).toEqual({});

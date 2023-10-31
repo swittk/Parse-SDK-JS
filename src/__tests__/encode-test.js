@@ -6,7 +6,7 @@ jest.dontMock('../ParseGeoPoint');
 const mockObject = function (className) {
   this.className = className;
 };
-mockObject.registerSubclass = function () {};
+mockObject.registerSubclass = function () { };
 mockObject.prototype = {
   _getServerData() {
     return this._serverData;
@@ -20,7 +20,7 @@ mockObject.prototype = {
   _getId() {
     return 'local1234';
   },
-  dirty() {},
+  dirty() { },
   toJSON() {
     return this.attributes;
   },

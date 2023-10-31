@@ -2,14 +2,6 @@
  * @flow
  */
 
-import ParseACL from './ParseACL';
-import ParseFile from './ParseFile';
-import ParseGeoPoint from './ParseGeoPoint';
-import ParsePolygon from './ParsePolygon';
-import ParseObject from './ParseObject';
-import { Op } from './ParseOp';
-import ParseRelation from './ParseRelation';
-
 /** Encodes values to storage type */
 function encode(
   value: any,
@@ -18,6 +10,13 @@ function encode(
   seen: Array<any>,
   offline?: boolean
 ): any {
+  const ParseACL = require('./ParseACL').default || require('./ParseACL');
+  const ParseFile = require('./ParseFile').default || require('./ParseFile');
+  const ParseGeoPoint = require('./ParseGeoPoint').default || require('./ParseGeoPoint');
+  const ParsePolygon = require('./ParsePolygon').default || require('./ParsePolygon');
+  const ParseObject = require('./ParseObject').default || require('./ParseObject');
+  const ParseRelation = require('./ParseRelation').default || require('./ParseRelation');
+  const { Op } = require('./ParseOp').default || require('./ParseOp');
   if (value instanceof ParseObject) {
     if (disallowObjects) {
       throw new Error('Parse Objects not allowed here');

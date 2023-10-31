@@ -2,8 +2,8 @@
  * @flow
  */
 
-import ParseRole from './ParseRole';
-import ParseUser from './ParseUser';
+import type ParseRole from './ParseRole';
+import type ParseUser from './ParseUser';
 
 type PermissionsMap = { [permission: string]: boolean };
 type ByIdMap = { [userId: string]: PermissionsMap };
@@ -33,7 +33,7 @@ class ParseACL {
   constructor(arg1: ParseUser | ByIdMap) {
     this.permissionsById = {};
     if (arg1 && typeof arg1 === 'object') {
-      if (arg1 instanceof ParseUser) {
+      if (arg1 instanceof (require('./ParseUser').default || require('./ParseUser'))) {
         this.setReadAccess(arg1, true);
         this.setWriteAccess(arg1, true);
       } else {
@@ -100,10 +100,10 @@ class ParseACL {
   }
 
   _setAccess(accessType: string, userId: ParseUser | ParseRole | string, allowed: boolean) {
-    if (userId instanceof ParseUser) {
+    if (userId instanceof (require('./ParseUser').default || require('./ParseUser'))) {
       // We would expect the ParseUser to have an ID; we don't have Users without IDs, right?
       userId = userId.id!;
-    } else if (userId instanceof ParseRole) {
+    } else if (userId instanceof (require('./ParseRole').default || require('./ParseRole'))) {
       const name = userId.getName();
       if (!name) {
         throw new TypeError('Role must have a name');
@@ -138,13 +138,13 @@ class ParseACL {
   }
 
   _getAccess(accessType: string, userId: ParseUser | ParseRole | string): boolean {
-    if (userId instanceof ParseUser) {
+    if (userId instanceof (require('./ParseUser').default || require('./ParseUser'))) {
       // We would expect the ParseUser to have an ID; we don't have Users without IDs, right?
       userId = userId.id!;
       if (!userId) {
         throw new Error('Cannot get access for a ParseUser without an ID');
       }
-    } else if (userId instanceof ParseRole) {
+    } else if (userId instanceof (require('./ParseRole').default || require('./ParseRole'))) {
       const name = userId.getName();
       if (!name) {
         throw new TypeError('Role must have a name');
@@ -250,7 +250,7 @@ class ParseACL {
    * @throws {TypeError} If role is neither a Parse.Role nor a String.
    */
   getRoleReadAccess(role: ParseRole | string): boolean {
-    if (role instanceof ParseRole) {
+    if (role instanceof (require('./ParseRole').default || require('./ParseRole'))) {
       // Normalize to the String name
       // A forced cast here is likely harmless since we force check 
       // `typeof role === 'string'` after this.
@@ -272,7 +272,7 @@ class ParseACL {
    * @throws {TypeError} If role is neither a Parse.Role nor a String.
    */
   getRoleWriteAccess(role: ParseRole | string): boolean {
-    if (role instanceof ParseRole) {
+    if (role instanceof (require('./ParseRole').default || require('./ParseRole'))) {
       // Normalize to the String name
       // A forced cast here is likely harmless since we force check 
       // `typeof role === 'string'` after this.
@@ -293,7 +293,7 @@ class ParseACL {
    * @throws {TypeError} If role is neither a Parse.Role nor a String.
    */
   setRoleReadAccess(role: ParseRole | string, allowed: boolean) {
-    if (role instanceof ParseRole) {
+    if (role instanceof (require('./ParseRole').default || require('./ParseRole'))) {
       // Normalize to the String name
       // A forced cast here is likely harmless since we force check 
       // `typeof role === 'string'` after this.
@@ -314,7 +314,7 @@ class ParseACL {
    * @throws {TypeError} If role is neither a Parse.Role nor a String.
    */
   setRoleWriteAccess(role: ParseRole | string, allowed: boolean) {
-    if (role instanceof ParseRole) {
+    if (role instanceof (require('./ParseRole').default || require('./ParseRole'))) {
       // Normalize to the String name
       // A forced cast here is likely harmless since we force check 
       // `typeof role === 'string'` after this.

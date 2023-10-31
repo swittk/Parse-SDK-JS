@@ -1,13 +1,10 @@
-import { AttributeMap } from "./ObjectStateMutations";
+import type { AttributeMap } from "./ObjectStateMutations";
 import type ParseObject from "./ParseObject";
 import type Query from "./ParseQuery";
 import type { QueryJSON, WhereClause } from './ParseQuery';
 
 import equalObjects from './equals';
 import decode from './decode';
-import ParseError from './ParseError';
-import ParsePolygon from './ParsePolygon';
-import ParseGeoPoint from './ParseGeoPoint';
 /**
  * contains -- Determines if an object is contained in a list with special handling for Parse pointers.
  *
@@ -248,6 +245,10 @@ function relativeTimeToDate(text, now = new Date()) {
  * @returns {boolean}
  */
 function matchesKeyConstraints(className, object, objects, key, constraints) {
+  const ParseError = require('./ParseError').default || require('./ParseError');
+  const ParsePolygon = require('./ParsePolygon').default || require('./ParsePolygon');
+  const ParseGeoPoint = require('./ParseGeoPoint').default || require('./ParseGeoPoint');
+
   if (constraints === null) {
     return false;
   }
@@ -558,6 +559,7 @@ function matchesKeyConstraints(className, object, objects, key, constraints) {
 }
 
 function validateQuery(query: Query | QueryJSON) {
+  const ParseError = require('./ParseError').default || require('./ParseError');
   let q: Query | QueryJSON | WhereClause = query;
 
   if ('toJSON' in query) {

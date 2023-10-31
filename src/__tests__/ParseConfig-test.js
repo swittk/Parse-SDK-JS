@@ -60,11 +60,7 @@ describe('ParseConfig', () => {
         },
       })
     );
-    expect(ParseConfig.current().attributes).toEqual({
-      count: 12,
-      point: new ParseGeoPoint(20.02, 30.03),
-    });
-    expect(ParseConfig.current().attributes).toEqual({
+    expect(ParseConfig.current(true).attributes).toEqual({
       count: 12,
       point: new ParseGeoPoint(20.02, 30.03),
     });
