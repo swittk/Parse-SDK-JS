@@ -1,7 +1,6 @@
 /* global WebSocket */
 
-import { CoreManager, WebSocketController, ParseObject, ParseError, ParseQuery, EventEmitter } from './internal';
-import LiveQuerySubscription from './LiveQuerySubscription';
+import { CoreManager, WebSocketController, ParseObject, ParseError, ParseQuery, EventEmitter, LiveQuerySubscription } from './internal';
 import { resolvingPromise } from './promiseUtils';
 
 // The LiveQuery client inner state

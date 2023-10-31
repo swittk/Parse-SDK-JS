@@ -2,9 +2,8 @@
  * @flow
  */
 
-import { CoreManager, encode, ParseError, ParseGeoPoint, ParseObject } from './internal';
+import { CoreManager, encode, ParseError, ParseGeoPoint, ParseObject, OfflineQuery } from './internal';
 import { continueWhile } from './promiseUtils';
-import OfflineQuery from './OfflineQuery';
 import { DEFAULT_PIN } from './LocalDatastoreUtils';
 
 import type LiveQuerySubscription from './LiveQuerySubscription';

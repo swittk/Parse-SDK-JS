@@ -9,8 +9,9 @@ import {
   ParsePolygon,
   ParseObject,
   ParseRelation,
+  ParseOp,
 } from './internal';
-import { Op } from './ParseOp';
+const { Op } = ParseOp;
 
 /** Encodes values to storage type */
 function encode(

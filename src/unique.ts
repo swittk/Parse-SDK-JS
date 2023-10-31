@@ -2,8 +2,7 @@
  * @flow
  */
 
-import arrayContainsObject from './arrayContainsObject';
-import { ParseObject } from './internal';
+import { ParseObject, arrayContainsObject } from './internal';
 
 export default function unique<T>(arr: Array<T>): Array<T> {
   const uniques: T[] = [];

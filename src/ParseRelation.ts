@@ -2,8 +2,8 @@
  * @flow
  */
 
-import { RelationOp } from './ParseOp';
-import { ParseObject, ParseQuery } from './internal';
+import { ParseObject, ParseQuery, ParseOp } from './internal';
+const { RelationOp } = ParseOp;
 
 /**
  * Creates a new Relation for the given parent object and key. This

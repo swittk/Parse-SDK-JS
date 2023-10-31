@@ -8,9 +8,10 @@ import {
   ParseGeoPoint,
   ParsePolygon,
   ParseObject,
-  ParseRelation
+  ParseRelation,
+  ParseOp
 } from './internal';
-import { opFromJSON } from './ParseOp';
+const { opFromJSON } = ParseOp;
 
 /** Decodes values from storage type */
 export default function decode(value: any): any {

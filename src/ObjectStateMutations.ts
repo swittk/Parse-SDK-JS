@@ -3,7 +3,7 @@
  */
 
 import { encode, ParseFile, ParseObject, ParseRelation, ParseOp, TaskQueue } from './internal';
-import { RelationOp } from './ParseOp';
+const { RelationOp } = ParseOp;
 
 import type { Op } from './ParseOp';
 

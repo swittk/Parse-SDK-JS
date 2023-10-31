@@ -2,9 +2,7 @@
  * @flow
  */
 
-import arrayContainsObject from './arrayContainsObject';
-import { decode, encode, ParseObject, ParseRelation, unique } from './internal';
-import type { Pointer } from './ParseObject';
+import { decode, encode, ParseObject, ParseRelation, unique, Pointer, arrayContainsObject } from './internal';
 
 export function opFromJSON(json: { [key: string]: any }): Op | null {
   if (!json || !json.__op) {
@@ -454,4 +452,15 @@ export class RelationOp extends Op {
     }
     return adds || removes || {};
   }
+}
+export default {
+  opFromJSON,
+  Op,
+  SetOp,
+  UnsetOp,
+  IncrementOp,
+  AddOp,
+  AddUniqueOp,
+  RemoveOp,
+  RelationOp
 }

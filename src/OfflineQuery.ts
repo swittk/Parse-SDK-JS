@@ -1,15 +1,15 @@
-import { AttributeMap } from "./ObjectStateMutations";
 import type ParseObject from "./ParseObject";
 import type Query from "./ParseQuery";
 import type { QueryJSON, WhereClause } from './ParseQuery';
-
-import equalObjects from './equals';
 import {
   decode,
   ParseError,
   ParsePolygon,
   ParseGeoPoint,
+  equals as equalObjects
 } from './internal'
+
+type AttributeMap = { [attr: string]: any };
 /**
  * contains -- Determines if an object is contained in a list with special handling for Parse pointers.
  *

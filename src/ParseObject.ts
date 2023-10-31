@@ -22,7 +22,7 @@ import {
 import { when, continueWhile, resolvingPromise } from './promiseUtils';
 import { DEFAULT_PIN, PIN_PREFIX } from './LocalDatastoreUtils';
 
-import {
+const {
   opFromJSON,
   Op,
   SetOp,
@@ -32,7 +32,7 @@ import {
   AddUniqueOp,
   RemoveOp,
   RelationOp,
-} from './ParseOp';
+} = ParseOp;
 import * as SingleInstanceStateController from './SingleInstanceStateController';
 import * as UniqueInstanceStateController from './UniqueInstanceStateController';
 
