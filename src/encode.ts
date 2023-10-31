@@ -2,13 +2,15 @@
  * @flow
  */
 
-import ParseACL from './ParseACL';
-import ParseFile from './ParseFile';
-import ParseGeoPoint from './ParseGeoPoint';
-import ParsePolygon from './ParsePolygon';
-import ParseObject from './ParseObject';
+import {
+  ParseACL,
+  ParseFile,
+  ParseGeoPoint,
+  ParsePolygon,
+  ParseObject,
+  ParseRelation,
+} from './internal';
 import { Op } from './ParseOp';
-import ParseRelation from './ParseRelation';
 
 /** Encodes values to storage type */
 function encode(

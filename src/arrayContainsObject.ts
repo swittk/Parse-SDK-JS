@@ -1,4 +1,4 @@
-import ParseObject from './ParseObject';
+import { ParseObject } from './internal';
 
 export default function arrayContainsObject(array: Array<any>, object: ParseObject): boolean {
   if (array.indexOf(object) > -1) {

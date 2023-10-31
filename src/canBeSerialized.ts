@@ -2,9 +2,7 @@
  * @flow
  */
 
-import ParseFile from './ParseFile';
-import ParseObject from './ParseObject';
-import ParseRelation from './ParseRelation';
+import { ParseObject, ParseFile, ParseRelation } from './internal';
 
 export default function canBeSerialized(obj: ParseObject): boolean {
   if (!(obj instanceof ParseObject)) {

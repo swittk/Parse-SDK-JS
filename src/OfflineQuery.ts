@@ -4,10 +4,12 @@ import type Query from "./ParseQuery";
 import type { QueryJSON, WhereClause } from './ParseQuery';
 
 import equalObjects from './equals';
-import decode from './decode';
-import ParseError from './ParseError';
-import ParsePolygon from './ParsePolygon';
-import ParseGeoPoint from './ParseGeoPoint';
+import {
+  decode,
+  ParseError,
+  ParsePolygon,
+  ParseGeoPoint,
+} from './internal'
 /**
  * contains -- Determines if an object is contained in a list with special handling for Parse pointers.
  *
@@ -598,5 +600,4 @@ const OfflineQuery = {
   validateQuery: validateQuery,
 };
 
-module.exports = OfflineQuery;
 export default OfflineQuery;

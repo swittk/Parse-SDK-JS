@@ -8,7 +8,7 @@ jest.dontMock('../ParseQuery');
 jest.dontMock('../Push');
 
 const Cloud = require('../Cloud');
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 const Push = require('../Push');
 
 const defaultController = CoreManager.getCloudController();

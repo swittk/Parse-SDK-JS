@@ -2,12 +2,7 @@
  * @flow
  */
 
-import CoreManager from './CoreManager';
-import decode from './decode';
-import encode from './encode';
-import ParseError from './ParseError';
-import ParseQuery from './ParseQuery';
-import ParseObject from './ParseObject';
+import { CoreManager, decode, encode, ParseError, ParseQuery, ParseObject } from './internal';
 import type { RequestOptions } from './RESTController';
 
 /**

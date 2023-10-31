@@ -2,10 +2,7 @@
  * @flow
  */
 /* global XMLHttpRequest, XDomainRequest */
-import uuidv4 from './uuid';
-
-import CoreManager from './CoreManager';
-import ParseError from './ParseError';
+import { CoreManager, ParseError, uuidv4 } from './internal';
 import { resolvingPromise } from './promiseUtils';
 
 export type RequestOptions = {
@@ -347,5 +344,4 @@ const RESTController = {
   },
 };
 
-module.exports = RESTController;
 export default RESTController;

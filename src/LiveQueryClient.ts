@@ -1,12 +1,8 @@
 /* global WebSocket */
 
-import CoreManager, { WebSocketController } from './CoreManager';
-import ParseObject from './ParseObject';
+import { CoreManager, WebSocketController, ParseObject, ParseError, ParseQuery, EventEmitter } from './internal';
 import LiveQuerySubscription from './LiveQuerySubscription';
 import { resolvingPromise } from './promiseUtils';
-import ParseError from './ParseError';
-import type { EventEmitter } from 'events';
-import type ParseQuery from './ParseQuery';
 
 // The LiveQuery client inner state
 const CLIENT_STATE = {
@@ -520,7 +516,7 @@ if (process.env.PARSE_BUILD === 'node') {
     typeof WebSocket === 'function' || typeof WebSocket === 'object' ? WebSocket : null as any
   );
 } else if (process.env.PARSE_BUILD === 'weapp') {
-  CoreManager.setWebSocketController(require('./Socket.weapp'));
+  CoreManager.setWebSocketController(require('./Socket.weapp').default);
 } else if (process.env.PARSE_BUILD === 'react-native') {
   CoreManager.setWebSocketController(WebSocket as any);
 }

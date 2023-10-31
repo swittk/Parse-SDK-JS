@@ -30,13 +30,12 @@ if (typeof window !== 'undefined' && window.indexedDB) {
       },
     };
 
-    module.exports = IndexedDBStorageController;
   } catch (_) {
     // IndexedDB not accessible
-    module.exports = undefined;
+    // module.exports = undefined;
   }
 } else {
   // IndexedDB not supported
-  module.exports = undefined;
+  // module.exports = undefined;
 }
 export default IndexedDBStorageController;

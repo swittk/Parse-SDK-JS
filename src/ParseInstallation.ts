@@ -2,7 +2,7 @@
  * @flow
  */
 
-import ParseObject from './ParseObject';
+import { ParseObject } from './internal';
 
 import type { AttributeMap } from './ObjectStateMutations';
 

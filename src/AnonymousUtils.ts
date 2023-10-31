@@ -2,9 +2,8 @@
  * @flow-weak
  */
 
-import ParseUser from './ParseUser';
+import { ParseUser, uuidv4 } from './internal';
 import type { RequestOptions } from './RESTController';
-import uuidv4 from './uuid';
 
 let registered = false;
 

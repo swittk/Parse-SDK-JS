@@ -2,9 +2,7 @@
  * @flow
  */
 
-import CoreManager from './CoreManager';
-import ParseObject from './ParseObject';
-import ParseCLP from './ParseCLP';
+import { CoreManager, ParseObject, ParseCLP } from './internal';
 
 import type { PermissionsMap } from './ParseCLP';
 

@@ -3,8 +3,7 @@
  */
 
 import { RelationOp } from './ParseOp';
-import ParseObject from './ParseObject';
-import ParseQuery from './ParseQuery';
+import { ParseObject, ParseQuery } from './internal';
 
 /**
  * Creates a new Relation for the given parent object and key. This

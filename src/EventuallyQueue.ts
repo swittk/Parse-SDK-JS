@@ -3,12 +3,13 @@
  *
  * @flow
  */
-
-import CoreManager from './CoreManager';
-import ParseError from './ParseError';
-import ParseObject from './ParseObject';
-import ParseQuery from './ParseQuery';
-import Storage from './Storage';
+import {
+  CoreManager,
+  ParseError,
+  ParseObject,
+  ParseQuery,
+  Storage,
+} from './internal';
 
 import type { SaveOptions } from './ParseObject';
 import type { RequestOptions } from './RESTController';
@@ -374,5 +375,4 @@ const EventuallyQueue = {
   },
 };
 
-module.exports = EventuallyQueue;
 export default EventuallyQueue;

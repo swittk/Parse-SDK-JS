@@ -2,16 +2,23 @@
  * @flow
  */
 
-import CoreManager from './CoreManager';
-import canBeSerialized from './canBeSerialized';
-import decode from './decode';
-import encode from './encode';
-import escape from './escape';
-import EventuallyQueue from './EventuallyQueue';
-import ParseACL from './ParseACL';
-import parseDate from './parseDate';
-import ParseError from './ParseError';
-import ParseFile from './ParseFile';
+import {
+  CoreManager,
+  canBeSerialized,
+  decode,
+  encode,
+  escape,
+  EventuallyQueue,
+  ParseACL,
+  ParseError,
+  ParseFile,
+  ParseQuery,
+  ParseRelation,
+  ParseOp,
+  unique,
+  unsavedChildren,
+  uuidv4
+} from './internal';
 import { when, continueWhile, resolvingPromise } from './promiseUtils';
 import { DEFAULT_PIN, PIN_PREFIX } from './LocalDatastoreUtils';
 
@@ -26,17 +33,13 @@ import {
   RemoveOp,
   RelationOp,
 } from './ParseOp';
-import ParseQuery from './ParseQuery';
-import ParseRelation from './ParseRelation';
 import * as SingleInstanceStateController from './SingleInstanceStateController';
-import unique from './unique';
 import * as UniqueInstanceStateController from './UniqueInstanceStateController';
-import unsavedChildren from './unsavedChildren';
 
 import type { AttributeMap, OpsMap } from './ObjectStateMutations';
 import type { RequestOptions, FullOptions } from './RESTController';
 
-import uuidv4 from './uuid';
+import parseDate from './parseDate';
 
 export type Pointer = {
   __type: string,
@@ -933,7 +936,7 @@ class ParseObject {
    * @param attr {String} The key.
    * @returns {Parse.Op | undefined} The operation, or undefined if none.
    */
-  op(attr: string): Op | undefined {
+  op(attr: string): ParseOp.Op | undefined {
     const pending = this._getPendingOps();
     for (let i = pending.length; i--;) {
       if (pending[i][attr]) {

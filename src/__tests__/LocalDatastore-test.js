@@ -87,7 +87,7 @@ jest.mock('../ParseQuery', () => {
   });
 });
 
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 const LocalDatastore = require('../LocalDatastore');
 const ParseObject = require('../ParseObject');
 const ParseQuery = require('../ParseQuery');

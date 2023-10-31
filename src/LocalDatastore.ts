@@ -2,10 +2,9 @@
  * @flow
  */
 
-import CoreManager from './CoreManager';
+import { CoreManager, ParseQuery } from './internal';
 
 import type ParseObject from './ParseObject';
-import ParseQuery from './ParseQuery';
 import { DEFAULT_PIN, PIN_PREFIX, OBJECT_PREFIX } from './LocalDatastoreUtils';
 
 /**
@@ -391,12 +390,11 @@ const LocalDatastore = {
   },
 };
 
-module.exports = LocalDatastore;
 export default LocalDatastore;
 
 if (process.env.PARSE_BUILD === 'react-native') {
-  CoreManager.setLocalDatastoreController(require('./LocalDatastoreController.react-native'));
+  CoreManager.setLocalDatastoreController(require('./LocalDatastoreController.react-native').default);
 } else {
-  CoreManager.setLocalDatastoreController(require('./LocalDatastoreController'));
+  CoreManager.setLocalDatastoreController(require('./LocalDatastoreController').default);
 }
 CoreManager.setLocalDatastore(LocalDatastore);

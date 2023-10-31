@@ -2,12 +2,14 @@
  * @flow
  */
 
-import CoreManager from './CoreManager';
+import {
+  CoreManager,
+  ParseError,
+  ParseObject,
+  ParseSession,
+  Storage,
+} from './internal';
 import isRevocableSession from './isRevocableSession';
-import ParseError from './ParseError';
-import ParseObject from './ParseObject';
-import ParseSession from './ParseSession';
-import Storage from './Storage';
 
 import type { AttributeMap } from './ObjectStateMutations';
 import type { RequestOptions, FullOptions } from './RESTController';

@@ -14,7 +14,7 @@ jest.dontMock('../uuid');
 jest.dontMock('crypto-js/aes');
 jest.dontMock('./test_helpers/mockWeChat');
 
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 const mockWeChat = require('./test_helpers/mockWeChat');
 
 global.wx = mockWeChat;

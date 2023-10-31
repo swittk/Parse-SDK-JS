@@ -1,4 +1,4 @@
-import CoreManager from './CoreManager';
+import { CoreManager } from './internal';
 import type ParseObject from './ParseObject';
 
 /**

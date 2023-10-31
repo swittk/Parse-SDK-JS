@@ -4,7 +4,7 @@
  */
 
 import { isLocalDatastoreKey } from './LocalDatastoreUtils';
-const RNStorage = require('./StorageController.react-native');
+const RNStorage = require('./StorageController.react-native').default;
 
 const LocalDatastoreController = {
   async fromPinWithName(name: string): Promise<Array<Object>> {
@@ -85,5 +85,4 @@ const LocalDatastoreController = {
   },
 };
 
-module.exports = LocalDatastoreController;
 export default LocalDatastoreController;

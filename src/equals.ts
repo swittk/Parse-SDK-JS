@@ -1,7 +1,9 @@
-import ParseACL from './ParseACL';
-import ParseFile from './ParseFile';
-import ParseGeoPoint from './ParseGeoPoint';
-import ParseObject from './ParseObject';
+import {
+  ParseACL,
+  ParseFile,
+  ParseGeoPoint,
+  ParseObject
+} from './internal';
 
 export default function equals(a: any, b: any): boolean {
   const toString = Object.prototype.toString;

@@ -2,9 +2,11 @@
  * @flow
  */
 
-import ParseObject from './ParseObject';
-import ParseACL from './ParseACL';
-import ParseError from './ParseError';
+import {
+  ParseObject, ParseACL,
+  ParseError
+} from './internal';
+
 
 import type { AttributeMap } from './ObjectStateMutations';
 import type ParseRelation from './ParseRelation';

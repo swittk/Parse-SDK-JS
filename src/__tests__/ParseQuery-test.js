@@ -40,7 +40,7 @@ const mockLocalDatastore = {
 };
 jest.setMock('../LocalDatastore', mockLocalDatastore);
 
-let CoreManager = require('../CoreManager');
+let CoreManager = require('../CoreManager').default;
 const EventEmitter = require('../EventEmitter');
 const ParseError = require('../ParseError').default;
 const ParseGeoPoint = require('../ParseGeoPoint').default;
@@ -2289,7 +2289,7 @@ describe('ParseQuery', () => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
     ParseObject = require('../ParseObject').default;
-    CoreManager = require('../CoreManager');
+    CoreManager = require('../CoreManager').default;
     ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
@@ -2339,7 +2339,7 @@ describe('ParseQuery', () => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
     ParseObject = require('../ParseObject').default;
-    CoreManager = require('../CoreManager');
+    CoreManager = require('../CoreManager').default;
     ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
@@ -2414,7 +2414,7 @@ describe('ParseQuery', () => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
     ParseObject = require('../ParseObject').default;
-    CoreManager = require('../CoreManager');
+    CoreManager = require('../CoreManager').default;
     ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
@@ -2464,7 +2464,7 @@ describe('ParseQuery', () => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
     ParseObject = require('../ParseObject').default;
-    CoreManager = require('../CoreManager');
+    CoreManager = require('../CoreManager').default;
     ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
@@ -2879,7 +2879,7 @@ describe('ParseQuery', () => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
     ParseObject = require('../ParseObject').default;
-    CoreManager = require('../CoreManager');
+    CoreManager = require('../CoreManager').default;
     ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();
@@ -2926,7 +2926,7 @@ describe('ParseQuery', () => {
     jest.dontMock('../ParseObject');
     jest.resetModules();
     ParseObject = require('../ParseObject').default;
-    CoreManager = require('../CoreManager');
+    CoreManager = require('../CoreManager').default;
     ParseQuery = require('../ParseQuery').default;
 
     ParseObject.enableSingleInstance();

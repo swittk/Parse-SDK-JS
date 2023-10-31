@@ -1,8 +1,7 @@
 /**
  * @flow
  */
-import LiveQueryClient from './LiveQueryClient';
-import CoreManager from './CoreManager';
+import { LiveQueryClient, CoreManager } from './internal';
 import type { EventEmitter } from 'events';
 function getLiveQueryClient(): Promise<LiveQueryClient> {
   return CoreManager.getLiveQueryController().getDefaultLiveQueryClient();

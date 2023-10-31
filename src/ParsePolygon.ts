@@ -2,7 +2,7 @@
  * @flow
  */
 
-import ParseGeoPoint from './ParseGeoPoint';
+import { ParseGeoPoint } from './internal';
 
 /**
  * Creates a new Polygon with any of the following forms:<br>

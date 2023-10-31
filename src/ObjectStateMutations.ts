@@ -2,11 +2,7 @@
  * @flow
  */
 
-import encode from './encode';
-import ParseFile from './ParseFile';
-import ParseObject from './ParseObject';
-import ParseRelation from './ParseRelation';
-import TaskQueue from './TaskQueue';
+import { encode, ParseFile, ParseObject, ParseRelation, ParseOp, TaskQueue } from './internal';
 import { RelationOp } from './ParseOp';
 
 import type { Op } from './ParseOp';

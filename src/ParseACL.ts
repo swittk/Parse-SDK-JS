@@ -2,8 +2,7 @@
  * @flow
  */
 
-import ParseRole from './ParseRole';
-import ParseUser from './ParseUser';
+import { ParseRole, ParseUser } from './internal';
 
 type PermissionsMap = { [permission: string]: boolean };
 type ByIdMap = { [userId: string]: PermissionsMap };

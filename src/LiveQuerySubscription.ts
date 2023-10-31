@@ -1,6 +1,5 @@
 import type { EventEmitter } from 'events';
-import CoreManager from './CoreManager';
-import AnEventEmitter from './EventEmitter';
+import { CoreManager } from './internal';
 import { resolvingPromise } from './promiseUtils';
 import type ParseQuery from './ParseQuery';
 

@@ -1,13 +1,16 @@
 /**
  * @flow
  */
-import ParseACL from './ParseACL'; // eslint-disable-line no-unused-vars
-import ParseFile from './ParseFile';
-import ParseGeoPoint from './ParseGeoPoint';
-import ParsePolygon from './ParsePolygon';
-import ParseObject from './ParseObject';
+import {
+  // eslint-disable-line no-unused-vars
+  ParseACL,
+  ParseFile,
+  ParseGeoPoint,
+  ParsePolygon,
+  ParseObject,
+  ParseRelation
+} from './internal';
 import { opFromJSON } from './ParseOp';
-import ParseRelation from './ParseRelation';
 
 /** Decodes values from storage type */
 export default function decode(value: any): any {

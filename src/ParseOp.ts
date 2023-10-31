@@ -3,11 +3,8 @@
  */
 
 import arrayContainsObject from './arrayContainsObject';
-import decode from './decode';
-import encode from './encode';
-import ParseObject, { Pointer } from './ParseObject';
-import ParseRelation from './ParseRelation';
-import unique from './unique';
+import { decode, encode, ParseObject, ParseRelation, unique } from './internal';
+import type { Pointer } from './ParseObject';
 
 export function opFromJSON(json: { [key: string]: any }): Op | null {
   if (!json || !json.__op) {
@@ -79,7 +76,7 @@ export class SetOp extends Op {
     return new SetOp(this._value);
   }
 
-  toJSON(offline?: boolean) : any {
+  toJSON(offline?: boolean): any {
     return encode(this._value, false, true, undefined, offline);
   }
 }

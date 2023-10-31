@@ -3,7 +3,7 @@
  */
 
 import arrayContainsObject from './arrayContainsObject';
-import ParseObject from './ParseObject';
+import { ParseObject } from './internal';
 
 export default function unique<T>(arr: Array<T>): Array<T> {
   const uniques: T[] = [];

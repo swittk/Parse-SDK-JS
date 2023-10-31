@@ -1,38 +1,40 @@
-import CryptoController from './CryptoController';
-import EventuallyQueue from './EventuallyQueue';
-import IndexedDBStorageController from './IndexedDBStorageController';
-import InstallationController from './InstallationController';
-import RESTController from './RESTController';
-import ACL from './ParseACL';
-import * as Analytics from './Analytics'
-import AnonymousUtils from './AnonymousUtils'
-import * as Cloud from './Cloud';
-import CLP from './ParseCLP';
-import CoreManager from './CoreManager';
-import EventEmitter from './EventEmitter';
-import Config from './ParseConfig'
-import ParseError from './ParseError'
-import FacebookUtils from './FacebookUtils'
-import File from './ParseFile'
-import GeoPoint from './ParseGeoPoint'
-import Polygon from './ParsePolygon'
-import Installation from './ParseInstallation'
-import LocalDatastore from './LocalDatastore'
-import ParseObject from './ParseObject'
-import * as Push from './Push'
-import Query from './ParseQuery'
-import Relation from './ParseRelation'
-import Role from './ParseRole'
-import Schema from './ParseSchema'
-import Session from './ParseSession'
-import Storage from './Storage'
-import User from './ParseUser'
-import LiveQuery from './ParseLiveQuery'
-import LiveQueryClient from './LiveQueryClient'
-// Need to reorder these last due to them requiring ParseObject/ParseRole, etc to be defined first
-import * as ParseOp from './ParseOp';
-import decode from './decode';
-import encode from './encode';
+import {
+  CryptoController,
+  EventuallyQueue,
+  IndexedDBStorageController,
+  InstallationController,
+  RESTController,
+  ParseACL as ACL,
+  Analytics,
+  AnonymousUtils,
+  Cloud,
+  ParseCLP as CLP,
+  CoreManager,
+  EventEmitter,
+  ParseConfig as Config,
+  ParseError,
+  FacebookUtils,
+  ParseFile as File,
+  ParseGeoPoint as GeoPoint,
+  ParsePolygon as Polygon,
+  ParseInstallation as Installation,
+  LocalDatastore,
+  ParseObject,
+  Push,
+  ParseQuery as Query,
+  ParseRelation as Relation,
+  ParseRole as Role,
+  ParseSchema as Schema,
+  ParseSession as Session,
+  Storage,
+  ParseUser as User,
+  ParseLiveQuery as LiveQuery,
+  LiveQueryClient,
+  // Need to reorder these last due to them requiring ParseObject / ParseRole, etc to be defined first,
+  ParseOp,
+  decode,
+  encode
+} from './internal';
 
 /**
  * Contains all Parse API classes and functions.
@@ -453,5 +455,4 @@ if (process.env.PARSE_BUILD === 'node') {
 // For legacy requires, of the form `var Parse = require('parse').Parse`
 Parse.Parse = Parse;
 
-module.exports = Parse;
 export default Parse;

@@ -1,6 +1,4 @@
-import CoreManager from './CoreManager';
-import decode from './decode';
-import ParseError from './ParseError';
+import { CoreManager, decode, ParseError } from './internal';
 
 export function getFunctions() {
   return CoreManager.getHooksController().get('functions');

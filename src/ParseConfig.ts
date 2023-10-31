@@ -2,12 +2,7 @@
  * @flow
  */
 
-import CoreManager from './CoreManager';
-import decode from './decode';
-import encode from './encode';
-import escape from './escape';
-import ParseError from './ParseError';
-import Storage from './Storage';
+import { CoreManager, decode, encode, escape, ParseError, Storage } from './internal';
 
 import type { RequestOptions } from './RESTController';
 
@@ -139,7 +134,7 @@ function decodePayload(data) {
 }
 
 const DefaultController = {
-  current: async ()=> {
+  current: async () => {
     if (currentConfig) {
       return currentConfig;
     }

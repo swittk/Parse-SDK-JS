@@ -10,7 +10,7 @@ jest.dontMock('../promiseUtils');
 
 // Forces the loading
 const ParseLiveQuery = require('../ParseLiveQuery').default;
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 const EventEmitter = require('../EventEmitter');
 const ParseQuery = require('../ParseQuery').default;
 const LiveQuerySubscription = require('../LiveQuerySubscription').default;

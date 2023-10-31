@@ -2,7 +2,7 @@
  * @flow-weak
  */
 /* global FB */
-import ParseUser from './ParseUser';
+import { ParseUser } from './internal';
 import type { AuthProviderType } from './ParseUser';
 
 let initialized = false;

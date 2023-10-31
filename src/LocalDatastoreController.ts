@@ -2,7 +2,7 @@
  * @flow
  */
 import { isLocalDatastoreKey } from './LocalDatastoreUtils';
-import Storage from './Storage';
+import { Storage } from './internal';
 
 const LocalDatastoreController = {
   async fromPinWithName(name: string): Promise<Array<Object>> {
@@ -64,5 +64,4 @@ const LocalDatastoreController = {
   },
 };
 
-module.exports = LocalDatastoreController;
 export default LocalDatastoreController;

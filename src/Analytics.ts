@@ -2,7 +2,7 @@
  * @flow
  */
 
-import CoreManager from './CoreManager';
+import { CoreManager } from './internal';
 
 /**
  * Parse.Analytics provides an interface to Parse's logging and analytics

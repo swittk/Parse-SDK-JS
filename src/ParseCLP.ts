@@ -2,8 +2,7 @@
  * @flow
  */
 
-import ParseRole from './ParseRole';
-import ParseUser from './ParseUser';
+import { ParseRole, ParseUser } from './internal';
 
 type Entity = ParseUser | ParseRole | string;
 type UsersMap = { [userId: string]: boolean | any };

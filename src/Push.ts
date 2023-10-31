@@ -2,9 +2,11 @@
  * @flow
  */
 
-import CoreManager from './CoreManager';
-import ParseObject from './ParseObject';
-import ParseQuery from './ParseQuery';
+import {
+  CoreManager,
+  ParseObject,
+  ParseQuery
+} from './internal'
 
 import type { WhereClause } from './ParseQuery';
 import type { FullOptions } from './RESTController';

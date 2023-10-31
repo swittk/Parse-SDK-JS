@@ -1,6 +1,3 @@
-/**
- * @flow
- */
 
 /**
  * Creates a new GeoPoint with any of the following forms:<br>

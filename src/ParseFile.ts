@@ -2,9 +2,8 @@
  * @flow
  */
 /* global XMLHttpRequest, Blob */
-import CoreManager from './CoreManager';
+import { CoreManager, ParseError } from './internal';
 import type { FullOptions } from './RESTController';
-import ParseError from './ParseError'
 
 let XHR: typeof XMLHttpRequest = null as any;
 if (typeof XMLHttpRequest !== 'undefined') {

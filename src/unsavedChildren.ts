@@ -2,9 +2,7 @@
  * @flow
  */
 
-import ParseFile from './ParseFile';
-import ParseObject from './ParseObject';
-import ParseRelation from './ParseRelation';
+import { ParseFile, ParseObject, ParseRelation } from './internal';
 
 type EncounterMap = {
   objects: { [identifier: string]: ParseObject | boolean },

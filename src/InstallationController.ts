@@ -2,10 +2,9 @@
  * @flow
  */
 
-import Storage from './Storage';
-const uuidv4 = require('./uuid');
+import { Storage, uuidv4 } from './internal';
 
-let iidCache: string|null = null;
+let iidCache: string | null = null;
 
 const InstallationController = {
   currentInstallationId(): Promise<string> {
@@ -35,5 +34,4 @@ const InstallationController = {
   },
 };
 
-module.exports = InstallationController;
 export default InstallationController;
