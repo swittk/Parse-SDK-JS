@@ -3,12 +3,12 @@
  */
 
 import arrayContainsObject from './arrayContainsObject';
-import ParseObject from './ParseObject';
+import { isParseObject } from './parseTypeCheck';
 
 export default function unique<T>(arr: Array<T>): Array<T> {
   const uniques: T[] = [];
   arr.forEach(value => {
-    if (value instanceof ParseObject) {
+    if (isParseObject(value)) {
       if (!arrayContainsObject(uniques, value)) {
         uniques.push(value);
       }

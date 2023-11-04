@@ -118,6 +118,8 @@ VALID_PERMISSIONS_EXTENDED.set('protectedFields', {});
  * @alias Parse.CLP
  */
 class ParseCLP {
+  __pType = 'CLP';
+  __isClass = true;
   permissionsMap: PermissionsMap;
 
   /**

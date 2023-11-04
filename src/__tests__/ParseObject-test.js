@@ -23,6 +23,7 @@ jest.dontMock('../UniqueInstanceStateController');
 jest.dontMock('../unsavedChildren');
 jest.dontMock('../ParseACL');
 jest.dontMock('../LocalDatastore');
+jest.dontMock('../EventuallyQueue');
 
 jest.mock('../uuid', () => {
   let value = 0;
@@ -34,6 +35,8 @@ jest.dontMock('./test_helpers/flushPromises');
 jest.useFakeTimers();
 
 const mockRelation = function (parent, key) {
+  this.__pType = 'Relation';
+  this.__isClass = true;
   // The parent and key fields will be populated by the parent
   if (parent) {
     this.parentClass = parent.className;

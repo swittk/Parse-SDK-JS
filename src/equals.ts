@@ -1,7 +1,4 @@
-import ParseACL from './ParseACL';
-import ParseFile from './ParseFile';
-import ParseGeoPoint from './ParseGeoPoint';
-import ParseObject from './ParseObject';
+import { isParseACL, isParseFile, isParseGeoPoint, isParseObject } from './parseTypeCheck';
 
 export default function equals(a: any, b: any): boolean {
   const toString = Object.prototype.toString;
@@ -36,14 +33,14 @@ export default function equals(a: any, b: any): boolean {
   }
 
   if (
-    a instanceof ParseACL ||
-    a instanceof ParseFile ||
-    a instanceof ParseGeoPoint ||
-    a instanceof ParseObject
+    isParseACL(a) ||
+    isParseFile(a) ||
+    isParseGeoPoint(a) ||
+    isParseObject(a)
   ) {
     return a.equals(b);
   }
-  if (b instanceof ParseObject) {
+  if (isParseObject(b)) {
     if (a.__type === 'Object' || a.__type === 'Pointer') {
       return a.objectId === b.id && a.className === b.className;
     }

@@ -2,9 +2,12 @@ jest.dontMock('../encode');
 jest.dontMock('../ParseACL');
 jest.dontMock('../ParseFile');
 jest.dontMock('../ParseGeoPoint');
+jest.dontMock('../parseTypeCheck');
 
 const mockObject = function (className) {
   this.className = className;
+  this.__pType = 'Object';
+  this.__isClass = true;
 };
 mockObject.registerSubclass = function () {};
 mockObject.prototype = {

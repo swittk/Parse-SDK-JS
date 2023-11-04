@@ -3,10 +3,10 @@
  */
 
 import CoreManager from './CoreManager';
-import ParseObject from './ParseObject';
-import ParseCLP from './ParseCLP';
+import type ParseCLP from './ParseCLP';
 
 import type { PermissionsMap } from './ParseCLP';
+import { isParseCLP, isParseObject } from './parseTypeCheck';
 
 const FIELD_TYPES = [
   'String',
@@ -193,7 +193,7 @@ class ParseSchema {
    * @returns {Parse.Schema} Returns the schema, so you can chain this call.
    */
   setCLP(clp: PermissionsMap | ParseCLP) {
-    if (clp instanceof ParseCLP) {
+    if (isParseCLP(clp)) {
       this._clp = clp.toJSON();
     } else {
       this._clp = clp;
@@ -227,7 +227,7 @@ class ParseSchema {
       return this.addPointer(name, options.targetClass!, options);
     }
     if (type === 'Relation') {
-      return this.addRelation(name, options.targetClass);
+      return this.addRelation(name, options.targetClass!);
     }
     const fieldOptions: Partial<FieldOptions> & {
       type: ValidFieldType,
@@ -417,7 +417,7 @@ class ParseSchema {
     }
     if (options.defaultValue !== undefined) {
       fieldOptions.defaultValue = options.defaultValue;
-      if (options.defaultValue instanceof ParseObject) {
+      if (isParseObject(options.defaultValue)) {
         fieldOptions.defaultValue = options.defaultValue.toPointer();
       }
     }

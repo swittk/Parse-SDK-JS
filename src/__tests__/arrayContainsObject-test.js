@@ -1,9 +1,12 @@
 jest.dontMock('../arrayContainsObject');
+jest.dontMock('../parseTypeCheck');
 
 let localCount = 0;
 const mockObject = function (className, id) {
   this.className = className;
   this.id = id;
+  this.__pType = 'Object';
+  this.__isClass = true;
   if (!id) {
     this._localId = 'local' + localCount++;
   }

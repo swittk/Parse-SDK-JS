@@ -7,6 +7,7 @@ import decode from './decode';
 import encode from './encode';
 import ParseObject, { Pointer } from './ParseObject';
 import ParseRelation from './ParseRelation';
+import { isParseObject, isParseRelation } from './parseTypeCheck';
 import unique from './unique';
 
 export function opFromJSON(json: { [key: string]: any }): Op | null {
@@ -194,7 +195,7 @@ export class AddUniqueOp extends Op {
     if (Array.isArray(value)) {
       const toAdd: any[] = [];
       this._value.forEach(v => {
-        if (v instanceof ParseObject) {
+        if (isParseObject(v)) {
           if (!arrayContainsObject(value, v)) {
             toAdd.push(v);
           }
@@ -251,9 +252,9 @@ export class RemoveOp extends Op {
           removed.splice(index, 1);
           index = removed.indexOf(this._value[i]);
         }
-        if (this._value[i] instanceof ParseObject && this._value[i].id) {
+        if (isParseObject(this._value[i]) && this._value[i].id) {
           for (let j = 0; j < removed.length; j++) {
-            if (removed[j] instanceof ParseObject && this._value[i].id === removed[j].id) {
+            if (isParseObject(removed[j]) && this._value[i].id === removed[j].id) {
               removed.splice(j, 1);
               j--;
             }
@@ -278,7 +279,7 @@ export class RemoveOp extends Op {
     if (previous instanceof RemoveOp) {
       const uniques = previous._value.concat([]);
       for (let i = 0; i < this._value.length; i++) {
-        if (this._value[i] instanceof ParseObject) {
+        if (isParseObject(this._value[i])) {
           if (!arrayContainsObject(uniques, this._value[i])) {
             uniques.push(this._value[i]);
           }
@@ -355,7 +356,7 @@ export class RelationOp extends Op {
       relation.targetClassName = this._targetClassName;
       return relation;
     }
-    if (value instanceof ParseRelation) {
+    if (isParseRelation(value)) {
       if (this._targetClassName) {
         if (value.targetClassName) {
           if (this._targetClassName !== value.targetClassName) {
@@ -382,7 +383,7 @@ export class RelationOp extends Op {
       return this;
     } else if (previous instanceof UnsetOp) {
       throw new Error('You cannot modify a relation after deleting it.');
-    } else if (previous instanceof SetOp && previous._value instanceof ParseRelation) {
+    } else if (isParseRelation(previous instanceof SetOp && previous._value)) {
       return this;
     } else if (previous instanceof RelationOp) {
       if (previous._targetClassName && previous._targetClassName !== this._targetClassName) {

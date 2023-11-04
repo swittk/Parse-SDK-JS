@@ -13,6 +13,7 @@ import { DEFAULT_PIN } from './LocalDatastoreUtils';
 
 import type LiveQuerySubscription from './LiveQuerySubscription';
 import type { RequestOptions, FullOptions } from './RESTController';
+import { isParseGeoPoint, isParseObject } from './parseTypeCheck';
 
 /**
  *    *   <li>batchSize: How many objects to yield in each batch (default: 100)
@@ -290,7 +291,7 @@ class ParseQuery {
       } else {
         this.className = objectClass;
       }
-    } else if (objectClass instanceof ParseObject) {
+    } else if (isParseObject(objectClass)) {
       this.className = objectClass.className;
     } else if (typeof objectClass === 'function') {
       const objectClz = (objectClass) as typeof ParseObject;
@@ -444,7 +445,7 @@ class ParseQuery {
       }
     }
     let limit = results.length;
-    if (params.limit !== 0 && params.limit < results.length) {
+    if (params.limit !== 0 && (params.limit || 0) < results.length) {
       limit = params.limit;
     }
 
@@ -1637,7 +1638,7 @@ class ParseQuery {
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
   near(key: string, point: ParseGeoPoint): ParseQuery {
-    if (!(point instanceof ParseGeoPoint)) {
+    if (!(isParseGeoPoint(point))) {
       // Try to cast it as a GeoPoint
       point = new ParseGeoPoint(point);
     }
@@ -1724,10 +1725,10 @@ class ParseQuery {
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
   withinGeoBox(key: string, southwest: ParseGeoPoint, northeast: ParseGeoPoint): ParseQuery {
-    if (!(southwest instanceof ParseGeoPoint)) {
+    if (!(isParseGeoPoint(southwest))) {
       southwest = new ParseGeoPoint(southwest);
     }
-    if (!(northeast instanceof ParseGeoPoint)) {
+    if (!(isParseGeoPoint(northeast))) {
       northeast = new ParseGeoPoint(northeast);
     }
     this._addCondition(key, '$within', { $box: [southwest, northeast] });

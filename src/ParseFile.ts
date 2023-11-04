@@ -65,6 +65,8 @@ export type FileSaveOptions = FullOptions & {
  * @alias Parse.File
  */
 class ParseFile {
+  __pType = 'File';
+  __isClass = true;
   _name: string;
   _url?: string;
   _source: FileSource;

@@ -4,6 +4,9 @@ class MockUser {
   constructor() {
     this.className = '_User';
     this.attributes = {};
+    this.__pType = 'Object';
+    this.__isClass = true;
+    this.__subtype = 'Role';
   }
   _isLinked() {}
   linkWith() {}

@@ -8,8 +8,12 @@ jest.dontMock('../promiseUtils');
 jest.dontMock('../SingleInstanceStateController');
 jest.dontMock('../TaskQueue');
 jest.dontMock('./test_helpers/flushPromises');
+jest.dontMock('../parseTypeCheck');
 
-const mockObject = function () {};
+const mockObject = function () {
+  this.__pType = 'Object';
+  this.__isClass = true;
+};
 mockObject.registerSubclass = function () {};
 jest.setMock('../ParseObject', mockObject);
 jest.useFakeTimers();

@@ -20,6 +20,9 @@ import ParseQuery from './ParseQuery';
  * @alias Parse.Relation
  */
 class ParseRelation {
+  __pType = 'Relation';
+  __isClass = true;
+
   parent?: ParseObject;
   key?: string;
   targetClassName: string | null;

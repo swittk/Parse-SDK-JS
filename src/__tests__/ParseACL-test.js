@@ -2,6 +2,9 @@ jest.dontMock('../ParseACL');
 
 const mockRole = function (name) {
   this.name = name;
+  this.__pType = 'Object';
+  this.__isClass = true;
+  this.__subtype = 'Role';
 };
 mockRole.prototype.getName = function () {
   return this.name;

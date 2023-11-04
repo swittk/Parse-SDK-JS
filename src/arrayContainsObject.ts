@@ -1,4 +1,5 @@
-import ParseObject from './ParseObject';
+import type ParseObject from './ParseObject';
+import { isParseObject } from './parseTypeCheck';
 
 export default function arrayContainsObject(array: Array<any>, object: ParseObject): boolean {
   if (array.indexOf(object) > -1) {
@@ -6,7 +7,7 @@ export default function arrayContainsObject(array: Array<any>, object: ParseObje
   }
   for (let i = 0; i < array.length; i++) {
     if (
-      array[i] instanceof ParseObject &&
+      isParseObject(array[i]) &&
       array[i].className === object.className &&
       array[i]._getId() === object._getId()
     ) {

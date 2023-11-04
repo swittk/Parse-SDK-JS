@@ -3,6 +3,7 @@ jest.dontMock('../encode');
 jest.dontMock('../decode');
 jest.dontMock('../ParseOp');
 jest.dontMock('../unique');
+jest.dontMock('../parseTypeCheck');
 
 let localCount = 0;
 const mockObject = function (className, id) {
@@ -11,6 +12,8 @@ const mockObject = function (className, id) {
   if (!id) {
     this._localId = 'local' + localCount++;
   }
+  this.__pType = 'Object';
+  this.__isClass = true;
 };
 mockObject.prototype._getId = function () {
   return this.id || this._localId;
@@ -22,6 +25,8 @@ mockObject.registerSubclass = function () {};
 jest.setMock('../ParseObject', mockObject);
 
 const mockRelation = function (parent, key) {
+  this.__pType = 'Relation';
+  this.__isClass = true;
   this.parent = parent;
   this.key = key;
 };

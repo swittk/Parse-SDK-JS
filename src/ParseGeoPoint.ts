@@ -27,6 +27,8 @@
  */
 /* global navigator */
 class ParseGeoPoint {
+  __pType = 'GeoPoint';
+  __isClass = true;
   _latitude: number;
   _longitude: number;
 

@@ -3,11 +3,12 @@
  */
 
 import ParseObject from './ParseObject';
-import ParseACL from './ParseACL';
+import type ParseACL from './ParseACL';
 import ParseError from './ParseError';
 
 import type { AttributeMap } from './ObjectStateMutations';
 import type ParseRelation from './ParseRelation';
+import { isParseACL } from './parseTypeCheck';
 
 /**
  * Represents a Role on the Parse server. Roles represent groupings of
@@ -23,6 +24,7 @@ import type ParseRelation from './ParseRelation';
  * @augments Parse.Object
  */
 class ParseRole extends ParseObject {
+  __subtype = 'Role';
   /**
    * @param {string} name The name of the Role to create.
    * @param {Parse.ACL} acl The ACL for this role. Roles must have an ACL.
@@ -31,7 +33,7 @@ class ParseRole extends ParseObject {
    */
   constructor(name: string, acl: ParseACL) {
     super('_Role');
-    if (typeof name === 'string' && acl instanceof ParseACL) {
+    if (typeof name === 'string' && isParseACL(acl)) {
       this.setName(name);
       this.setACL(acl);
     }

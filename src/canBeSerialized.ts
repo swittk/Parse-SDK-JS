@@ -2,12 +2,11 @@
  * @flow
  */
 
-import ParseFile from './ParseFile';
-import ParseObject from './ParseObject';
-import ParseRelation from './ParseRelation';
+import type ParseObject from './ParseObject';
+import { isParseFile, isParseObject, isParseRelation } from './parseTypeCheck';
 
 export default function canBeSerialized(obj: ParseObject): boolean {
-  if (!(obj instanceof ParseObject)) {
+  if (!isParseObject(obj)) {
     return true;
   }
   const attributes = obj.attributes;
@@ -24,13 +23,13 @@ function canBeSerializedHelper(value: any): boolean {
   if (typeof value !== 'object') {
     return true;
   }
-  if (value instanceof ParseRelation) {
+  if (isParseRelation(value)) {
     return true;
   }
-  if (value instanceof ParseObject) {
+  if (isParseObject(value)) {
     return !!value.id;
   }
-  if (value instanceof ParseFile) {
+  if (isParseFile(value)) {
     if (value.url()) {
       return true;
     }

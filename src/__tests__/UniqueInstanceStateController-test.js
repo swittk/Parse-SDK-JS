@@ -7,12 +7,15 @@ jest.dontMock('../ParseOp');
 jest.dontMock('../UniqueInstanceStateController');
 jest.dontMock('../TaskQueue');
 jest.dontMock('../promiseUtils');
+jest.dontMock('../parseTypeCheck');
 jest.useFakeTimers();
 
 const mockObject = function (className) {
   this.className = className;
+  this.__pType = 'Object';
+  this.__isClass = true;
 };
-mockObject.registerSubclass = function () {};
+mockObject.registerSubclass = function () { };
 jest.setMock('../ParseObject', mockObject);
 
 const ParseFile = require('../ParseFile').default;

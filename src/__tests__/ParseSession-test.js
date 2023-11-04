@@ -18,6 +18,9 @@ jest.dontMock('../UniqueInstanceStateController');
 jest.dontMock('./test_helpers/mockXHR');
 
 const mockUser = function (token) {
+  this.__pType = 'Object';
+  this.__isClass = true;
+  this.__subtype = 'Role';
   this.token = token;
 };
 mockUser.prototype.getSessionToken = function () {

@@ -2,9 +2,10 @@
  * @flow
  */
 
-import ParseFile from './ParseFile';
-import ParseObject from './ParseObject';
-import ParseRelation from './ParseRelation';
+import type ParseFile from './ParseFile';
+import type ParseObject from './ParseObject';
+import type ParseRelation from './ParseRelation';
+import { isParseFile, isParseObject, isParseRelation } from './parseTypeCheck';
 
 type EncounterMap = {
   objects: { [identifier: string]: ParseObject | boolean },
@@ -50,7 +51,7 @@ function traverse(
   shouldThrow: boolean,
   allowDeepUnsaved: boolean
 ) {
-  if (obj instanceof ParseObject) {
+  if (isParseObject(obj)) {
     if (!obj.id && shouldThrow) {
       throw new Error('Cannot create a pointer to an unsaved Object.');
     }
@@ -66,13 +67,13 @@ function traverse(
     }
     return;
   }
-  if (obj instanceof ParseFile) {
+  if (isParseFile(obj)) {
     if (!obj.url() && encountered.files.indexOf(obj) < 0) {
       encountered.files.push(obj);
     }
     return;
   }
-  if (obj instanceof ParseRelation) {
+  if (isParseRelation(obj)) {
     return;
   }
   if (Array.isArray(obj)) {

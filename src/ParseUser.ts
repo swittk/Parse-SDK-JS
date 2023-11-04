@@ -45,6 +45,9 @@ const authProviders: { [key: string]: AuthProviderType } = {};
  * @augments Parse.Object
  */
 class ParseUser extends ParseObject {
+  __pType = 'Object';
+  __isClass = true;
+  __subtype = 'User';
   /**
    * @param {object} attributes The initial set of data to store in the user.
    */

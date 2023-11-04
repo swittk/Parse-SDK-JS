@@ -14,7 +14,7 @@ import type ParseConfig from './ParseConfig';
 import type LiveQueryClient from './LiveQueryClient';
 import type ParseSchema from './ParseSchema';
 import type { StorageController } from './Storage';
-
+import type { EventuallyQueueType } from './EventuallyQueue';
 type AnalyticsController = {
   track: (name: string, dimensions: { [key: string]: string }) => Promise<any>,
 };
@@ -226,7 +226,8 @@ type Config = {
   HooksController?: HooksController,
   WebSocketController?: new (url: string | URL, protocols?: string | string[] | undefined) => WebSocketController,
   LiveQueryController?: LiveQueryControllerType,
-  AsyncStorage?: AsyncStorageType
+  AsyncStorage?: AsyncStorageType,
+  EventuallyQueue?: EventuallyQueueType
 };
 
 const config: Config & { [key: string]: any } = {
@@ -551,6 +552,15 @@ const CoreManager = {
   getHooksController(): HooksController {
     return config['HooksController']!;
   },
+
+  setEventuallyQueue(queue: EventuallyQueueType) {
+    requireMethods('EventuallyQueue', ['save', 'generateQueueId', 'enqueue', 'store', 'load', 'getQueue', 'setQueue', 'remove', 'clear', 'queueItemExists', 'length', 'sendQueue', 'sendQueueCallback', 'poll', 'isPolling'], queue);
+    config['EventuallyQueue'] = queue;
+  },
+
+  getEventuallyQueue(): EventuallyQueueType {
+    return config['EventuallyQueue']!;
+  }
 };
 
 module.exports = CoreManager;

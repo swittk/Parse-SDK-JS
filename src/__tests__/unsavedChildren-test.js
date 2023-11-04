@@ -7,6 +7,8 @@ function mockObject({ className, localId, id, attributes, dirty }) {
   this.id = id;
   this.attributes = attributes;
   this._dirty = !!dirty;
+  this.__pType = 'Object';
+  this.__isClass = true;
 }
 mockObject.registerSubclass = function () {};
 mockObject.prototype = {
@@ -178,6 +180,12 @@ describe('unsavedChildren', () => {
       },
       dirty: true,
     });
+    if(!a.__type == 'Object') {
+      throw new Error('A not object')
+    }
+    if(!a.attributes.b.__type == 'Object') {
+      throw new Error('B not object')
+    }
     a.attributes.b.attributes.a = a;
 
     expect(unsavedChildren(a)).toEqual([a.attributes.b]);

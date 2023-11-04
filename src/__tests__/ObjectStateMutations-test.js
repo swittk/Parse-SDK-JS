@@ -6,9 +6,12 @@ jest.dontMock('../ParseGeoPoint');
 jest.dontMock('../ParseOp');
 jest.dontMock('../ParseRelation');
 jest.dontMock('../TaskQueue');
+jest.dontMock('../parseTypeCheck');
 
 const mockObject = function (className) {
   this.className = className;
+  this.__pType = 'Object';
+  this.__isClass = true;
 };
 mockObject.registerSubclass = function () {};
 jest.setMock('../ParseObject', mockObject);

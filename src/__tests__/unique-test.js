@@ -1,5 +1,6 @@
 jest.dontMock('../arrayContainsObject');
 jest.dontMock('../unique');
+jest.dontMock('../parseTypeCheck');
 
 let localCount = 0;
 const mockObject = function (className, id) {
@@ -8,6 +9,8 @@ const mockObject = function (className, id) {
   if (!id) {
     this._localId = 'local' + localCount++;
   }
+  this.__pType = 'Object';
+  this.__isClass = true;
 };
 mockObject.prototype._getId = function () {
   return this.id || this._localId;

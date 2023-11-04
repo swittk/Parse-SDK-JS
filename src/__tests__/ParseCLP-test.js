@@ -2,6 +2,8 @@ jest.dontMock('../ParseCLP');
 
 const mockRole = function (name) {
   this.name = name;
+  this.__pType = 'Object';
+  this.__isClass = true;
 };
 
 mockRole.prototype.getName = function () {

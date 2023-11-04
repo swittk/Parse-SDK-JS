@@ -3,6 +3,8 @@ jest.dontMock('../canBeSerialized');
 function mockObject(id, attributes) {
   this.id = id;
   this.attributes = attributes;
+  this.__pType = 'Object';
+  this.__isClass = true;
 }
 mockObject.registerSubclass = function () {};
 jest.setMock('../ParseObject', mockObject);

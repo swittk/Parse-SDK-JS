@@ -1,3 +1,4 @@
+jest.dontMock('../parseTypeCheck');
 jest.dontMock('../CoreManager');
 jest.dontMock('../encode');
 jest.dontMock('../decode');

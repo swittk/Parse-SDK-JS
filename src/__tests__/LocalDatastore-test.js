@@ -8,6 +8,8 @@ const encode = require('../encode').default;
 let objectCount = 0;
 
 class MockObject {
+  __type = 'Object';
+  __isClass = true;
   constructor(className) {
     this.className = className;
     this.attributes = {};
@@ -64,6 +66,9 @@ class MockObject {
 
   set(key, value) {
     this.attributes[key] = value;
+  }
+  static registerSubclass() {
+    
   }
 }
 

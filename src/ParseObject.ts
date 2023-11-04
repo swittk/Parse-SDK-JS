@@ -7,11 +7,10 @@ import canBeSerialized from './canBeSerialized';
 import decode from './decode';
 import encode from './encode';
 import escape from './escape';
-import EventuallyQueue from './EventuallyQueue';
 import ParseACL from './ParseACL';
 import parseDate from './parseDate';
 import ParseError from './ParseError';
-import ParseFile from './ParseFile';
+import type ParseFile from './ParseFile';
 import { when, continueWhile, resolvingPromise } from './promiseUtils';
 import { DEFAULT_PIN, PIN_PREFIX } from './LocalDatastoreUtils';
 
@@ -37,6 +36,7 @@ import type { AttributeMap, OpsMap } from './ObjectStateMutations';
 import type { RequestOptions, FullOptions } from './RESTController';
 
 import uuidv4 from './uuid';
+import { isParseACL, isParseFile, isParseObject, isParseRelation } from './parseTypeCheck';
 
 export type Pointer = {
   __type: string,
@@ -105,6 +105,8 @@ type ObjectFetchOptions = {
  * @alias Parse.Object
  */
 class ParseObject {
+  __pType = 'Object';
+  __isClass = true;
   /**
    * @param {string} className The class name for the object
    * @param {object} attributes The initial set of data to store in the object.
@@ -265,8 +267,8 @@ class ParseObject {
         val &&
         typeof val === 'object' &&
         !(val instanceof ParseObject) &&
-        !(val instanceof ParseFile) &&
-        !(val instanceof ParseRelation)
+        !(isParseFile(val)) &&
+        !(isParseRelation(val))
       ) {
         // Due to the way browsers construct maps, the key order will not change
         // unless the object is changed
@@ -364,7 +366,7 @@ class ParseObject {
         decoded[attr] = new ParseACL(serverData[attr]);
       } else if (attr !== 'objectId') {
         decoded[attr] = decode(serverData[attr]);
-        if (decoded[attr] instanceof ParseRelation) {
+        if (isParseRelation(decoded[attr])) {
           decoded[attr]._ensureParentAndKey(this, attr);
         }
       }
@@ -633,7 +635,7 @@ class ParseObject {
   relation(attr: string): ParseRelation {
     const value = this.get(attr);
     if (value) {
-      if (!(value instanceof ParseRelation)) {
+      if (!(isParseRelation(value))) {
         throw new Error('Called relation() on non-relation field ' + attr);
       }
       value._ensureParentAndKey(this, attr);
@@ -753,10 +755,10 @@ class ParseObject {
       } else if (
         k === 'ACL' &&
         typeof changes[k] === 'object' &&
-        !(changes[k] instanceof ParseACL)
+        !(isParseACL(changes[k]))
       ) {
         newOps[k] = new SetOp(new ParseACL(changes[k]));
-      } else if (changes[k] instanceof ParseRelation) {
+      } else if (isParseRelation(changes[k])) {
         const relation = new ParseRelation(this, k);
         relation.targetClassName = changes[k].targetClassName;
         newOps[k] = new SetOp(relation);
@@ -1064,7 +1066,7 @@ class ParseObject {
    * @see Parse.Object#set
    */
   validate(attrs: AttributeMap): ParseError | boolean {
-    if (attrs.hasOwnProperty('ACL') && !(attrs.ACL instanceof ParseACL)) {
+    if (attrs.hasOwnProperty('ACL') && !(isParseACL(attrs.ACL))) {
       return new ParseError(ParseError.OTHER_CAUSE, 'ACL must be a Parse ACL.');
     }
     for (const key in attrs) {
@@ -1083,7 +1085,7 @@ class ParseObject {
    */
   getACL(): ParseACL | null {
     const acl = this.get('ACL');
-    if (acl instanceof ParseACL) {
+    if (isParseACL(acl)) {
       return acl;
     }
     return null;
@@ -1241,6 +1243,7 @@ class ParseObject {
       await this.save(null, options);
     } catch (e) {
       if (e.code === ParseError.CONNECTION_FAILED) {
+        const EventuallyQueue = CoreManager.getEventuallyQueue();
         await EventuallyQueue.save(this, options);
         EventuallyQueue.poll();
       }
@@ -1385,6 +1388,7 @@ class ParseObject {
       await this.destroy(options);
     } catch (e) {
       if (e.code === ParseError.CONNECTION_FAILED) {
+        const EventuallyQueue = CoreManager.getEventuallyQueue();
         await EventuallyQueue.destroy(this, options);
         EventuallyQueue.poll();
       }
@@ -2428,7 +2432,7 @@ const DefaultController = {
       const filesSaved: Array<Promise<ParseFile> | undefined> = [];
       let pending: Array<ParseObject> = [];
       unsaved.forEach(el => {
-        if (el instanceof ParseFile) {
+        if (isParseFile(el)) {
           filesSaved.push(el.save(options));
         } else if (el instanceof ParseObject) {
           pending.push(el);

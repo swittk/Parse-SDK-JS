@@ -3,6 +3,9 @@ jest.dontMock('../AnonymousUtils');
 class MockUser {
   constructor() {
     this.className = '_User';
+    this.__pType = 'Object';
+    this.__isClass = true;
+    this.__subtype = 'Role';
     this.attributes = {};
   }
   _isLinked() {}

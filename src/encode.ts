@@ -2,13 +2,8 @@
  * @flow
  */
 
-import ParseACL from './ParseACL';
-import ParseFile from './ParseFile';
-import ParseGeoPoint from './ParseGeoPoint';
-import ParsePolygon from './ParsePolygon';
-import ParseObject from './ParseObject';
 import { Op } from './ParseOp';
-import ParseRelation from './ParseRelation';
+import { isParseACL, isParseFile, isParseGeoPoint, isParseObject, isParsePolygon, isParseRelation } from './parseTypeCheck';
 
 /** Encodes values to storage type */
 function encode(
@@ -18,7 +13,7 @@ function encode(
   seen: Array<any>,
   offline?: boolean
 ): any {
-  if (value instanceof ParseObject) {
+  if (isParseObject(value)) {
     if (disallowObjects) {
       throw new Error('Parse Objects not allowed here');
     }
@@ -40,14 +35,14 @@ function encode(
   }
   if (
     value instanceof Op ||
-    value instanceof ParseACL ||
-    value instanceof ParseGeoPoint ||
-    value instanceof ParsePolygon ||
-    value instanceof ParseRelation
+    isParseACL(value) ||
+    isParseGeoPoint(value) ||
+    isParsePolygon(value) ||
+    isParseRelation(value)
   ) {
     return value.toJSON();
   }
-  if (value instanceof ParseFile) {
+  if (isParseFile(value)) {
     if (!value.url()) {
       throw new Error('Tried to encode an unsaved file.');
     }

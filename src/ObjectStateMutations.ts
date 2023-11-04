@@ -3,13 +3,11 @@
  */
 
 import encode from './encode';
-import ParseFile from './ParseFile';
-import ParseObject from './ParseObject';
-import ParseRelation from './ParseRelation';
 import TaskQueue from './TaskQueue';
 import { RelationOp } from './ParseOp';
 
 import type { Op } from './ParseOp';
+import { isParseFile, isParseObject, isParseRelation } from './parseTypeCheck';
 
 export type AttributeMap = { [attr: string]: any };
 export type OpsMap = { [attr: string]: Op };
@@ -180,9 +178,9 @@ export function commitServerChanges(
     if (
       val &&
       typeof val === 'object' &&
-      !(val instanceof ParseObject) &&
-      !(val instanceof ParseFile) &&
-      !(val instanceof ParseRelation)
+      !isParseObject(val) &&
+      !isParseFile(val) &&
+      !isParseRelation(val)
     ) {
       const json = encode(val, false, true);
       objectCache[attr] = JSON.stringify(json);

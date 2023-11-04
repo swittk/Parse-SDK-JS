@@ -3,6 +3,7 @@
  */
 
 import ParseGeoPoint from './ParseGeoPoint';
+import { isParseGeoPoint, isParsePolygon } from './parseTypeCheck';
 
 /**
  * Creates a new Polygon with any of the following forms:<br>
@@ -24,6 +25,9 @@ import ParseGeoPoint from './ParseGeoPoint';
  * @alias Parse.Polygon
  */
 class ParsePolygon {
+  __pType = 'Polygon';
+  __isClass = true;
+
   _coordinates: Array<[number, number]>;
 
   /**
@@ -68,7 +72,7 @@ class ParsePolygon {
    * @returns {boolean}
    */
   equals(other: ParsePolygon | any): boolean {
-    if (!(other instanceof ParsePolygon) || this.coordinates.length !== other.coordinates.length) {
+    if (!(isParsePolygon(other)) || this.coordinates.length !== other.coordinates.length) {
       return false;
     }
     let isEqual = true;
@@ -149,7 +153,7 @@ class ParsePolygon {
     for (let i = 0; i < coords.length; i += 1) {
       const coord = coords[i];
       let geoPoint;
-      if (coord instanceof ParseGeoPoint) {
+      if (isParseGeoPoint(coord)) {
         geoPoint = coord;
       } else if (Array.isArray(coord) && coord.length === 2) {
         geoPoint = new ParseGeoPoint(coord[0], coord[1]);

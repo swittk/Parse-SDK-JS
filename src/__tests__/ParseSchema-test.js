@@ -3,6 +3,8 @@ const mockObject = function (className, id) {
   this.className = className;
   this.id = id;
   this.attributes = {};
+  this.__pType = 'Object';
+  this.__isClass = true;
   this.toPointer = function () {
     return {
       className: this.className,
@@ -15,6 +17,8 @@ jest.setMock('../ParseObject', mockObject);
 
 const mockCLP = function (clp) {
   this.permissionsMap = clp;
+  this.__pType = 'CLP';
+  this.__isClass = true;
   this.toJSON = function () {
     return { ...this.permissionsMap };
   };
