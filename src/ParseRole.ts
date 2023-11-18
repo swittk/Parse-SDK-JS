@@ -8,6 +8,7 @@ import ParseError from './ParseError';
 
 import type { AttributeMap } from './ObjectStateMutations';
 import type ParseRelation from './ParseRelation';
+import CoreManager from './CoreManager';
 
 /**
  * Represents a Role on the Parse server. Roles represent groupings of
@@ -143,3 +144,5 @@ class ParseRole extends ParseObject {
 
 ParseObject.registerSubclass('_Role', ParseRole);
 export default ParseRole;
+
+CoreManager.setParseRole(ParseRole);

@@ -16,6 +16,8 @@ import type ParseSchema from './ParseSchema';
 import type { StorageController } from './Storage';
 import type ParseQuery from './ParseQuery';
 import type * as ParseOp from './ParseOp';
+import type ParseACL from './ParseACL';
+import type ParseRole from './ParseRole';
 
 type AnalyticsController = {
   track: (name: string, dimensions: { [key: string]: string }) => Promise<any>,
@@ -231,6 +233,9 @@ type Config = {
   AsyncStorage?: AsyncStorageType,
   ParseQuery?: typeof ParseQuery,
   ParseOp?: typeof ParseOp,
+  ParseObject?: typeof ParseObject,
+  ParseACL?: typeof ParseACL,
+  ParseRole?: typeof ParseRole
 };
 
 const config: Config & { [key: string]: any } = {
@@ -567,7 +572,25 @@ const CoreManager = {
   },
   getParseOp() {
     return config['ParseOp']!;
-  }
+  },
+  setParseObject(parseobject: typeof ParseObject) {
+    config['ParseObject'] = parseobject;
+  },
+  getParseObject() {
+    return config['ParseObject']!;
+  },
+  setParseACL(parseacl: typeof ParseACL) {
+    config['ParseACL'] = parseacl;
+  },
+  getParseACL() {
+    return config['ParseACL']!;
+  },
+  setParseRole(parserole: typeof ParseRole) {
+    config['ParseRole'] = parserole;
+  },
+  getParseRole() {
+    return config['ParseRole']!;
+  },
 };
 
 module.exports = CoreManager;

@@ -2,7 +2,8 @@
  * @flow
  */
 
-import ParseRole from './ParseRole';
+import CoreManager from './CoreManager';
+import type ParseRole from './ParseRole';
 import ParseUser from './ParseUser';
 
 type PermissionsMap = { [permission: string]: boolean };
@@ -100,6 +101,7 @@ class ParseACL {
   }
 
   _setAccess(accessType: string, userId: ParseUser | ParseRole | string, allowed: boolean) {
+    const ParseRole = CoreManager.getParseRole();
     if (userId instanceof ParseUser) {
       // We would expect the ParseUser to have an ID; we don't have Users without IDs, right?
       userId = userId.id!;
@@ -138,6 +140,7 @@ class ParseACL {
   }
 
   _getAccess(accessType: string, userId: ParseUser | ParseRole | string): boolean {
+    const ParseRole = CoreManager.getParseRole();
     if (userId instanceof ParseUser) {
       // We would expect the ParseUser to have an ID; we don't have Users without IDs, right?
       userId = userId.id!;
@@ -250,6 +253,7 @@ class ParseACL {
    * @throws {TypeError} If role is neither a Parse.Role nor a String.
    */
   getRoleReadAccess(role: ParseRole | string): boolean {
+    const ParseRole = CoreManager.getParseRole();
     if (role instanceof ParseRole) {
       // Normalize to the String name
       // A forced cast here is likely harmless since we force check 
@@ -272,6 +276,7 @@ class ParseACL {
    * @throws {TypeError} If role is neither a Parse.Role nor a String.
    */
   getRoleWriteAccess(role: ParseRole | string): boolean {
+    const ParseRole = CoreManager.getParseRole();
     if (role instanceof ParseRole) {
       // Normalize to the String name
       // A forced cast here is likely harmless since we force check 
@@ -293,6 +298,7 @@ class ParseACL {
    * @throws {TypeError} If role is neither a Parse.Role nor a String.
    */
   setRoleReadAccess(role: ParseRole | string, allowed: boolean) {
+    const ParseRole = CoreManager.getParseRole();
     if (role instanceof ParseRole) {
       // Normalize to the String name
       // A forced cast here is likely harmless since we force check 
@@ -314,6 +320,7 @@ class ParseACL {
    * @throws {TypeError} If role is neither a Parse.Role nor a String.
    */
   setRoleWriteAccess(role: ParseRole | string, allowed: boolean) {
+    const ParseRole = CoreManager.getParseRole();
     if (role instanceof ParseRole) {
       // Normalize to the String name
       // A forced cast here is likely harmless since we force check 

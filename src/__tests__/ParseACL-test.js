@@ -11,6 +11,9 @@ jest.setMock('../ParseRole', mockRole);
 const ParseACL = require('../ParseACL').default;
 const ParseUser = require('../ParseUser').default;
 const ParseRole = require('../ParseRole');
+const CoreManager = require('../CoreManager');
+const spy = jest.spyOn(CoreManager, 'getParseRole').mockImplementation(() => { return require('../ParseRole') });
+
 
 describe('ParseACL', () => {
   it('can be constructed with no arguments', () => {
@@ -48,7 +51,7 @@ describe('ParseACL', () => {
 
   it('throws a helpful error when constructed with a function', () => {
     expect(function () {
-      new ParseACL(function () {});
+      new ParseACL(function () { });
     }).toThrow('ParseACL constructed with a function. Did you forget ()?');
   });
 
