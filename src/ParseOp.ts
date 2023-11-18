@@ -3,6 +3,7 @@
  */
 
 import arrayContainsObject from './arrayContainsObject';
+import CoreManager from './CoreManager';
 import decode from './decode';
 import encode from './encode';
 import ParseObject, { Pointer } from './ParseObject';
@@ -79,7 +80,7 @@ export class SetOp extends Op {
     return new SetOp(this._value);
   }
 
-  toJSON(offline?: boolean) : any {
+  toJSON(offline?: boolean): any {
     return encode(this._value, false, true, undefined, offline);
   }
 }
@@ -458,3 +459,14 @@ export class RelationOp extends Op {
     return adds || removes || {};
   }
 }
+CoreManager.setParseOp({
+  Op,
+  opFromJSON,
+  SetOp,
+  UnsetOp,
+  IncrementOp,
+  AddOp,
+  RelationOp,
+  RemoveOp,
+  AddUniqueOp
+})

@@ -8,7 +8,7 @@ const mockObject = function (className) {
   this.className = className;
   this.ops = {};
 };
-mockObject.registerSubclass = function () {};
+mockObject.registerSubclass = function () { };
 mockObject.prototype = {
   _getId() {
     return this.id;
@@ -53,7 +53,8 @@ mockQuery.prototype = {
   },
 };
 jest.setMock('../ParseQuery', mockQuery);
-
+const CoreManager = require('../CoreManager');
+const spy = jest.spyOn(CoreManager, 'getParseQuery').mockImplementation(() => mockQuery);
 const ParseObject = require('../ParseObject');
 const ParseRelation = require('../ParseRelation').default;
 

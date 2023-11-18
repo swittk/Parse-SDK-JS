@@ -2159,7 +2159,7 @@ const DefaultController = {
     return RESTController.request('GET', 'aggregate/' + className, params, options);
   },
 };
-
+CoreManager.setParseQuery(ParseQuery);
 CoreManager.setQueryController(DefaultController);
 
 export default ParseQuery;

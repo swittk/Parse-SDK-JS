@@ -11,8 +11,8 @@ class MockObject {
     this.id = String(objectCount++);
     this._localId = `local${objectCount}`;
   }
-  destroy() {}
-  save() {}
+  destroy() { }
+  save() { }
   _getId() {
     return this.id || this._localId;
   }
@@ -58,6 +58,7 @@ CoreManager.setInstallationController({
     return Promise.resolve('iid');
   },
 });
+const spy = jest.spyOn(CoreManager, 'getParseQuery').mockImplementation(() => { return require('../ParseQuery') });
 
 describe('EventuallyQueue', () => {
   beforeEach(async () => {
@@ -170,7 +171,7 @@ describe('EventuallyQueue', () => {
   });
 
   it('can send queue by object id', async () => {
-    jest.spyOn(EventuallyQueue.process, 'byId').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue.process, 'byId').mockImplementationOnce(() => { });
     const object = new ParseObject('TestObject');
     await EventuallyQueue.save(object);
 
@@ -180,7 +181,7 @@ describe('EventuallyQueue', () => {
   });
 
   it('can send queue by object hash', async () => {
-    jest.spyOn(EventuallyQueue.process, 'byHash').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue.process, 'byHash').mockImplementationOnce(() => { });
     const object = new ParseObject('TestObject');
     delete object.id;
     object.set('hash', 'secret');
@@ -192,7 +193,7 @@ describe('EventuallyQueue', () => {
   });
 
   it('can send queue by object create', async () => {
-    jest.spyOn(EventuallyQueue.process, 'create').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue.process, 'create').mockImplementationOnce(() => { });
     const object = new ParseObject('TestObject');
     delete object.id;
     await EventuallyQueue.save(object);
@@ -204,8 +205,8 @@ describe('EventuallyQueue', () => {
 
   it('can handle send queue destroy callback', async () => {
     const object = new ParseObject('TestObject');
-    jest.spyOn(object, 'destroy').mockImplementationOnce(() => {});
-    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => {});
+    jest.spyOn(object, 'destroy').mockImplementationOnce(() => { });
+    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => { });
     const queueObject = {
       action: 'destroy',
       queueId: 'queue1',
@@ -223,7 +224,7 @@ describe('EventuallyQueue', () => {
     jest.spyOn(object, 'destroy').mockImplementationOnce(() => {
       return Promise.reject('Unable to delete object.');
     });
-    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => { });
     const queueObject = {
       action: 'destroy',
       queueId: 'queue1',
@@ -244,7 +245,7 @@ describe('EventuallyQueue', () => {
         'XMLHttpRequest failed: "Unable to connect to the Parse API"'
       );
     });
-    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => { });
     const queueObject = {
       action: 'destroy',
       queueId: 'queue1',
@@ -257,7 +258,7 @@ describe('EventuallyQueue', () => {
   });
 
   it('can handle send queue save callback with no object', async () => {
-    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => { });
     const object = null;
 
     const queueObject = { queueId: 'queue0' };
@@ -268,8 +269,8 @@ describe('EventuallyQueue', () => {
 
   it('can handle send queue save callback', async () => {
     const object = new ParseObject('TestObject');
-    jest.spyOn(object, 'save').mockImplementationOnce(() => {});
-    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => {});
+    jest.spyOn(object, 'save').mockImplementationOnce(() => { });
+    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => { });
     await EventuallyQueue.save(object);
 
     const queueObject = {
@@ -290,7 +291,7 @@ describe('EventuallyQueue', () => {
     jest.spyOn(object, 'save').mockImplementationOnce(() => {
       return Promise.reject('Unable to save.');
     });
-    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => { });
     await EventuallyQueue.save(object);
 
     const queueObject = {
@@ -314,7 +315,7 @@ describe('EventuallyQueue', () => {
         'XMLHttpRequest failed: "Unable to connect to the Parse API"'
       );
     });
-    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => { });
     const queueObject = {
       action: 'save',
       queueId: 'queue2',
@@ -328,7 +329,7 @@ describe('EventuallyQueue', () => {
   });
 
   it('can handle send queue save callback if queue is old', async () => {
-    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'remove').mockImplementationOnce(() => { });
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -348,13 +349,13 @@ describe('EventuallyQueue', () => {
   });
 
   it('can process new object', async () => {
-    jest.spyOn(EventuallyQueue, 'sendQueueCallback').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'sendQueueCallback').mockImplementationOnce(() => { });
     await EventuallyQueue.process.create(MockObject, {});
     expect(EventuallyQueue.sendQueueCallback).toHaveBeenCalledTimes(1);
   });
 
   it('can process object by id', async () => {
-    jest.spyOn(EventuallyQueue, 'sendQueueCallback').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'sendQueueCallback').mockImplementationOnce(() => { });
     const object = new ParseObject('TestObject');
     const queueObject = {
       id: 'object1',
@@ -369,7 +370,7 @@ describe('EventuallyQueue', () => {
   });
 
   it('can process object by hash', async () => {
-    jest.spyOn(EventuallyQueue, 'sendQueueCallback').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'sendQueueCallback').mockImplementationOnce(() => { });
     const object = new ParseObject('TestObject');
     const queueObject = {
       hash: 'secret',
@@ -384,7 +385,7 @@ describe('EventuallyQueue', () => {
   });
 
   it('can process new object if hash not exists', async () => {
-    jest.spyOn(EventuallyQueue.process, 'create').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue.process, 'create').mockImplementationOnce(() => { });
     const queueObject = {
       hash: 'secret',
       serverOptions: { sessionToken: 'hashToken' },
@@ -402,7 +403,7 @@ describe('EventuallyQueue', () => {
   });
 
   it('can poll server', async () => {
-    jest.spyOn(EventuallyQueue, 'sendQueue').mockImplementationOnce(() => {});
+    jest.spyOn(EventuallyQueue, 'sendQueue').mockImplementationOnce(() => { });
     RESTController._setXHR(mockXHR([{ status: 200, response: { status: 'ok' } }]));
     EventuallyQueue.poll();
     expect(EventuallyQueue.isPolling()).toBe(true);

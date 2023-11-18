@@ -7,7 +7,6 @@
 import CoreManager from './CoreManager';
 import ParseError from './ParseError';
 import ParseObject from './ParseObject';
-import ParseQuery from './ParseQuery';
 import Storage from './Storage';
 
 import type { SaveOptions } from './ParseObject';
@@ -356,6 +355,7 @@ const EventuallyQueue = {
     },
     async byId(ObjectType: string | ParseObject | (typeof ParseObject), queueObject) {
       const { sessionToken } = queueObject.serverOptions;
+      const ParseQuery = CoreManager.getParseQuery();
       const query = new ParseQuery(ObjectType);
       query.equalTo('objectId', queueObject.id);
       const results = await query.find({ sessionToken });
@@ -363,6 +363,7 @@ const EventuallyQueue = {
     },
     async byHash(ObjectType, queueObject) {
       const { sessionToken } = queueObject.serverOptions;
+      const ParseQuery = CoreManager.getParseQuery();
       const query = new ParseQuery(ObjectType);
       query.equalTo('hash', queueObject.hash);
       const results = await query.find({ sessionToken });

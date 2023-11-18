@@ -15,18 +15,7 @@ import ParseFile from './ParseFile';
 import { when, continueWhile, resolvingPromise } from './promiseUtils';
 import { DEFAULT_PIN, PIN_PREFIX } from './LocalDatastoreUtils';
 
-import {
-  opFromJSON,
-  Op,
-  SetOp,
-  UnsetOp,
-  IncrementOp,
-  AddOp,
-  AddUniqueOp,
-  RemoveOp,
-  RelationOp,
-} from './ParseOp';
-import ParseQuery from './ParseQuery';
+
 import ParseRelation from './ParseRelation';
 import * as SingleInstanceStateController from './SingleInstanceStateController';
 import unique from './unique';
@@ -37,6 +26,7 @@ import type { AttributeMap, OpsMap } from './ObjectStateMutations';
 import type { RequestOptions, FullOptions } from './RESTController';
 
 import uuidv4 from './uuid';
+import type { Op } from './ParseOp';
 
 export type Pointer = {
   __type: string,
@@ -294,6 +284,7 @@ class ParseObject {
   }
 
   _getSaveJSON(): AttributeMap {
+    const { SetOp } = CoreManager.getParseOp();
     const pending = this._getPendingOps();
     const dirtyObjects = this._getDirtyObjectAttributes();
     const json = {};
@@ -407,6 +398,7 @@ class ParseObject {
   }
 
   _handleSaveResponse(response: AttributeMap, status: number) {
+    const { RelationOp, UnsetOp } = CoreManager.getParseOp();
     const changes: Partial<{
       createdAt: string,
       updatedAt: string,
@@ -708,6 +700,13 @@ class ParseObject {
    * @returns {(ParseObject|boolean)} true if the set succeeded.
    */
   set(key: any, value?: any, options?: any): ParseObject | boolean {
+    const {
+      opFromJSON,
+      Op,
+      SetOp,
+      UnsetOp,
+      RelationOp,
+    } = CoreManager.getParseOp();
     // TODO: Improve types here without breaking stuff.
     let changes = {};
     const newOps = {};
@@ -823,6 +822,7 @@ class ParseObject {
    * @returns {(ParseObject|boolean)}
    */
   increment(attr: string, amount?: number): ParseObject | boolean {
+    const { IncrementOp } = CoreManager.getParseOp();
     if (typeof amount === 'undefined') {
       amount = 1;
     }
@@ -847,6 +847,7 @@ class ParseObject {
     if (typeof amount !== 'number') {
       throw new Error('Cannot decrement by a non-numeric amount.');
     }
+    const { IncrementOp } = CoreManager.getParseOp();
     return this.set(attr, new IncrementOp(amount * -1));
   }
 
@@ -859,6 +860,7 @@ class ParseObject {
    * @returns {(ParseObject | boolean)}
    */
   add(attr: string, item: any): ParseObject | boolean {
+    const { AddOp } = CoreManager.getParseOp();
     return this.set(attr, new AddOp([item]));
   }
 
@@ -871,6 +873,7 @@ class ParseObject {
    * @returns {(ParseObject | boolean)}
    */
   addAll(attr: string, items: Array<any>): ParseObject | boolean {
+    const { AddOp } = CoreManager.getParseOp();
     return this.set(attr, new AddOp(items));
   }
 
@@ -884,6 +887,7 @@ class ParseObject {
    * @returns {(ParseObject | boolean)}
    */
   addUnique(attr: string, item: any): ParseObject | boolean {
+    const { AddUniqueOp } = CoreManager.getParseOp();
     return this.set(attr, new AddUniqueOp([item]));
   }
 
@@ -897,6 +901,7 @@ class ParseObject {
    * @returns {(ParseObject | boolean)}
    */
   addAllUnique(attr: string, items: Array<any>): ParseObject | boolean {
+    const { AddUniqueOp } = CoreManager.getParseOp();
     return this.set(attr, new AddUniqueOp(items));
   }
 
@@ -909,6 +914,7 @@ class ParseObject {
    * @returns {(ParseObject | boolean)}
    */
   remove(attr: string, item: any): ParseObject | boolean {
+    const { RemoveOp } = CoreManager.getParseOp();
     return this.set(attr, new RemoveOp([item]));
   }
 
@@ -921,6 +927,7 @@ class ParseObject {
    * @returns {(ParseObject | boolean)}
    */
   removeAll(attr: string, items: Array<any>): ParseObject | boolean {
+    const { RemoveOp } = CoreManager.getParseOp();
     return this.set(attr, new RemoveOp(items));
   }
 
@@ -1033,6 +1040,7 @@ class ParseObject {
       return false;
     }
     try {
+      const ParseQuery = CoreManager.getParseQuery();
       const query = new ParseQuery(this.className);
       await query.get(this.id, options);
       return true;
@@ -2253,6 +2261,7 @@ const DefaultController = {
       if (error) {
         return Promise.reject(error);
       }
+      const ParseQuery = CoreManager.getParseQuery();
       // Construct a ParseQuery that finds objects with matching IDs
       const query = new ParseQuery(className!);
       query.containedIn('objectId', ids);

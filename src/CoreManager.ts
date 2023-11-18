@@ -14,6 +14,8 @@ import type ParseConfig from './ParseConfig';
 import type LiveQueryClient from './LiveQueryClient';
 import type ParseSchema from './ParseSchema';
 import type { StorageController } from './Storage';
+import type ParseQuery from './ParseQuery';
+import type * as ParseOp from './ParseOp';
 
 type AnalyticsController = {
   track: (name: string, dimensions: { [key: string]: string }) => Promise<any>,
@@ -226,7 +228,9 @@ type Config = {
   HooksController?: HooksController,
   WebSocketController?: new (url: string | URL, protocols?: string | string[] | undefined) => WebSocketController,
   LiveQueryController?: LiveQueryControllerType,
-  AsyncStorage?: AsyncStorageType
+  AsyncStorage?: AsyncStorageType,
+  ParseQuery?: typeof ParseQuery,
+  ParseOp?: typeof ParseOp,
 };
 
 const config: Config & { [key: string]: any } = {
@@ -551,6 +555,19 @@ const CoreManager = {
   getHooksController(): HooksController {
     return config['HooksController']!;
   },
+
+  setParseQuery(parsequery: typeof ParseQuery) {
+    config['ParseQuery'] = parsequery;
+  },
+  getParseQuery() {
+    return config['ParseQuery']!
+  },
+  setParseOp(parseop: typeof ParseOp) {
+    config['ParseOp'] = parseop;
+  },
+  getParseOp() {
+    return config['ParseOp']!;
+  }
 };
 
 module.exports = CoreManager;

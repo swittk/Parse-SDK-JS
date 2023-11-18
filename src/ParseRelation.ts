@@ -4,7 +4,8 @@
 
 import { RelationOp } from './ParseOp';
 import ParseObject from './ParseObject';
-import ParseQuery from './ParseQuery';
+import type ParseQuery from './ParseQuery';
+import CoreManager from './CoreManager';
 
 /**
  * Creates a new Relation for the given parent object and key. This
@@ -131,6 +132,7 @@ class ParseRelation {
     if (!parent) {
       throw new Error('Cannot construct a query for a Relation without a parent');
     }
+    const ParseQuery = CoreManager.getParseQuery();
     if (!this.targetClassName) {
       query = new ParseQuery(parent.className);
       query._extraOptions.redirectClassNameForKey = this.key;

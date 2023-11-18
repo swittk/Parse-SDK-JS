@@ -169,6 +169,7 @@ CoreManager.set('APPLICATION_ID', 'A');
 CoreManager.set('JAVASCRIPT_KEY', 'B');
 CoreManager.set('MASTER_KEY', 'C');
 CoreManager.set('VERSION', 'V');
+const spy = jest.spyOn(CoreManager, 'getParseQuery').mockImplementation(() => mockQuery);
 
 const { SetOp, UnsetOp, IncrementOp } = require('../ParseOp');
 
