@@ -1296,12 +1296,15 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param value The value that the Parse.Object must contain.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  equalTo<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, value: | T['attributes'][K]
-    | (T['attributes'][K] extends Object
-      ? Pointer
-      : T['attributes'][K] extends Array<infer E>
-      ? E
-      : never)): this;
+  equalTo<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    value:
+      | T['attributes'][K]
+      | (T['attributes'][K] extends ParseObject
+        ? Pointer
+        : T['attributes'][K] extends Array<infer E>
+        ? E
+        : never)): this;
   equalTo<K extends keyof T['attributes']>(compare: Partial<Record<K, T[K]>>): this;
   equalTo(key: string | { [key: string]: any }, value?: any): ParseQuery {
     if (key && typeof key === 'object') {
@@ -1328,7 +1331,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
     key: K,
     value:
       | T['attributes'][K]
-      | (T['attributes'][K] extends Object
+      | (T['attributes'][K] extends ParseObject
         ? Pointer
         : T['attributes'][K] extends Array<infer E>
         ? E
@@ -1413,7 +1416,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    */
   containedIn<K extends keyof T['attributes'] | keyof BaseAttributes>(
     key: K,
-    values: Array<T['attributes'][K] | (T['attributes'][K] extends Object ? string : never)>,
+    values: Array<T['attributes'][K] | (T['attributes'][K] extends ParseObject ? string : never)>,
   ): this;
   containedIn(key: string, value: Array<any>): ParseQuery {
     return this._addCondition(key, '$in', value);
@@ -1445,7 +1448,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    */
   containedBy<K extends keyof T['attributes'] | keyof BaseAttributes>(
     key: K,
-    values: Array<T['attributes'][K] | (T['attributes'][K] extends Object ? string : never)>,
+    values: Array<T['attributes'][K] | (T['attributes'][K] extends ParseObject ? string : never)>,
   ): this;
   containedBy(key: string, values: Array<any>): ParseQuery {
     return this._addCondition(key, '$containedBy', values);
