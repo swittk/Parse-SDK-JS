@@ -7,12 +7,66 @@ import encode from './encode';
 import { continueWhile } from './promiseUtils';
 import ParseError from './ParseError';
 import ParseGeoPoint from './ParseGeoPoint';
-import ParseObject from './ParseObject';
+import ParseObject, { BaseAttributes, Pointer } from './ParseObject';
 import OfflineQuery from './OfflineQuery';
 import { DEFAULT_PIN } from './LocalDatastoreUtils';
 
 import type LiveQuerySubscription from './LiveQuerySubscription';
 import type { RequestOptions, FullOptions } from './RESTController';
+
+// According to http://docs.parseplatform.org/rest/guide/#aggregate-queries
+interface AggregationOptions {
+  group?: (Record<string, any> & { objectId?: string }) | undefined;
+  match?: Record<string, any> | undefined;
+  project?: Record<string, any> | undefined;
+  limit?: number | undefined;
+  skip?: number | undefined;
+  // Sort documentation https://docs.mongodb.com/v3.2/reference/operator/aggregation/sort/#pipe._S_sort
+  sort?: Record<string, 1 | -1> | undefined;
+  // Sample documentation: https://docs.mongodb.com/v3.2/reference/operator/aggregation/sample/
+  sample?: { size: number } | undefined;
+  // Count documentation: https://docs.mongodb.com/manual/reference/operator/aggregation/count/
+  count?: string | undefined;
+  // Lookup documentation: https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/
+  lookup?:
+  | {
+    from: string;
+    localField: string;
+    foreignField: string;
+    as: string;
+  }
+  | {
+    from: string;
+    let?: Record<string, any>;
+    pipeline: Record<string, any>;
+    as: string;
+  }
+  | undefined;
+  // Graph Lookup documentation: https://docs.mongodb.com/manual/reference/operator/aggregation/graphLookup/
+  graphLookup?:
+  | {
+    from: string;
+    startWith?: string;
+    connectFromField: string;
+    connectToField: string;
+    as: string;
+    maxDepth?: number;
+    depthField?: string;
+    restrictSearchWithMatch?: Record<string, any>;
+  }
+  | undefined;
+  // Facet documentation: https://docs.mongodb.com/manual/reference/operator/aggregation/facet/
+  facet?: Record<string, Array<Record<string, any>>> | undefined;
+  // Unwind documentation: https://www.mongodb.com/docs/manual/reference/operator/aggregation/unwind/
+  unwind?:
+  | {
+    path: string;
+    includeArrayIndex?: string;
+    preserveNullAndEmptyArrays?: boolean;
+  }
+  | string
+  | undefined;
+}
 
 /**
  *    *   <li>batchSize: How many objects to yield in each batch (default: 100)
@@ -256,7 +310,7 @@ function handleOfflineSort(a, b, sorts) {
  *
  * @alias Parse.Query
  */
-class ParseQuery {
+class ParseQuery<T extends ParseObject = ParseObject> {
   /**
    * @property {string} className
    */
@@ -283,7 +337,7 @@ class ParseQuery {
   /**
    * @param {(string | Parse.Object)} objectClass An instance of a subclass of Parse.Object, or a Parse className string.
    */
-  constructor(objectClass: string | ParseObject | (typeof ParseObject)) {
+  constructor(objectClass: string | ParseObject | (typeof ParseObject) | (new (...args: any[]) => T)) {
     if (typeof objectClass === 'string') {
       if (objectClass === 'User' && CoreManager.get('PERFORM_USER_REWRITE')) {
         this.className = '_User';
@@ -329,7 +383,7 @@ class ParseQuery {
    * @param {Array} queries
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  _orQuery(queries: Array<ParseQuery>): ParseQuery {
+  _orQuery(queries: Array<ParseQuery>): this {
     const queryJSON = queries.map(q => {
       return q.toJSON().where;
     });
@@ -344,7 +398,7 @@ class ParseQuery {
    * @param {Array} queries
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  _andQuery(queries: Array<ParseQuery>): ParseQuery {
+  _andQuery(queries: Array<ParseQuery>): this {
     const queryJSON = queries.map(q => {
       return q.toJSON().where;
     });
@@ -359,7 +413,7 @@ class ParseQuery {
    * @param {Array} queries
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  _norQuery(queries: Array<ParseQuery>): ParseQuery {
+  _norQuery(queries: Array<ParseQuery>): this {
     const queryJSON = queries.map(q => {
       return q.toJSON().where;
     });
@@ -376,7 +430,7 @@ class ParseQuery {
    * @param value
    * @returns {Parse.Query}
    */
-  _addCondition(key: string, condition: string, value: any): ParseQuery {
+  _addCondition(key: string, condition: string, value: any): this {
     if (!this._where[key] || typeof this._where[key] === 'string') {
       this._where[key] = {};
     }
@@ -534,7 +588,7 @@ class ParseQuery {
    * @param {QueryJSON} json from Parse.Query.toJSON() method
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  withJSON(json: QueryJSON): ParseQuery {
+  withJSON(json: QueryJSON): this {
     if (json.where) {
       this._where = json.where;
     }
@@ -625,7 +679,7 @@ class ParseQuery {
    * @param {QueryJSON} json from Parse.Query.toJSON() method
    * @returns {Parse.Query} new created query
    */
-  static fromJSON(className: string, json: QueryJSON): ParseQuery {
+  static fromJSON<U extends ParseObject>(className: string | (new (...args: any[]) => U), json: QueryJSON): ParseQuery {
     const query = new ParseQuery(className);
     return query.withJSON(json);
   }
@@ -647,7 +701,7 @@ class ParseQuery {
    * @returns {Promise} A promise that is resolved with the result when
    * the query completes.
    */
-  get(objectId: string, options?: QueryOptions): Promise<ParseObject> {
+  get(objectId: string, options?: QueryOptions): Promise<T> {
     this.equalTo('objectId', objectId);
 
     const firstOptions: QueryOptions = {};
@@ -688,7 +742,7 @@ class ParseQuery {
    * @returns {Promise} A promise that is resolved with the results when
    * the query completes.
    */
-  find(options?: QueryOptions): Promise<Array<ParseObject>> {
+  find(options?: QueryOptions): Promise<Array<T>> {
     options = options || {};
 
     const findOptions: QueryOptions = {};
@@ -760,12 +814,12 @@ class ParseQuery {
    * @returns {Promise} A promise that is resolved with the results when
    * the query completes.
    */
-  async findAll(options?: BatchOptions): Promise<Array<ParseObject>> {
+  async findAll(options?: BatchOptions): Promise<Array<T>> {
     let result: ParseObject[] = [];
     await this.eachBatch((objects: ParseObject[]) => {
       result = [...result, ...objects];
     }, options);
-    return result;
+    return result as T[];
   }
 
   /**
@@ -815,7 +869,7 @@ class ParseQuery {
    * </ul>
    * @returns {Promise} A promise that is resolved with the query completes.
    */
-  distinct(key: string, options?: { sessionToken?: string }): Promise<Array<any>> {
+  distinct<K extends keyof T['attributes'], V = T['attributes'][K]>(key: K, options?: { sessionToken?: string }): Promise<Array<V>> {
     options = options || {};
 
     const distinctOptions: { sessionToken?: string, useMasterKey: boolean } = { useMasterKey: true };
@@ -845,7 +899,7 @@ class ParseQuery {
    * </ul>
    * @returns {Promise} A promise that is resolved with the query completes.
    */
-  aggregate(pipeline: any, options?: { sessionToken?: string }): Promise<Array<any>> {
+  aggregate<V = any>(pipeline: AggregationOptions | AggregationOptions[], options?: { sessionToken?: string }): Promise<Array<V>> {
     options = options || {};
     const aggregateOptions: { sessionToken?: string, useMasterKey: boolean } = { useMasterKey: true };
 
@@ -864,6 +918,7 @@ class ParseQuery {
       if (!Array.isArray(pipeline)) {
         pipeline = [pipeline];
       }
+      // TODO: Types, should it be pipeline.unshift({ match: this._where }); ?
       pipeline.unshift({ $match: this._where });
     }
 
@@ -894,7 +949,7 @@ class ParseQuery {
    * @returns {Promise} A promise that is resolved with the object when
    * the query completes.
    */
-  first(options: QueryOptions = {}): Promise<ParseObject | void> {
+  first(options: QueryOptions = {}): Promise<T | void> {
     const findOptions: QueryOptions = {};
     if (options.hasOwnProperty('useMasterKey')) {
       findOptions.useMasterKey = options.useMasterKey;
@@ -924,7 +979,7 @@ class ParseQuery {
     }
 
     return controller.find(this.className, params, findOptions).then(response => {
-      const objects = response.results!;
+      const objects = response.results! as T[];
       if (!objects[0]) {
         return undefined;
       }
@@ -941,7 +996,7 @@ class ParseQuery {
       if (options.json) {
         return objects[0];
       } else {
-        return ParseObject.fromJSON(objects[0], !select);
+        return ParseObject.fromJSON(objects[0], !select) as T;
       }
     });
   }
@@ -968,7 +1023,7 @@ class ParseQuery {
    *     iteration has completed.
    */
   eachBatch(
-    callback: (objs: Array<ParseObject>) => void,
+    callback: (objs: Array<T>) => void,
     options?: BatchOptions
   ): Promise<void> {
     options = options || {};
@@ -1021,7 +1076,7 @@ class ParseQuery {
     }
 
     let finished = false;
-    let previousResults: ParseObject[] = [];
+    let previousResults: T[] = [];
     return continueWhile(
       () => {
         return !finished;
@@ -1033,9 +1088,9 @@ class ParseQuery {
         ]);
         if (results.length >= query._limit) {
           query.greaterThan('objectId', results[results.length - 1].id);
-          previousResults = results;
+          previousResults = results as T[];
         } else if (results.length > 0) {
-          await Promise.resolve(callback(results));
+          await Promise.resolve(callback(results as T[]));
           finished = true;
         } else {
           finished = true;
@@ -1064,7 +1119,7 @@ class ParseQuery {
    * @returns {Promise} A promise that will be fulfilled once the
    *     iteration has completed.
    */
-  each(callback: (obj: ParseObject) => any, options?: BatchOptions): Promise<void> {
+  each(callback: (obj: T) => any, options?: BatchOptions): Promise<void> {
     return this.eachBatch(results => {
       let callbacksDone = Promise.resolve();
       results.forEach(result => {
@@ -1082,7 +1137,7 @@ class ParseQuery {
    * @param {(string|object)} value String or Object of index that should be used when executing query
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  hint(value: any): ParseQuery {
+  hint(value: string | object): this {
     if (typeof value === 'undefined') {
       delete this._hint;
     }
@@ -1126,11 +1181,11 @@ class ParseQuery {
    * @returns {Promise} A promise that will be fulfilled once the
    *     iteration has completed.
    */
-  async map(
-    callback: (currentObject: ParseObject, index: number, query: ParseQuery) => any,
+  async map<U>(
+    callback: (currentObject: T, index: number, query: ParseQuery) => PromiseLike<U> | U,
     options?: BatchOptions
-  ): Promise<Array<any>> {
-    const array: any[] = [];
+  ): Promise<Array<U>> {
+    const array: U[] = [];
     let index = 0;
     await this.each(object => {
       return Promise.resolve(callback(object, index, this)).then(result => {
@@ -1165,10 +1220,10 @@ class ParseQuery {
    *     iteration has completed.
    */
   async reduce(
-    callback: (accumulator: any, currentObject: ParseObject, index: number) => any,
+    callback: (accumulator: T, currentObject: T, index: number) => PromiseLike<T> | T,
     initialValue: any,
     options?: BatchOptions
-  ): Promise<Array<any>> {
+  ): Promise<Array<T>> {
     let accumulator = initialValue;
     let index = 0;
     await this.each(object => {
@@ -1215,10 +1270,10 @@ class ParseQuery {
    *     iteration has completed.
    */
   async filter(
-    callback: (currentObject: ParseObject, index: number, query: ParseQuery) => boolean,
+    callback: (currentObject: T, index: number, query: ParseQuery) => PromiseLike<boolean> | boolean,
     options?: BatchOptions
-  ): Promise<Array<ParseObject>> {
-    const array: ParseObject[] = [];
+  ): Promise<Array<T>> {
+    const array: T[] = [];
     let index = 0;
     await this.each(object => {
       return Promise.resolve(callback(object, index, this)).then(flag => {
@@ -1241,6 +1296,13 @@ class ParseQuery {
    * @param value The value that the Parse.Object must contain.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  equalTo<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, value: | T['attributes'][K]
+    | (T['attributes'][K] extends Object
+      ? Pointer
+      : T['attributes'][K] extends Array<infer E>
+      ? E
+      : never)): this;
+  equalTo<K extends keyof T['attributes']>(compare: Partial<Record<K, T[K]>>): this;
   equalTo(key: string | { [key: string]: any }, value?: any): ParseQuery {
     if (key && typeof key === 'object') {
       Object.entries(key).forEach(([k, val]) => this.equalTo(k, val));
@@ -1262,6 +1324,16 @@ class ParseQuery {
    * @param value The value that must not be equalled.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  notEqualTo<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    value:
+      | T['attributes'][K]
+      | (T['attributes'][K] extends Object
+        ? Pointer
+        : T['attributes'][K] extends Array<infer E>
+        ? E
+        : never),
+  ): this;
   notEqualTo(key: string | { [key: string]: any }, value?: any): ParseQuery {
     if (key && typeof key === 'object') {
       Object.entries(key).forEach(([k, val]) => this.notEqualTo(k, val));
@@ -1278,6 +1350,7 @@ class ParseQuery {
    * @param value The value that provides an upper bound.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  lessThan<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, value: T['attributes'][K]): this;
   lessThan(key: string, value: any): ParseQuery {
     return this._addCondition(key, '$lt', value);
   }
@@ -1290,6 +1363,10 @@ class ParseQuery {
    * @param value The value that provides an lower bound.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  greaterThan<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    value: T['attributes'][K],
+  ): this;
   greaterThan(key: string, value: any): ParseQuery {
     return this._addCondition(key, '$gt', value);
   }
@@ -1302,6 +1379,10 @@ class ParseQuery {
    * @param value The value that provides an upper bound.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  lessThanOrEqualTo<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    value: T['attributes'][K],
+  ): this;
   lessThanOrEqualTo(key: string, value: any): ParseQuery {
     return this._addCondition(key, '$lte', value);
   }
@@ -1314,6 +1395,10 @@ class ParseQuery {
    * @param {*} value The value that provides an lower bound.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  greaterThanOrEqualTo<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    value: T['attributes'][K],
+  ): this;
   greaterThanOrEqualTo(key: string, value: any): ParseQuery {
     return this._addCondition(key, '$gte', value);
   }
@@ -1326,6 +1411,10 @@ class ParseQuery {
    * @param {Array<*>} value The values that will match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  containedIn<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    values: Array<T['attributes'][K] | (T['attributes'][K] extends Object ? string : never)>,
+  ): this;
   containedIn(key: string, value: Array<any>): ParseQuery {
     return this._addCondition(key, '$in', value);
   }
@@ -1338,6 +1427,10 @@ class ParseQuery {
    * @param {Array<*>} value The values that will not match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  notContainedIn<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    values: Array<T['attributes'][K]>,
+  ): this;
   notContainedIn(key: string, value: Array<any>): ParseQuery {
     return this._addCondition(key, '$nin', value);
   }
@@ -1350,6 +1443,10 @@ class ParseQuery {
    * @param {Array} values The values that will match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  containedBy<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    values: Array<T['attributes'][K] | (T['attributes'][K] extends Object ? string : never)>,
+  ): this;
   containedBy(key: string, values: Array<any>): ParseQuery {
     return this._addCondition(key, '$containedBy', values);
   }
@@ -1362,6 +1459,7 @@ class ParseQuery {
    * @param {Array} values The values that will match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  containsAll<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, values: any[]): this;
   containsAll(key: string, values: Array<any>): ParseQuery {
     return this._addCondition(key, '$all', values);
   }
@@ -1374,6 +1472,10 @@ class ParseQuery {
    * @param {Array<string>} values The string values that will match as starting string.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  containsAllStartingWith<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    values: any[],
+  ): this;
   containsAllStartingWith(key: string, values: Array<string>): ParseQuery {
     const _this = this;
     if (!Array.isArray(values)) {
@@ -1393,6 +1495,7 @@ class ParseQuery {
    * @param {string} key The key that should exist.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  exists<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K): this;
   exists(key: string): ParseQuery {
     return this._addCondition(key, '$exists', true);
   }
@@ -1403,6 +1506,7 @@ class ParseQuery {
    * @param {string} key The key that should not exist
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  doesNotExist<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K): this;
   doesNotExist(key: string): ParseQuery {
     return this._addCondition(key, '$exists', false);
   }
@@ -1417,6 +1521,11 @@ class ParseQuery {
    * @param {string} modifiers The regular expression mode.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  matches<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    regex: RegExp | string,
+    modifiers?: string,
+  ): this;
   matches(key: string, regex: RegExp | string, modifiers: string): ParseQuery {
     this._addCondition(key, '$regex', regex);
     if (!modifiers) {
@@ -1445,6 +1554,7 @@ class ParseQuery {
    * @param {Parse.Query} query The query that should match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  matchesQuery<U extends ParseObject, K extends keyof T['attributes']>(key: K, query: ParseQuery<U>): this;
   matchesQuery(key: string, query: ParseQuery): ParseQuery {
     const queryJSON = query.toJSON();
     queryJSON.className = query.className;
@@ -1460,6 +1570,7 @@ class ParseQuery {
    * @param {Parse.Query} query The query that should not match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  doesNotMatchQuery<U extends ParseObject, K extends keyof T['attributes']>(key: K, query: ParseQuery<U>): this;
   doesNotMatchQuery(key: string, query: ParseQuery): ParseQuery {
     const queryJSON = query.toJSON();
     queryJSON.className = query.className;
@@ -1477,6 +1588,11 @@ class ParseQuery {
    * @param {Parse.Query} query The query to run.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  matchesKeyInQuery<
+    U extends ParseObject,
+    K extends keyof T['attributes'],
+    X extends Extract<keyof U['attributes'], string>,
+  >(key: K, queryKey: X, query: ParseQuery<U>): this;
   matchesKeyInQuery(key: string, queryKey: string, query: ParseQuery): ParseQuery {
     const queryJSON = query.toJSON();
     queryJSON.className = query.className;
@@ -1497,6 +1613,11 @@ class ParseQuery {
    * @param {Parse.Query} query The query to run.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  doesNotMatchKeyInQuery<
+    U extends ParseObject,
+    K extends keyof T['attributes'] | keyof BaseAttributes,
+    X extends Extract<keyof U['attributes'], string>,
+  >(key: K, queryKey: X, query: ParseQuery<U>): this;
   doesNotMatchKeyInQuery(key: string, queryKey: string, query: ParseQuery): ParseQuery {
     const queryJSON = query.toJSON();
     queryJSON.className = query.className;
@@ -1514,6 +1635,7 @@ class ParseQuery {
    * @param {string} substring The substring that the value must contain.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  contains<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, substring: string): this;
   contains(key: string, substring: string): ParseQuery {
     if (typeof substring !== 'string') {
       throw new Error('The value being searched for must be a string.');
@@ -1550,6 +1672,11 @@ class ParseQuery {
    * @param {boolean} options.diacriticSensitive A boolean flag to enable or disable diacritic sensitive search.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  fullText<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    value: string,
+    options?: FullTextQueryOptions,
+  ): this;
   fullText(key: string, value: string, options: FullTextQueryOptions = {}): ParseQuery {
 
     if (!key) {
@@ -1605,7 +1732,8 @@ class ParseQuery {
    * @param {string} modifiers The regular expression mode.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  startsWith(key: string, prefix: string, modifiers: string): ParseQuery {
+  startsWith<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, prefix: string, modifiers?: string): this;
+  startsWith(key: string, prefix: string, modifiers?: string): ParseQuery {
     if (typeof prefix !== 'string') {
       throw new Error('The value being searched for must be a string.');
     }
@@ -1621,7 +1749,8 @@ class ParseQuery {
    * @param {string} modifiers The regular expression mode.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  endsWith(key: string, suffix: string, modifiers: string): ParseQuery {
+  endsWith<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, suffix: string, modifiers?: string): this;
+  endsWith(key: string, suffix: string, modifiers?: string): ParseQuery {
     if (typeof suffix !== 'string') {
       throw new Error('The value being searched for must be a string.');
     }
@@ -1636,6 +1765,7 @@ class ParseQuery {
    * @param {Parse.GeoPoint} point The reference Parse.GeoPoint that is used.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  near<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, point: ParseGeoPoint): this;
   near(key: string, point: ParseGeoPoint): ParseQuery {
     if (!(point instanceof ParseGeoPoint)) {
       // Try to cast it as a GeoPoint
@@ -1656,11 +1786,17 @@ class ParseQuery {
    * defaults to true.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  withinRadians<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    point: ParseGeoPoint,
+    maxDistance: number,
+    sorted?: boolean
+  ): this;
   withinRadians(
     key: string,
     point: ParseGeoPoint,
     maxDistance: number,
-    sorted: boolean
+    sorted?: boolean
   ): ParseQuery {
     if (sorted || sorted === undefined) {
       this.near(key, point);
@@ -1685,7 +1821,13 @@ class ParseQuery {
    * defaults to true.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  withinMiles(key: string, point: ParseGeoPoint, maxDistance: number, sorted: boolean): ParseQuery {
+  withinMiles<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    point: ParseGeoPoint,
+    maxDistance: number,
+    sorted?: boolean,
+  ): this;
+  withinMiles(key: string, point: ParseGeoPoint, maxDistance: number, sorted?: boolean): ParseQuery {
     return this.withinRadians(key, point, maxDistance / 3958.8, sorted);
   }
 
@@ -1702,11 +1844,17 @@ class ParseQuery {
    * defaults to true.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  withinKilometers<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    point: ParseGeoPoint,
+    maxDistance: number,
+    sorted?: boolean,
+  ): this;
   withinKilometers(
     key: string,
     point: ParseGeoPoint,
     maxDistance: number,
-    sorted: boolean
+    sorted?: boolean
   ): ParseQuery {
     return this.withinRadians(key, point, maxDistance / 6371.0, sorted);
   }
@@ -1723,6 +1871,11 @@ class ParseQuery {
    *     The upper-right inclusive corner of the box.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
+  withinGeoBox<K extends keyof T['attributes'] | keyof BaseAttributes>(
+    key: K,
+    southwest: ParseGeoPoint,
+    northeast: ParseGeoPoint,
+  ): this;
   withinGeoBox(key: string, southwest: ParseGeoPoint, northeast: ParseGeoPoint): ParseQuery {
     if (!(southwest instanceof ParseGeoPoint)) {
       southwest = new ParseGeoPoint(southwest);
@@ -1745,7 +1898,8 @@ class ParseQuery {
    * @param {Array} points Array of Coordinates / GeoPoints
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  withinPolygon(key: string, points: Array<Array<number>>): ParseQuery {
+  withinPolygon<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, points: number[][]): this;
+  withinPolygon(key: string, points: Array<Array<number>>): this {
     return this._addCondition(key, '$geoWithin', { $polygon: points });
   }
 
@@ -1757,7 +1911,8 @@ class ParseQuery {
    * @param {Parse.GeoPoint} point
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  polygonContains(key: string, point: ParseGeoPoint): ParseQuery {
+  polygonContains<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, point: ParseGeoPoint): this;
+  polygonContains(key: string, point: ParseGeoPoint): this {
     return this._addCondition(key, '$geoIntersects', { $point: point });
   }
 
@@ -1770,7 +1925,8 @@ class ParseQuery {
    * string of comma separated values, or an Array of keys, or multiple keys.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  ascending(...keys: Array<string>): ParseQuery {
+  ascending<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K | K[]): this;
+  ascending(...keys: Array<string>): this {
     this._order = [];
     return this.addAscending.apply(this, keys);
   }
@@ -1783,7 +1939,8 @@ class ParseQuery {
    * string of comma separated values, or an Array of keys, or multiple keys.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  addAscending(...keys: Array<string>): ParseQuery {
+  addAscending<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K | K[]): this;
+  addAscending(...keys: Array<string>): this {
     if (!this._order) {
       this._order = [];
     }
@@ -1804,7 +1961,8 @@ class ParseQuery {
    * string of comma separated values, or an Array of keys, or multiple keys.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  descending(...keys: Array<string>): ParseQuery {
+  descending<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K | K[]): this;
+  descending(...keys: Array<string>): this {
     this._order = [];
     return this.addDescending.apply(this, keys);
   }
@@ -1817,7 +1975,8 @@ class ParseQuery {
    * string of comma separated values, or an Array of keys, or multiple keys.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  addDescending(...keys: Array<string>): ParseQuery {
+  addDescending<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K | K[]): this;
+  addDescending(...keys: Array<string>): this {
     if (!this._order) {
       this._order = [];
     }
@@ -1848,7 +2007,7 @@ class ParseQuery {
    * @param {number} n the number of results to skip.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  skip(n: number): ParseQuery {
+  skip(n: number): this {
     if (typeof n !== 'number' || n < 0) {
       throw new Error('You can only skip by a positive number');
     }
@@ -1862,7 +2021,7 @@ class ParseQuery {
    * @param {number} n the number of results to limit to.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  limit(n: number): ParseQuery {
+  limit(n: number): this {
     if (typeof n !== 'number') {
       throw new Error('You can only set the limit to a numeric value');
     }
@@ -1879,7 +2038,7 @@ class ParseQuery {
    * @param {boolean} includeCount false - disable, true - enable.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  withCount(includeCount: boolean = true): ParseQuery {
+  withCount(includeCount: boolean = true) {
     if (typeof includeCount !== 'boolean') {
       throw new Error('You can only set withCount to a boolean value');
     }
@@ -1897,7 +2056,8 @@ class ParseQuery {
    * @param {...string|Array<string>} keys The name(s) of the key(s) to include.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  include(...keys: Array<string | Array<string>>): ParseQuery {
+  include<K extends keyof T['attributes'] | keyof BaseAttributes>(...key: (K | K[])[]): this;
+  include(...keys: Array<string | Array<string>>): this {
     keys.forEach(key => {
       if (Array.isArray(key)) {
         this._include = this._include.concat(key);
@@ -1915,7 +2075,7 @@ class ParseQuery {
    *
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  includeAll(): ParseQuery {
+  includeAll(): ParseQuery<T> {
     return this.include('*');
   }
 
@@ -1927,7 +2087,9 @@ class ParseQuery {
    * @param {...string|Array<string>} keys The name(s) of the key(s) to include.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  select(...keys: Array<string | Array<string>>): ParseQuery {
+  select<K extends keyof T['attributes'] | keyof BaseAttributes>(...keys: K[]): this;
+  select<K extends keyof T['attributes'] | keyof BaseAttributes>(keys: K[]): this;
+  select(...keys: Array<string | Array<string>>): this {
     if (!this._select) {
       this._select = [];
     }
@@ -1950,7 +2112,8 @@ class ParseQuery {
    * @param {...string|Array<string>} keys The name(s) of the key(s) to exclude.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  exclude(...keys: Array<string | Array<string>>): ParseQuery {
+  exclude<K extends keyof T['attributes'] | keyof BaseAttributes>(...keys: (K | K[])[]): this;
+  exclude(...keys: Array<string | Array<string>>): this {
     keys.forEach(key => {
       if (Array.isArray(key)) {
         this._exclude = this._exclude.concat(key);
@@ -1969,7 +2132,8 @@ class ParseQuery {
    * @param {...string|Array<string>} keys The name(s) of the key(s) to watch.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  watch(...keys: Array<string | Array<string>>): ParseQuery {
+  watch<K extends keyof T['attributes'] | keyof BaseAttributes>(...keys: (K | K[])[]): this;
+  watch(...keys: Array<string | Array<string>>): this {
     keys.forEach(key => {
       if (Array.isArray(key)) {
         this._watch = this._watch.concat(key);
@@ -2033,11 +2197,11 @@ class ParseQuery {
    * @static
    * @returns {Parse.Query} The query that is the OR of the passed in queries.
    */
-  static or(...queries: Array<ParseQuery>): ParseQuery {
+  static or<U extends ParseObject>(...queries: Array<ParseQuery<U>>): ParseQuery<U> {
     const className = _getClassNameFromQueries(queries);
     const query = new ParseQuery(className!); // Cast to !; Checked inside ParseQuery constructor anyway
     query._orQuery(queries);
-    return query;
+    return query as ParseQuery<U>;
   }
 
   /**
@@ -2052,11 +2216,11 @@ class ParseQuery {
    * @static
    * @returns {Parse.Query} The query that is the AND of the passed in queries.
    */
-  static and(...queries: Array<ParseQuery>): ParseQuery {
+  static and<U extends ParseObject>(...queries: Array<ParseQuery<U>>): ParseQuery<U> {
     const className = _getClassNameFromQueries(queries);
     const query = new ParseQuery(className!); // Cast to !; Checked inside ParseQuery constructor anyway
     query._andQuery(queries);
-    return query;
+    return query as ParseQuery<U>;
   }
 
   /**
@@ -2071,11 +2235,11 @@ class ParseQuery {
    * @static
    * @returns {Parse.Query} The query that is the NOR of the passed in queries.
    */
-  static nor(...queries: Array<ParseQuery>): ParseQuery {
+  static nor<U extends ParseObject>(...queries: Array<ParseQuery<U>>): ParseQuery<U> {
     const className = _getClassNameFromQueries(queries);
     const query = new ParseQuery(className!); // Cast to !; Checked inside ParseQuery constructor anyway
     query._norQuery(queries);
-    return query;
+    return query as ParseQuery<U>;
   }
 
   /**
@@ -2083,7 +2247,7 @@ class ParseQuery {
    *
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  fromNetwork(): ParseQuery {
+  fromNetwork(): this {
     this._queriesLocalDatastore = false;
     this._localDatastorePinName = null;
     return this;
@@ -2094,7 +2258,7 @@ class ParseQuery {
    *
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  fromLocalDatastore(): ParseQuery {
+  fromLocalDatastore(): this {
     return this.fromPinWithName(null);
   }
 
@@ -2103,7 +2267,7 @@ class ParseQuery {
    *
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  fromPin(): ParseQuery {
+  fromPin(): this {
     return this.fromPinWithName(DEFAULT_PIN);
   }
 
@@ -2113,7 +2277,7 @@ class ParseQuery {
    * @param {string} name The name of query source.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  fromPinWithName(name?: string | null): ParseQuery {
+  fromPinWithName(name?: string | null): this {
     const localDatastore = CoreManager.getLocalDatastore();
     if (localDatastore.checkIfEnabled()) {
       this._queriesLocalDatastore = true;
@@ -2127,7 +2291,7 @@ class ParseQuery {
    *
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  cancel(): ParseQuery {
+  cancel(): this {
     if (this._xhrRequest.task && typeof this._xhrRequest.task.abort === 'function') {
       this._xhrRequest.task._aborted = true;
       this._xhrRequest.task.abort();
@@ -2139,7 +2303,7 @@ class ParseQuery {
     return this;
   }
 
-  _setRequestTask(options) {
+  _setRequestTask(options: QueryOptions & { requestTask?: (task: any) => void }) {
     options.requestTask = task => {
       this._xhrRequest.task = task;
       this._xhrRequest.onchange();

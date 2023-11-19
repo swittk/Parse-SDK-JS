@@ -86,6 +86,27 @@ type ObjectFetchOptions = {
   useMasterKey?: boolean, sessionToken?: string, include?: string | string[], context?: AttributeMap,
 }
 
+interface Attributes {
+  [key: string]: any;
+}
+
+type ObjectSetOptions = {
+  promise?: boolean,
+  error?: (e?: any) => void,
+  /**
+               * Set to true to avoid firing the event.
+               */
+  silent?: boolean | undefined;
+  unset?: boolean;
+  ignoreValidation?: boolean;
+}
+
+export interface BaseAttributes {
+  createdAt: Date;
+  objectId: string;
+  updatedAt: Date;
+}
+
 /**
  * Creates a new model with defined attributes.
  *
@@ -104,7 +125,7 @@ type ObjectFetchOptions = {
  *
  * @alias Parse.Object
  */
-class ParseObject {
+class ParseObject<T extends Attributes = any> {
   /**
    * @param {string} className The class name for the object
    * @param {object} attributes The initial set of data to store in the object.
@@ -112,9 +133,10 @@ class ParseObject {
    */
   constructor(
     className?: string | { className: string, [attr: string]: any },
-    attributes?: { [attr: string]: any },
+    attributes?: T,
     options?: { ignoreValidation: boolean }
   ) {
+    this.attributes
     // Enable legacy initializers
     if (typeof this.initialize === 'function') {
       this.initialize.apply(this, arguments);
@@ -139,7 +161,7 @@ class ParseObject {
         options = attributes as any;
       }
     }
-    if (toSet && !this.set(toSet, options)) {
+    if (toSet && !this.set(toSet as T, options)) {
       throw new Error("Can't create an invalid Parse Object");
     }
   }
@@ -157,9 +179,9 @@ class ParseObject {
 
   /* Prototype getters / setters */
 
-  get attributes(): AttributeMap {
+  get attributes(): T {
     const stateController = CoreManager.getObjectStateController();
-    return Object.freeze(stateController.estimateAttributes(this._getStateIdentifier()));
+    return Object.freeze(stateController.estimateAttributes(this._getStateIdentifier()) as T);
   }
 
   /**
@@ -258,9 +280,9 @@ class ParseObject {
     const attributes = this.attributes;
     const stateController = CoreManager.getObjectStateController();
     const objectCache = stateController.getObjectCache(this._getStateIdentifier());
-    const dirty = {};
+    const dirty: Record<string, any> = {};
     for (const attr in attributes) {
-      const val = attributes[attr];
+      const val = attributes[attr] as any;
       if (
         val &&
         typeof val === 'object' &&
@@ -620,7 +642,10 @@ class ParseObject {
    * @param {string} attr The string name of an attribute.
    * @returns {*}
    */
-  get(attr: string): any {
+  get<K extends Extract<keyof T, string>>(attr: K): T[K];
+  get(attr: 'objectId'): string | undefined;
+  get(attr: 'ACL'): ParseACL | undefined;
+  get(attr: string) {
     return this.attributes[attr];
   }
 
@@ -630,8 +655,10 @@ class ParseObject {
    * @param {string} attr The attribute to get the relation for.
    * @returns {Parse.Relation}
    */
-  relation(attr: string): ParseRelation {
-    const value = this.get(attr);
+  relation<R extends ParseObject, K extends Extract<keyof T, string> = Extract<keyof T, string>>(
+    attr: T[K] extends ParseRelation ? K : never,
+  ): ParseRelation<this, R> {
+    const value = this.get(attr as string as Extract<keyof T, string>) as any;
     if (value) {
       if (!(value instanceof ParseRelation)) {
         throw new Error('Called relation() on non-relation field ' + attr);
@@ -707,6 +734,28 @@ class ParseObject {
    *     The only supported option is <code>error</code>.
    * @returns {(ParseObject|boolean)} true if the set succeeded.
    */
+  set<K extends Extract<keyof T, string>>(attrs: Pick<T, K> | T, options?: ObjectSetOptions): this | false;
+  set(attrs: T, options?: ObjectSetOptions): this | false;
+  set<K extends Extract<keyof T, string>>(
+    key: K,
+    value: T[K] extends undefined ? never : T[K],
+    options?: ObjectSetOptions,
+  ): this | false;
+  set(
+    key: 'ACL',
+    value: ParseACL,
+    options?: ObjectSetOptions,
+  ): this | false;
+  set<K extends Extract<keyof T, string>>(
+    key: K,
+    value: Op,
+  ): this | false;
+  set<K extends Extract<keyof T, string>>(
+    key: Partial<Record<keyof T, boolean>>,
+    options: ObjectSetOptions,
+  ): this | false;
+
+
   set(key: any, value?: any, options?: any): ParseObject | boolean {
     // TODO: Improve types here without breaking stuff.
     let changes = {};
@@ -808,7 +857,7 @@ class ParseObject {
    * @param options
    * @returns {(ParseObject | boolean)}
    */
-  unset(attr: string, options?: { [opt: string]: any }): ParseObject | boolean {
+  unset(attr: Extract<keyof T, string>, options?: { [opt: string]: any }): ParseObject | boolean {
     options = options || {};
     options.unset = true;
     return this.set(attr, null, options);
@@ -822,7 +871,7 @@ class ParseObject {
    * @param amount {Number} The amount to increment by (optional).
    * @returns {(ParseObject|boolean)}
    */
-  increment(attr: string, amount?: number): ParseObject | boolean {
+  increment(attr: Extract<keyof T, string>, amount?: number): ParseObject | boolean {
     if (typeof amount === 'undefined') {
       amount = 1;
     }
@@ -840,7 +889,7 @@ class ParseObject {
    * @param amount {Number} The amount to decrement by (optional).
    * @returns {(ParseObject | boolean)}
    */
-  decrement(attr: string, amount?: number): ParseObject | boolean {
+  decrement(attr: Extract<keyof T, string>, amount?: number): ParseObject | boolean {
     if (typeof amount === 'undefined') {
       amount = 1;
     }
@@ -858,8 +907,11 @@ class ParseObject {
    * @param item {} The item to add.
    * @returns {(ParseObject | boolean)}
    */
-  add(attr: string, item: any): ParseObject | boolean {
-    return this.set(attr, new AddOp([item]));
+  add<K extends { [K in keyof T]: NonNullable<T[K]> extends any[] ? K : never }[keyof T]>(
+    attr: K,
+    item: NonNullable<T[K]>[number],
+  ): this | false {
+    return this.set(attr as string as Extract<keyof T, string>, new AddOp([item]));
   }
 
   /**
@@ -870,8 +922,11 @@ class ParseObject {
    * @param items {Object[]} The items to add.
    * @returns {(ParseObject | boolean)}
    */
-  addAll(attr: string, items: Array<any>): ParseObject | boolean {
-    return this.set(attr, new AddOp(items));
+  addAll<K extends { [K in keyof T]: NonNullable<T[K]> extends any[] ? K : never }[keyof T]>(
+    attr: K,
+    items: NonNullable<T[K]>,
+  ): this | false {
+    return this.set(attr as string as Extract<keyof T, string>, new AddOp(items));
   }
 
   /**
@@ -883,8 +938,11 @@ class ParseObject {
    * @param item {} The object to add.
    * @returns {(ParseObject | boolean)}
    */
-  addUnique(attr: string, item: any): ParseObject | boolean {
-    return this.set(attr, new AddUniqueOp([item]));
+  addUnique<K extends { [K in keyof T]: NonNullable<T[K]> extends any[] ? K : never }[keyof T]>(
+    attr: K,
+    item: NonNullable<T[K]>[number],
+  ): this | false {
+    return this.set(attr as string as Extract<keyof T, string>, new AddUniqueOp([item]));
   }
 
   /**
@@ -896,8 +954,11 @@ class ParseObject {
    * @param items {Object[]} The objects to add.
    * @returns {(ParseObject | boolean)}
    */
-  addAllUnique(attr: string, items: Array<any>): ParseObject | boolean {
-    return this.set(attr, new AddUniqueOp(items));
+  addAllUnique<K extends { [K in keyof T]: NonNullable<T[K]> extends any[] ? K : never }[keyof T]>(
+    attr: K,
+    items: NonNullable<T[K]>,
+  ): this | false {
+    return this.set(attr as string as Extract<keyof T, string>, new AddUniqueOp(items));
   }
 
   /**
@@ -908,8 +969,11 @@ class ParseObject {
    * @param item {} The object to remove.
    * @returns {(ParseObject | boolean)}
    */
-  remove(attr: string, item: any): ParseObject | boolean {
-    return this.set(attr, new RemoveOp([item]));
+  remove<K extends { [K in keyof T]: NonNullable<T[K]> extends any[] ? K : never }[keyof T]>(
+    attr: K,
+    item: NonNullable<T[K]>[number],
+  ): this | false {
+    return this.set(attr as string as Extract<keyof T, string>, new RemoveOp([item]));
   }
 
   /**
@@ -920,8 +984,11 @@ class ParseObject {
    * @param items {Object[]} The object to remove.
    * @returns {(ParseObject | boolean)}
    */
-  removeAll(attr: string, items: Array<any>): ParseObject | boolean {
-    return this.set(attr, new RemoveOp(items));
+  removeAll<K extends { [K in keyof T]: NonNullable<T[K]> extends any[] ? K : never }[keyof T]>(
+    attr: K,
+    items: NonNullable<T[K]>,
+  ): this | false {
+    return this.set(attr as string as Extract<keyof T, string>, new RemoveOp(items));
   }
 
   /**
@@ -954,13 +1021,13 @@ class ParseObject {
       const readonly = (this.constructor as any).readOnlyAttributes() || [];
       // Attributes are frozen, so we have to rebuild an object,
       // rather than delete readonly keys
-      const copy = {};
+      const copy: Partial<T> = {};
       for (const a in attributes) {
         if (readonly.indexOf(a) < 0) {
           copy[a] = attributes[a];
         }
       }
-      attributes = copy;
+      attributes = copy as T;
     }
     if (clone.set) {
       clone.set(attributes);
@@ -1082,7 +1149,7 @@ class ParseObject {
    * @see Parse.Object#get
    */
   getACL(): ParseACL | null {
-    const acl = this.get('ACL');
+    const acl = this.get('ACL') as any;
     if (acl instanceof ParseACL) {
       return acl;
     }
@@ -1128,7 +1195,7 @@ class ParseObject {
    */
   clear(): ParseObject | boolean {
     const attributes = this.attributes;
-    const erasable = {};
+    const erasable: Partial<Record<keyof T, boolean>> = {};
     let readonly = ['createdAt', 'updatedAt'];
     if (typeof (this.constructor as any).readOnlyAttributes === 'function') {
       readonly = readonly.concat((this.constructor as any).readOnlyAttributes());
@@ -1334,7 +1401,7 @@ class ParseObject {
       if (validation) {
         return Promise.reject(validation);
       }
-      this.set(attrs, options);
+      this.set(attrs as T, options);
     }
 
     options = options || {};

@@ -19,8 +19,8 @@ import ParseQuery from './ParseQuery';
  *
  * @alias Parse.Relation
  */
-class ParseRelation {
-  parent?: ParseObject;
+class ParseRelation<S extends ParseObject = ParseObject, T extends ParseObject = ParseObject> {
+  parent?: S;
   key?: string;
   targetClassName: string | null;
 
@@ -28,7 +28,7 @@ class ParseRelation {
    * @param {Parse.Object} parent The parent of this relation.
    * @param {string} key The key for this relation on the parent.
    */
-  constructor(parent?: ParseObject, key?: string) {
+  constructor(parent?: S, key?: string) {
     this.parent = parent;
     this.key = key;
     this.targetClassName = null;
@@ -37,7 +37,7 @@ class ParseRelation {
   /*
    * Makes sure that this relation has the right parent and key.
    */
-  _ensureParentAndKey(parent: ParseObject, key: string) {
+  _ensureParentAndKey(parent: S, key: string) {
     this.key = this.key || key;
     if (this.key !== key) {
       throw new Error('Internal Error. Relation retrieved from two different keys.');
@@ -64,7 +64,7 @@ class ParseRelation {
    * @param {(Parse.Object|Array)} objects The item or items to add.
    * @returns {Parse.Object} The parent of the relation.
    */
-  add(objects: ParseObject | Array<ParseObject | string>): ParseObject {
+  add(objects: T | (T | string)[]): ParseObject {
     if (!Array.isArray(objects)) {
       objects = [objects];
     }
@@ -89,7 +89,7 @@ class ParseRelation {
    *
    * @param {(Parse.Object|Array)} objects The item or items to remove.
    */
-  remove(objects: ParseObject | Array<ParseObject | string>) {
+  remove(objects: T | (T | string)[]) {
     if (!Array.isArray(objects)) {
       objects = [objects];
     }
@@ -125,7 +125,7 @@ class ParseRelation {
    *
    * @returns {Parse.Query} Relation Query
    */
-  query(): ParseQuery {
+  query(): ParseQuery<T> {
     let query;
     const parent = this.parent;
     if (!parent) {
