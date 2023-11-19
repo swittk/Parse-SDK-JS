@@ -18,6 +18,7 @@ import type ParseQuery from './ParseQuery';
 import type * as ParseOp from './ParseOp';
 import type ParseACL from './ParseACL';
 import type ParseRole from './ParseRole';
+import type EventuallyQueue from './EventuallyQueue';
 
 type AnalyticsController = {
   track: (name: string, dimensions: { [key: string]: string }) => Promise<any>,
@@ -235,7 +236,8 @@ type Config = {
   ParseOp?: typeof ParseOp,
   ParseObject?: typeof ParseObject,
   ParseACL?: typeof ParseACL,
-  ParseRole?: typeof ParseRole
+  ParseRole?: typeof ParseRole,
+  EventuallyQueue?: typeof EventuallyQueue,
 };
 
 const config: Config & { [key: string]: any } = {
@@ -591,6 +593,12 @@ const CoreManager = {
   getParseRole() {
     return config['ParseRole']!;
   },
+  setEventuallyQueue(queue: typeof EventuallyQueue) {
+    config['EventuallyQueue'] = queue;
+  },
+  getEventuallyQueue() {
+    return config['EventuallyQueue']!;
+  }
 };
 
 module.exports = CoreManager;

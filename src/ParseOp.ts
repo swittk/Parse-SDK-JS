@@ -6,7 +6,8 @@ import arrayContainsObject from './arrayContainsObject';
 import CoreManager from './CoreManager';
 import decode from './decode';
 import encode from './encode';
-import ParseObject, { Pointer } from './ParseObject';
+import type ParseObject from './ParseObject';
+import type { Pointer } from './ParseObject';
 import ParseRelation from './ParseRelation';
 import unique from './unique';
 
@@ -193,6 +194,7 @@ export class AddUniqueOp extends Op {
       return this._value || [];
     }
     if (Array.isArray(value)) {
+      const ParseObject = CoreManager.getParseObject();
       const toAdd: any[] = [];
       this._value.forEach(v => {
         if (v instanceof ParseObject) {
@@ -244,6 +246,7 @@ export class RemoveOp extends Op {
       return [];
     }
     if (Array.isArray(value)) {
+      const ParseObject = CoreManager.getParseObject();
       // var i = value.indexOf(this._value);
       const removed = value.concat([]);
       for (let i = 0; i < this._value.length; i++) {
@@ -279,6 +282,7 @@ export class RemoveOp extends Op {
     if (previous instanceof RemoveOp) {
       const uniques = previous._value.concat([]);
       for (let i = 0; i < this._value.length; i++) {
+        const ParseObject = CoreManager.getParseObject();
         if (this._value[i] instanceof ParseObject) {
           if (!arrayContainsObject(uniques, this._value[i])) {
             uniques.push(this._value[i]);
@@ -346,6 +350,7 @@ export class RelationOp extends Op {
           'Cannot apply a RelationOp without either a previous value, or an object and a key'
         );
       }
+      const ParseObject = CoreManager.getParseObject();
       const parent = new ParseObject(object.className);
       if (object.id && object.id.indexOf('local') === 0) {
         parent._localId = object.id;

@@ -18,7 +18,7 @@ mockObject.prototype._getId = function () {
 mockObject.fromJSON = function (json) {
   return new mockObject(json.className, json.objectId);
 };
-mockObject.registerSubclass = function () {};
+mockObject.registerSubclass = function () { };
 jest.setMock('../ParseObject', mockObject);
 
 const mockRelation = function (parent, key) {
@@ -41,6 +41,10 @@ const {
   RelationOp,
   opFromJSON,
 } = ParseOp;
+const CoreManager = require('../CoreManager');
+const spy = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => require('../ParseObject'));
+const spy2 = jest.spyOn(CoreManager, 'getEventuallyQueue').mockImplementation(() => require('../EventuallyQueue'));
+
 
 describe('ParseOp', () => {
   it('base class', () => {
