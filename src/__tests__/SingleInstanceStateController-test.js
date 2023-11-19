@@ -20,7 +20,7 @@ const ParseFile = require('../ParseFile').default;
 const ParseGeoPoint = require('../ParseGeoPoint').default;
 const ParseOps = require('../ParseOp');
 const SingleInstanceStateController = require('../SingleInstanceStateController');
-const TaskQueue = require('../TaskQueue');
+const TaskQueue = require('../TaskQueue').default;
 const flushPromises = require('./test_helpers/flushPromises');
 
 describe('SingleInstanceStateController', () => {

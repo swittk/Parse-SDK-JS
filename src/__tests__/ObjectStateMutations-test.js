@@ -16,7 +16,7 @@ jest.setMock('../ParseObject', mockObject);
 
 const ObjectStateMutations = require('../ObjectStateMutations');
 const ParseOps = require('../ParseOp');
-const TaskQueue = require('../TaskQueue');
+const TaskQueue = require('../TaskQueue').default;
 
 const CoreManager = require('../CoreManager').default;
 // Register our mock

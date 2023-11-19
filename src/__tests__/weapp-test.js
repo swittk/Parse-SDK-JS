@@ -61,7 +61,7 @@ describe('WeChat', () => {
   });
 
   it('load uuid module', () => {
-    const uuidv4 = require('../uuid');
+    const uuidv4 = require('../uuid').default;
     expect(uuidv4()).not.toEqual(0);
     expect(uuidv4()).not.toEqual(uuidv4());
   });

@@ -19,5 +19,4 @@ if (process.env.PARSE_BUILD === 'weapp') {
   uuid = v4;
 }
 
-module.exports = uuid;
 export default uuid;
