@@ -162,7 +162,7 @@ describe('IndexDB StorageController', () => {
   let IndexedDBStorageController;
   beforeEach(() => {
     jest.isolateModules(() => {
-      IndexedDBStorageController = require('../IndexedDBStorageController');
+      IndexedDBStorageController = require('../IndexedDBStorageController').default;
     });
     IndexedDBStorageController.clear();
   });
@@ -201,7 +201,7 @@ describe('IndexDB StorageController', () => {
 
   it('handle indexedDB is not defined', async () => {
     global.indexedDB = undefined;
-    const dbController = require('../IndexedDBStorageController');
+    const dbController = require('../IndexedDBStorageController').default;
     expect(dbController).toBeUndefined();
     global.indexedDB = mockIndexedDB;
   });
@@ -211,7 +211,7 @@ describe('IndexDB StorageController', () => {
       global.indexedDB = mockIndexedDB;
       jest.spyOn(idbKeyVal, 'createStore')
         .mockImplementationOnce(() => { throw new Error('Protected'); });
-      const dbController = require('../IndexedDBStorageController');
+      const dbController = require('../IndexedDBStorageController').default;
       expect(dbController).toBeUndefined();
       expect(idbKeyVal.createStore).toHaveBeenCalled();
     });

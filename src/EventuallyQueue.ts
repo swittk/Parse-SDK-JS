@@ -376,5 +376,4 @@ const EventuallyQueue = {
 };
 CoreManager.setEventuallyQueue(EventuallyQueue);
 
-module.exports = EventuallyQueue;
 export default EventuallyQueue;

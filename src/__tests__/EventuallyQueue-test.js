@@ -45,7 +45,7 @@ jest.mock('../ParseQuery', () => {
 });
 const mockRNStorageInterface = require('./test_helpers/mockRNStorage');
 const CoreManager = require('../CoreManager').default;
-const EventuallyQueue = require('../EventuallyQueue');
+const EventuallyQueue = require('../EventuallyQueue').default;
 const ParseError = require('../ParseError').default;
 const ParseObject = require('../ParseObject');
 const RESTController = require('../RESTController');

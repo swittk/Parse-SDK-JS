@@ -55,7 +55,7 @@ describe('React Native', () => {
 
   it('load LocalDatastoreController', () => {
     const LocalDatastoreController = require('../LocalDatastoreController.react-native');
-    require('../LocalDatastore');
+    require('../LocalDatastore').default;
     const LDC = CoreManager.getLocalDatastoreController();
     expect(LocalDatastoreController).toEqual(LDC);
   });

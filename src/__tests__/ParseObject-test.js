@@ -143,7 +143,7 @@ const mockLocalDatastore = {
 jest.setMock('../LocalDatastore', mockLocalDatastore);
 
 const CoreManager = require('../CoreManager').default;
-const EventuallyQueue = require('../EventuallyQueue');
+const EventuallyQueue = require('../EventuallyQueue').default;
 const ParseACL = require('../ParseACL').default;
 const ParseError = require('../ParseError').default;
 const ParseFile = require('../ParseFile').default;

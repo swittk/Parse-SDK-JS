@@ -391,7 +391,6 @@ const LocalDatastore = {
   },
 };
 
-module.exports = LocalDatastore;
 export default LocalDatastore;
 
 if (process.env.PARSE_BUILD === 'react-native') {

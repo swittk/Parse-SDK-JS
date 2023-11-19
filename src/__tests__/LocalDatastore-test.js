@@ -92,7 +92,7 @@ jest.mock('../ParseQuery', () => {
 });
 
 const CoreManager = require('../CoreManager').default;
-const LocalDatastore = require('../LocalDatastore');
+const LocalDatastore = require('../LocalDatastore').default;
 const ParseObject = require('../ParseObject');
 // Register our mocks
 const spy0 = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => require('../ParseObject'));
