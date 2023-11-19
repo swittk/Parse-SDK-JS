@@ -8,11 +8,13 @@ jest.dontMock('../promiseUtils');
 jest.dontMock('../SingleInstanceStateController');
 jest.dontMock('../TaskQueue');
 jest.dontMock('./test_helpers/flushPromises');
-
-const mockObject = function () {};
-mockObject.registerSubclass = function () {};
+jest.dontMock('../CoreManager');
+const mockObject = function () { };
+mockObject.registerSubclass = function () { };
 jest.setMock('../ParseObject', mockObject);
 jest.useFakeTimers();
+const CoreManager = require('../CoreManager');
+CoreManager.setParseObject(mockObject);
 
 const ParseFile = require('../ParseFile').default;
 const ParseGeoPoint = require('../ParseGeoPoint').default;

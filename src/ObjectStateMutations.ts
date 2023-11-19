@@ -4,12 +4,12 @@
 
 import encode from './encode';
 import ParseFile from './ParseFile';
-import ParseObject from './ParseObject';
 import ParseRelation from './ParseRelation';
 import TaskQueue from './TaskQueue';
 import { RelationOp } from './ParseOp';
 
 import type { Op } from './ParseOp';
+import CoreManager from './CoreManager';
 
 export type AttributeMap = { [attr: string]: any };
 export type OpsMap = { [attr: string]: Op };
@@ -174,6 +174,7 @@ export function commitServerChanges(
   objectCache: ObjectCache,
   changes: AttributeMap
 ) {
+  const ParseObject = CoreManager.getParseObject();
   for (const attr in changes) {
     const val = changes[attr];
     nestedSet(serverData, attr, val);
