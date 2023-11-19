@@ -14,7 +14,7 @@ jest.mock('idb-keyval', () => {
 });
 const idbKeyVal = require('idb-keyval');
 
-const BrowserStorageController = require('../StorageController.browser');
+const BrowserStorageController = require('../StorageController.browser').default;
 
 describe('Browser StorageController', () => {
   beforeEach(() => {
@@ -42,7 +42,7 @@ describe('Browser StorageController', () => {
   });
 });
 
-const RNStorageController = require('../StorageController.react-native');
+const RNStorageController = require('../StorageController.react-native').default;
 
 describe('React Native StorageController', () => {
   beforeEach(() => {
@@ -218,7 +218,7 @@ describe('IndexDB StorageController', () => {
   });
 });
 
-const DefaultStorageController = require('../StorageController.default');
+const DefaultStorageController = require('../StorageController.default').default;
 
 describe('Default StorageController', () => {
   beforeEach(() => {
@@ -279,7 +279,7 @@ const Storage = require('../Storage');
 
 describe('Storage (Default StorageController)', () => {
   beforeEach(() => {
-    CoreManager.setStorageController(require('../StorageController.default'));
+    CoreManager.setStorageController(require('../StorageController.default').default);
   });
 
   it('can store and retrieve values', () => {
@@ -343,7 +343,7 @@ describe('Storage (Default StorageController)', () => {
 describe('Storage (Async StorageController)', () => {
   beforeEach(() => {
     CoreManager.setAsyncStorage(mockRNStorageInterface);
-    CoreManager.setStorageController(require('../StorageController.react-native'));
+    CoreManager.setStorageController(require('../StorageController.react-native').default);
   });
 
   it('throws when using a synchronous method', () => {

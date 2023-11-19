@@ -54,14 +54,14 @@ describe('React Native', () => {
   });
 
   it('load LocalDatastoreController', () => {
-    const LocalDatastoreController = require('../LocalDatastoreController.react-native');
+    const LocalDatastoreController = require('../LocalDatastoreController.react-native').default;
     require('../LocalDatastore').default;
     const LDC = CoreManager.getLocalDatastoreController();
     expect(LocalDatastoreController).toEqual(LDC);
   });
 
   it('load StorageController', () => {
-    const StorageController = require('../StorageController.react-native');
+    const StorageController = require('../StorageController.react-native').default;
     jest.spyOn(StorageController, 'setItemAsync');
     const storage = require('../Storage');
     storage.setItemAsync('key', 'value');

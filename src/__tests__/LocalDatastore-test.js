@@ -99,10 +99,10 @@ const spy0 = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => 
 const spy1 = jest.spyOn(CoreManager, 'getParseQuery').mockImplementation(() => require('../ParseQuery'));
 const ParseQuery = require('../ParseQuery');
 const ParseUser = require('../ParseUser').default;
-const LocalDatastoreController = require('../LocalDatastoreController');
-const RNDatastoreController = require('../LocalDatastoreController.react-native');
-const BrowserStorageController = require('../StorageController.browser');
-const DefaultStorageController = require('../StorageController.default');
+const LocalDatastoreController = require('../LocalDatastoreController').default;
+const RNDatastoreController = require('../LocalDatastoreController.react-native').default;
+const BrowserStorageController = require('../StorageController.browser').default;
+const DefaultStorageController = require('../StorageController.default').default;
 
 const item1 = new ParseObject('Item');
 const item2 = new ParseObject('Item');

@@ -61,7 +61,7 @@ describe('Browser', () => {
   });
 
   it('load StorageController', () => {
-    const StorageController = require('../StorageController.browser');
+    const StorageController = require('../StorageController.browser').default;
     jest.spyOn(StorageController, 'setItem');
     const storage = require('../Storage');
     storage.setItem('key', 'value');

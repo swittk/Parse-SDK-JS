@@ -65,7 +65,7 @@ describe('EventuallyQueue', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     CoreManager.setAsyncStorage(mockRNStorageInterface);
-    CoreManager.setStorageController(require('../StorageController.react-native'));
+    CoreManager.setStorageController(require('../StorageController.react-native').default);
     CoreManager.setRESTController(RESTController);
     EventuallyQueue.stopPoll();
     await EventuallyQueue.clear();
