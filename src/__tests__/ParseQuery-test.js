@@ -33,7 +33,6 @@ mockObject.fromJSON = function (json) {
   return o;
 };
 jest.setMock('../ParseObject', mockObject);
-
 const mockLocalDatastore = {
   _serializeObjectsFromPinName: jest.fn(),
   checkIfEnabled: jest.fn(),
@@ -41,6 +40,7 @@ const mockLocalDatastore = {
 jest.setMock('../LocalDatastore', mockLocalDatastore);
 
 let CoreManager = require('../CoreManager');
+CoreManager.setParseObject(mockObject);
 const EventEmitter = require('../EventEmitter');
 const ParseError = require('../ParseError').default;
 const ParseGeoPoint = require('../ParseGeoPoint').default;

@@ -46,6 +46,8 @@ const ParseGeoPoint = require('../ParseGeoPoint').default;
 const ParseObject = require('../ParseObject');
 const ParseRelation = require('../ParseRelation').default;
 const ParseUser = require('../ParseUser').default;
+const CoreManager = require('../CoreManager');
+CoreManager.setParseObject(mockObject);
 
 describe('encode', () => {
   it('ignores primitives', () => {

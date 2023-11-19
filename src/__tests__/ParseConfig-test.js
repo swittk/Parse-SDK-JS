@@ -17,6 +17,7 @@ const CoreManager = require('../CoreManager');
 const ParseConfig = require('../ParseConfig').default;
 const ParseGeoPoint = require('../ParseGeoPoint').default;
 const Storage = require('../Storage');
+require('../ParseObject'); // Load the class into CoreManager
 
 CoreManager.set('APPLICATION_ID', 'A');
 CoreManager.set('JAVASCRIPT_KEY', 'B');

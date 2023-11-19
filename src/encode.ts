@@ -6,9 +6,9 @@ import ParseACL from './ParseACL';
 import ParseFile from './ParseFile';
 import ParseGeoPoint from './ParseGeoPoint';
 import ParsePolygon from './ParsePolygon';
-import ParseObject from './ParseObject';
 import { Op } from './ParseOp';
 import ParseRelation from './ParseRelation';
+import CoreManager from './CoreManager';
 
 /** Encodes values to storage type */
 function encode(
@@ -18,6 +18,7 @@ function encode(
   seen: Array<any>,
   offline?: boolean
 ): any {
+  const ParseObject = CoreManager.getParseObject();
   if (value instanceof ParseObject) {
     if (disallowObjects) {
       throw new Error('Parse Objects not allowed here');

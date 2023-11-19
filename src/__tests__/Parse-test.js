@@ -1,4 +1,5 @@
 jest.dontMock('../CoreManager');
+jest.dontMock('../ParseObject');
 jest.dontMock('../CryptoController');
 jest.dontMock('../decode');
 jest.dontMock('../encode');
