@@ -30,7 +30,7 @@ jest.setMock('../ParseUser', mockUser);
 const CoreManager = require('../CoreManager');
 const ParseObject = require('../ParseObject').default;
 const ParseSession = require('../ParseSession').default;
-// Register to Coremanager
+// Register our mock to Coremanager
 const spy0 = jest.spyOn(CoreManager, 'getParseUser').mockImplementation(() => require('../ParseUser'));
 
 CoreManager.set('APPLICATION_ID', 'A');

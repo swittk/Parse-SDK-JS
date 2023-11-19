@@ -170,6 +170,7 @@ CoreManager.set('APPLICATION_ID', 'A');
 CoreManager.set('JAVASCRIPT_KEY', 'B');
 CoreManager.set('MASTER_KEY', 'C');
 CoreManager.set('VERSION', 'V');
+// Register our mocks
 const spy = jest.spyOn(CoreManager, 'getParseQuery').mockImplementation(() => mockQuery);
 const spy2 = jest.spyOn(CoreManager, 'getEventuallyQueue').mockImplementation(() => EventuallyQueue);
 const spy3 = jest.spyOn(CoreManager, 'getParseUser').mockImplementation(() => require('../ParseUser').default);

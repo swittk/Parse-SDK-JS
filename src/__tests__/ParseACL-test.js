@@ -14,6 +14,7 @@ const ParseACL = require('../ParseACL').default;
 const ParseUser = require('../ParseUser').default;
 const ParseRole = require('../ParseRole');
 const CoreManager = require('../CoreManager');
+// Register our mock
 const spy = jest.spyOn(CoreManager, 'getParseRole').mockImplementation(() => { return require('../ParseRole') });
 
 

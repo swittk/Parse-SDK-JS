@@ -18,6 +18,7 @@ const ParseOps = require('../ParseOp');
 const TaskQueue = require('../TaskQueue');
 
 const CoreManager = require('../CoreManager');
+// Register our mock
 const spy = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => require('../ParseObject'));
 
 

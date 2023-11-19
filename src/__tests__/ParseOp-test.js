@@ -42,6 +42,7 @@ const {
   opFromJSON,
 } = ParseOp;
 const CoreManager = require('../CoreManager');
+// Register our mock
 const spy = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => require('../ParseObject'));
 const spy2 = jest.spyOn(CoreManager, 'getEventuallyQueue').mockImplementation(() => require('../EventuallyQueue'));
 

@@ -2,6 +2,7 @@ jest.dontMock('../encode');
 jest.dontMock('../ParseRelation');
 jest.dontMock('../ParseOp');
 jest.dontMock('../unique');
+jest.dontMock('../CoreManager');
 
 const mockStore = {};
 const mockObject = function (className) {
@@ -54,11 +55,10 @@ mockQuery.prototype = {
 };
 jest.setMock('../ParseQuery', mockQuery);
 const CoreManager = require('../CoreManager');
+// Register our mock
 const spy0 = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => mockObject);
 const spy1 = jest.spyOn(CoreManager, 'getParseQuery').mockImplementation(() => mockQuery);
 const ParseOp = require('../ParseOp');
-// TODO: Switt this shouldn't be needed if all circular deps are resolved.
-const spy2 = jest.spyOn(CoreManager, 'getParseOp').mockImplementation(() => require('../ParseOp'));
 const ParseObject = require('../ParseObject');
 const ParseRelation = require('../ParseRelation').default;
 

@@ -58,6 +58,7 @@ CoreManager.setInstallationController({
     return Promise.resolve('iid');
   },
 });
+// Register our mock
 const spy = jest.spyOn(CoreManager, 'getParseQuery').mockImplementation(() => { return require('../ParseQuery') });
 
 describe('EventuallyQueue', () => {

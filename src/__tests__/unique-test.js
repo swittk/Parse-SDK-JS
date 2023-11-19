@@ -17,6 +17,7 @@ jest.setMock('../ParseObject', mockObject);
 const unique = require('../unique').default;
 const ParseObject = require('../ParseObject');
 const CoreManager = require('../CoreManager');
+// Register our mock to CoreManager
 const spy = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => require('../ParseObject'));
 
 describe('unique', () => {
