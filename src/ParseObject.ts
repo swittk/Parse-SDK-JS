@@ -136,7 +136,6 @@ class ParseObject<T extends Attributes = any> {
     attributes?: T,
     options?: { ignoreValidation: boolean }
   ) {
-    this.attributes
     // Enable legacy initializers
     if (typeof this.initialize === 'function') {
       this.initialize.apply(this, arguments);
