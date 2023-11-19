@@ -36,7 +36,7 @@ describe('React Native', () => {
   });
 
   it('load EventEmitter', () => {
-    const eventEmitter = require('../EventEmitter');
+    const eventEmitter = require('../EventEmitter').default;
     expect(eventEmitter).toEqual(mockEmitter);
   });
 
@@ -47,7 +47,7 @@ describe('React Native', () => {
         toString: () => 'World',
       };
     });
-    const CryptoController = require('../CryptoController');
+    const CryptoController = require('../CryptoController').default;
     const phrase = CryptoController.encrypt({}, 'salt');
     expect(phrase).toBe('World');
     expect(CryptoJS.AES.encrypt).toHaveBeenCalled();

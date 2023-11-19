@@ -10,7 +10,7 @@ const b64Digit = require('../ParseFile').b64Digit;
 
 const ParseObject = require('../ParseObject').default;
 const CoreManager = require('../CoreManager').default;
-const EventEmitter = require('../EventEmitter');
+const EventEmitter = require('../EventEmitter').default;
 
 const mockHttp = require('http');
 const mockHttps = require('https');

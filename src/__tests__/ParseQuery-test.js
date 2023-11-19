@@ -43,7 +43,7 @@ jest.setMock('../LocalDatastore', mockLocalDatastore);
 
 let CoreManager = require('../CoreManager').default;
 CoreManager.setParseObject(mockObject);
-const EventEmitter = require('../EventEmitter');
+const EventEmitter = require('../EventEmitter').default;
 const ParseError = require('../ParseError').default;
 const ParseGeoPoint = require('../ParseGeoPoint').default;
 let ParseObject = require('../ParseObject');
