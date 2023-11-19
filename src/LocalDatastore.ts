@@ -90,10 +90,10 @@ const LocalDatastore = {
 
   // Removes object and children keys from pin name
   // Keeps the object and children pinned
-  async _handleUnPinAllWithName(name: string, objects: Array<ParseObject>) {
+  async _handleUnPinAllWithName<T>(name: string, objects: Array<ParseObject<T>>) {
     const localDatastore = await this._getAllContents();
     const pinName = this.getPinName(name);
-    const promises = [];
+    const promises: Promise<void>[] = [];
     let objectKeys = [];
     for (const parent of objects) {
       const children = this._getChildren(parent);
@@ -126,7 +126,7 @@ const LocalDatastore = {
         promises.push(this.unPinWithName(objectKey));
       }
     }
-    return Promise.all(promises);
+    return Promise.all(promises) as Promise<any> as Promise<void>;
   },
 
   // Retrieve all pointer fields from object recursively
@@ -188,7 +188,7 @@ const LocalDatastore = {
   // Replaces object pointers with pinned pointers
   // The object pointers may contain old data
   // Uses Breadth First Search Algorithm
-  async _serializeObject(objectKey: string, localDatastore: any) {
+  async _serializeObject(objectKey: string, localDatastore?: any) {
     let LDS = localDatastore;
     if (!LDS) {
       LDS = await this._getAllContents();

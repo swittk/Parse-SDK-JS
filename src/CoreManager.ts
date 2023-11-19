@@ -14,6 +14,7 @@ import type ParseConfig from './ParseConfig';
 import type LiveQueryClient from './LiveQueryClient';
 import type ParseSchema from './ParseSchema';
 import type { StorageController } from './Storage';
+import type LocalDatastore from './LocalDatastore';
 
 type AnalyticsController = {
   track: (name: string, dimensions: { [key: string]: string }) => Promise<any>,
@@ -226,7 +227,8 @@ type Config = {
   HooksController?: HooksController,
   WebSocketController?: new (url: string | URL, protocols?: string | string[] | undefined) => WebSocketController,
   LiveQueryController?: LiveQueryControllerType,
-  AsyncStorage?: AsyncStorageType
+  AsyncStorage?: AsyncStorageType,
+  LocalDatastore?: typeof LocalDatastore
 };
 
 const config: Config & { [key: string]: any } = {
