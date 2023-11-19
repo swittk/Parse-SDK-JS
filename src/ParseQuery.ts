@@ -14,21 +14,26 @@ import { DEFAULT_PIN } from './LocalDatastoreUtils';
 import type LiveQuerySubscription from './LiveQuerySubscription';
 import type { RequestOptions, FullOptions } from './RESTController';
 
-// According to http://docs.parseplatform.org/rest/guide/#aggregate-queries
+
+/** 
+ * According to http://docs.parseplatform.org/rest/guide/#aggregate-queries
+ * Properties are renamed to `$group` as per MongoDB native specs as of parse-server 6.4.0 
+ * https://github.com/parse-community/parse-server/blob/759731926f3017df563eb1cc25196770c14ac3f7/changelogs/CHANGELOG_beta.md?plain=1#L138 
+*/
 interface AggregationOptions {
-  group?: (Record<string, any> & { objectId?: string }) | undefined;
-  match?: Record<string, any> | undefined;
-  project?: Record<string, any> | undefined;
-  limit?: number | undefined;
-  skip?: number | undefined;
+  $group?: (Record<string, any> & { _id?: string }) | undefined;
+  $match?: Record<string, any> | undefined;
+  $project?: Record<string, any> | undefined;
+  $limit?: number | undefined;
+  $skip?: number | undefined;
   // Sort documentation https://docs.mongodb.com/v3.2/reference/operator/aggregation/sort/#pipe._S_sort
-  sort?: Record<string, 1 | -1> | undefined;
+  $sort?: Record<string, 1 | -1> | undefined;
   // Sample documentation: https://docs.mongodb.com/v3.2/reference/operator/aggregation/sample/
-  sample?: { size: number } | undefined;
+  $sample?: { size: number } | undefined;
   // Count documentation: https://docs.mongodb.com/manual/reference/operator/aggregation/count/
-  count?: string | undefined;
+  $count?: string | undefined;
   // Lookup documentation: https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/
-  lookup?:
+  $lookup?:
   | {
     from: string;
     localField: string;
@@ -43,7 +48,7 @@ interface AggregationOptions {
   }
   | undefined;
   // Graph Lookup documentation: https://docs.mongodb.com/manual/reference/operator/aggregation/graphLookup/
-  graphLookup?:
+  $graphLookup?:
   | {
     from: string;
     startWith?: string;
@@ -56,9 +61,9 @@ interface AggregationOptions {
   }
   | undefined;
   // Facet documentation: https://docs.mongodb.com/manual/reference/operator/aggregation/facet/
-  facet?: Record<string, Array<Record<string, any>>> | undefined;
+  $facet?: Record<string, Array<Record<string, any>>> | undefined;
   // Unwind documentation: https://www.mongodb.com/docs/manual/reference/operator/aggregation/unwind/
-  unwind?:
+  $unwind?:
   | {
     path: string;
     includeArrayIndex?: string;
