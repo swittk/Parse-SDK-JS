@@ -7,7 +7,7 @@ jest.dontMock('../EventEmitter');
 jest.dontMock('../LiveQueryClient');
 jest.dontMock('../LocalDatastore');
 jest.dontMock('../ParseObject');
-jest.dontMock('../Storage');
+jest.dontMock('../Storage').default;
 
 jest.mock(
   'react-native/Libraries/vendor/emitter/EventEmitter',
@@ -63,7 +63,7 @@ describe('React Native', () => {
   it('load StorageController', () => {
     const StorageController = require('../StorageController.react-native').default;
     jest.spyOn(StorageController, 'setItemAsync');
-    const storage = require('../Storage');
+    const storage = require('../Storage').default;
     storage.setItemAsync('key', 'value');
     expect(StorageController.setItemAsync).toHaveBeenCalledTimes(1);
   });

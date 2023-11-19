@@ -6,7 +6,7 @@ jest.dontMock('../ParseError');
 jest.dontMock('../EventEmitter');
 jest.dontMock('../Parse');
 jest.dontMock('../RESTController');
-jest.dontMock('../Storage');
+jest.dontMock('../Storage').default;
 jest.dontMock('crypto-js/aes');
 jest.setMock('../EventuallyQueue', { default: { poll: jest.fn() } });
 
@@ -63,7 +63,7 @@ describe('Browser', () => {
   it('load StorageController', () => {
     const StorageController = require('../StorageController.browser').default;
     jest.spyOn(StorageController, 'setItem');
-    const storage = require('../Storage');
+    const storage = require('../Storage').default;
     storage.setItem('key', 'value');
     expect(StorageController.setItem).toHaveBeenCalledTimes(1);
   });
@@ -82,7 +82,7 @@ describe('Browser', () => {
     }
     global.XDomainRequest = XDomainRequest;
     console.log('hererer');
-    const RESTController = require('../RESTController');
+    const RESTController = require('../RESTController').default;
     const options = {
       progress: () => { },
       requestTask: () => { },
@@ -112,7 +112,7 @@ describe('Browser', () => {
     class XMLHttpRequest { }
     global.XDomainRequest = XDomainRequest;
     global.XMLHttpRequest = XMLHttpRequest;
-    const RESTController = require('../RESTController');
+    const RESTController = require('../RESTController').default;
     try {
       await RESTController.ajax('POST', 'classes/TestObject');
       expect(true).toBe(false);
@@ -140,7 +140,7 @@ describe('Browser', () => {
     class XMLHttpRequest { }
     global.XDomainRequest = XDomainRequest;
     global.XMLHttpRequest = XMLHttpRequest;
-    const RESTController = require('../RESTController');
+    const RESTController = require('../RESTController').default;
     try {
       await RESTController.ajax('POST', 'classes/TestObject');
       expect(true).toBe(false);

@@ -121,7 +121,6 @@ const Storage = {
   },
 };
 
-module.exports = Storage;
 export default Storage;
 
 if (process.env.PARSE_BUILD === 'react-native') {

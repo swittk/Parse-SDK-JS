@@ -275,7 +275,7 @@ describe('WeChat StorageController', () => {
   });
 });
 
-const Storage = require('../Storage');
+const Storage = require('../Storage').default;
 
 describe('Storage (Default StorageController)', () => {
   beforeEach(() => {

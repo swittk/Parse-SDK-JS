@@ -6,7 +6,7 @@ jest.mock('../uuid', () => {
 });
 
 const CoreManager = require('../CoreManager').default;
-const RESTController = require('../RESTController');
+const RESTController = require('../RESTController').default;
 const flushPromises = require('./test_helpers/flushPromises');
 const mockXHR = require('./test_helpers/mockXHR');
 const mockWeChat = require('./test_helpers/mockWeChat');

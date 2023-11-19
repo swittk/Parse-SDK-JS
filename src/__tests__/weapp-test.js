@@ -9,7 +9,7 @@ jest.dontMock('../ParseFile');
 jest.dontMock('../ParseObject');
 jest.dontMock('../RESTController');
 jest.dontMock('../Socket.weapp');
-jest.dontMock('../Storage');
+jest.dontMock('../Storage').default;
 jest.dontMock('../uuid');
 jest.dontMock('crypto-js/aes');
 jest.dontMock('./test_helpers/mockWeChat');
@@ -35,14 +35,14 @@ describe('WeChat', () => {
   it('load StorageController', () => {
     const StorageController = require('../StorageController.weapp');
     jest.spyOn(StorageController, 'setItem');
-    const storage = require('../Storage');
+    const storage = require('../Storage').default;
     storage.setItem('key', 'value');
     expect(StorageController.setItem).toHaveBeenCalledTimes(1);
   });
 
   it('load RESTController', () => {
     const XHR = require('../Xhr.weapp');
-    const RESTController = require('../RESTController');
+    const RESTController = require('../RESTController').default;
     expect(RESTController._getXHR()).toEqual(XHR);
   });
 

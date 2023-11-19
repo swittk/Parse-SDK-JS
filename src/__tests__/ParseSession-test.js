@@ -9,7 +9,7 @@ jest.dontMock('../ParseObject');
 jest.dontMock('../ParseOp');
 jest.dontMock('../ParseSession');
 jest.dontMock('../RESTController');
-jest.dontMock('../Storage');
+jest.dontMock('../Storage').default;
 jest.dontMock('../StorageController.default');
 jest.dontMock('../TaskQueue');
 jest.dontMock('../unique');

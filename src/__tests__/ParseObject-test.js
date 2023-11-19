@@ -152,7 +152,7 @@ const ParsePolygon = require('../ParsePolygon').default;
 const ParseObject = require('../ParseObject').default;
 
 const ParseOp = require('../ParseOp');
-const RESTController = require('../RESTController');
+const RESTController = require('../RESTController').default;
 const SingleInstanceStateController = require('../SingleInstanceStateController');
 const unsavedChildren = require('../unsavedChildren').default;
 

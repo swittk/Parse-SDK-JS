@@ -14,7 +14,7 @@ jest.dontMock('../ParseUser');
 jest.dontMock('../promiseUtils');
 jest.dontMock('../RESTController');
 jest.dontMock('../SingleInstanceStateController');
-jest.dontMock('../Storage');
+jest.dontMock('../Storage').default;
 jest.dontMock('../StorageController.default');
 jest.dontMock('../TaskQueue');
 jest.dontMock('../unique');
@@ -37,7 +37,7 @@ const CryptoController = require('../CryptoController').default;
 const LocalDatastore = require('../LocalDatastore').default;
 const ParseObject = require('../ParseObject').default;
 const ParseUser = require('../ParseUser').default;
-const Storage = require('../Storage');
+const Storage = require('../Storage').default;
 const ParseError = require('../ParseError').default;
 const AnonymousUtils = require('../AnonymousUtils').default;
 
