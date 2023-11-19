@@ -3,6 +3,7 @@ jest.dontMock('../encode');
 jest.dontMock('../decode');
 jest.dontMock('../ParseOp');
 jest.dontMock('../unique');
+jest.dontMock('../CoreManager');
 
 let localCount = 0;
 const mockObject = function (className, id) {

@@ -2,7 +2,8 @@
 
 jest.autoMockOff();
 jest.unmock('../LocalDatastoreUtils');
-
+jest.dontMock('../ParseOp');
+require('../ParseOp');
 const encode = require('../encode').default;
 
 let objectCount = 0;

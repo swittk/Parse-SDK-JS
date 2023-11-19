@@ -7,11 +7,13 @@ jest.dontMock('../Parse');
 jest.dontMock('../LocalDatastore');
 jest.dontMock('crypto-js/aes');
 jest.setMock('../EventuallyQueue', { poll: jest.fn() });
+jest.dontMock('../ParseOp');
 
 global.indexedDB = require('./test_helpers/mockIndexedDB');
 const CoreManager = require('../CoreManager');
 const EventuallyQueue = require('../EventuallyQueue');
 const Parse = require('../Parse');
+
 
 describe('Parse module', () => {
   it('can be initialized with keys', () => {

@@ -6,7 +6,6 @@ import ParseACL from './ParseACL';
 import ParseFile from './ParseFile';
 import ParseGeoPoint from './ParseGeoPoint';
 import ParsePolygon from './ParsePolygon';
-import { Op } from './ParseOp';
 import ParseRelation from './ParseRelation';
 import CoreManager from './CoreManager';
 
@@ -39,6 +38,7 @@ function encode(
     seen = seen.concat(seenEntry);
     return value._toFullJSON(seen, offline);
   }
+  const { Op } = CoreManager.getParseOp();
   if (
     value instanceof Op ||
     value instanceof ParseACL ||

@@ -1,3 +1,4 @@
+jest.dontMock('../ParseOp');
 jest.dontMock('../CoreManager');
 jest.dontMock('../encode');
 jest.dontMock('../decode');
@@ -13,6 +14,7 @@ jest.dontMock('../LocalDatastore');
 jest.dontMock('../OfflineQuery');
 jest.dontMock('../LiveQuerySubscription');
 
+require('../ParseOp'); // Load ParseOp first
 jest.mock('../uuid', () => {
   let value = 0;
   return () => value++;

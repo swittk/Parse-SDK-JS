@@ -4,6 +4,7 @@ jest.dontMock('../ParseFile');
 jest.dontMock('../ParseGeoPoint');
 jest.dontMock('../ParseUser');
 jest.dontMock('../CoreManager');
+jest.dontMock('../ParseOp');
 
 const mockObject = function (className) {
   this.className = className;
@@ -47,6 +48,7 @@ const ParseObject = require('../ParseObject');
 const ParseRelation = require('../ParseRelation').default;
 const ParseUser = require('../ParseUser').default;
 const CoreManager = require('../CoreManager');
+require('../ParseOp');
 CoreManager.setParseObject(mockObject);
 
 describe('encode', () => {
