@@ -14,7 +14,6 @@ jest.dontMock('../StorageController.default');
 jest.dontMock('../TaskQueue');
 jest.dontMock('../unique');
 jest.dontMock('../UniqueInstanceStateController');
-
 jest.dontMock('./test_helpers/mockXHR');
 
 const mockUser = function (token) {
@@ -31,6 +30,8 @@ jest.setMock('../ParseUser', mockUser);
 const CoreManager = require('../CoreManager');
 const ParseObject = require('../ParseObject').default;
 const ParseSession = require('../ParseSession').default;
+// Register to Coremanager
+const spy0 = jest.spyOn(CoreManager, 'getParseUser').mockImplementation(() => require('../ParseUser'));
 
 CoreManager.set('APPLICATION_ID', 'A');
 CoreManager.set('JAVASCRIPT_KEY', 'B');

@@ -65,6 +65,9 @@ class MockObject {
   set(key, value) {
     this.attributes[key] = value;
   }
+  static registerSubclass() {
+
+  }
 }
 
 const mockAsyncStorage = require('./test_helpers/mockRNStorage');
@@ -90,6 +93,8 @@ jest.mock('../ParseQuery', () => {
 const CoreManager = require('../CoreManager');
 const LocalDatastore = require('../LocalDatastore');
 const ParseObject = require('../ParseObject');
+const spy0 = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => require('../ParseObject'));
+const spy1 = jest.spyOn(CoreManager, 'getParseQuery').mockImplementation(() => require('../ParseQuery'));
 const ParseQuery = require('../ParseQuery');
 const ParseUser = require('../ParseUser').default;
 const LocalDatastoreController = require('../LocalDatastoreController');

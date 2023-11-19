@@ -1,7 +1,6 @@
 import CoreManager from './CoreManager';
 import isRevocableSession from './isRevocableSession';
 import ParseObject from './ParseObject';
-import ParseUser from './ParseUser';
 
 import type { AttributeMap } from './ObjectStateMutations';
 import type { RequestOptions, FullOptions } from './RESTController';
@@ -61,6 +60,7 @@ class ParseSession extends ParseObject {
     if (options.hasOwnProperty('useMasterKey')) {
       sessionOptions.useMasterKey = options.useMasterKey;
     }
+    const ParseUser = CoreManager.getParseUser();
     return ParseUser.currentAsync().then(user => {
       if (!user) {
         return Promise.reject('There is no current user.');
@@ -81,6 +81,7 @@ class ParseSession extends ParseObject {
    * @returns {boolean}
    */
   static isCurrentSessionRevocable(): boolean {
+    const ParseUser = CoreManager.getParseUser();
     const currentUser = ParseUser.current();
     if (currentUser) {
       return isRevocableSession(currentUser.getSessionToken() || '');

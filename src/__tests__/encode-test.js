@@ -2,6 +2,8 @@ jest.dontMock('../encode');
 jest.dontMock('../ParseACL');
 jest.dontMock('../ParseFile');
 jest.dontMock('../ParseGeoPoint');
+jest.dontMock('../ParseUser');
+jest.dontMock('../CoreManager');
 
 const mockObject = function (className) {
   this.className = className;
@@ -43,6 +45,7 @@ const ParseFile = require('../ParseFile').default;
 const ParseGeoPoint = require('../ParseGeoPoint').default;
 const ParseObject = require('../ParseObject');
 const ParseRelation = require('../ParseRelation').default;
+const ParseUser = require('../ParseUser').default;
 
 describe('encode', () => {
   it('ignores primitives', () => {

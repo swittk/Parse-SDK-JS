@@ -16,7 +16,6 @@ import type ParseSchema from './ParseSchema';
 import type { StorageController } from './Storage';
 import type ParseQuery from './ParseQuery';
 import type * as ParseOp from './ParseOp';
-import type ParseACL from './ParseACL';
 import type ParseRole from './ParseRole';
 import type EventuallyQueue from './EventuallyQueue';
 
@@ -235,7 +234,7 @@ type Config = {
   ParseQuery?: typeof ParseQuery,
   ParseOp?: typeof ParseOp,
   ParseObject?: typeof ParseObject,
-  ParseACL?: typeof ParseACL,
+  ParseUser?: typeof ParseUser,
   ParseRole?: typeof ParseRole,
   EventuallyQueue?: typeof EventuallyQueue,
 };
@@ -581,11 +580,11 @@ const CoreManager = {
   getParseObject() {
     return config['ParseObject']!;
   },
-  setParseACL(parseacl: typeof ParseACL) {
-    config['ParseACL'] = parseacl;
+  setParseUser(parseuser: typeof ParseUser) {
+    config['ParseUser'] = parseuser;
   },
-  getParseACL() {
-    return config['ParseACL']!;
+  getParseUser() {
+    return config['ParseUser']!;
   },
   setParseRole(parserole: typeof ParseRole) {
     config['ParseRole'] = parserole;

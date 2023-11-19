@@ -1,4 +1,6 @@
 jest.dontMock('../ParseACL');
+jest.dontMock('../ParseUser');
+jest.dontMock('../CoreManager');
 
 const mockRole = function (name) {
   this.name = name;

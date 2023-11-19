@@ -7,6 +7,7 @@ const ParseGeoPoint = require('../ParseGeoPoint').default;
 const ParseObject = require('../ParseObject').default;
 // Need this to instantiate it.
 const ParseRole = require('../ParseRole').default;
+const ParseUser = require('../ParseUser').default;
 
 describe('equals', () => {
   it('tests equality of primitives', () => {

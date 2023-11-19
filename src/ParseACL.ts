@@ -4,7 +4,7 @@
 
 import CoreManager from './CoreManager';
 import type ParseRole from './ParseRole';
-import ParseUser from './ParseUser';
+import type ParseUser from './ParseUser';
 
 type PermissionsMap = { [permission: string]: boolean };
 type ByIdMap = { [userId: string]: PermissionsMap };
@@ -34,6 +34,7 @@ class ParseACL {
   constructor(arg1: ParseUser | ByIdMap) {
     this.permissionsById = {};
     if (arg1 && typeof arg1 === 'object') {
+      const ParseUser = CoreManager.getParseUser();
       if (arg1 instanceof ParseUser) {
         this.setReadAccess(arg1, true);
         this.setWriteAccess(arg1, true);
@@ -102,6 +103,7 @@ class ParseACL {
 
   _setAccess(accessType: string, userId: ParseUser | ParseRole | string, allowed: boolean) {
     const ParseRole = CoreManager.getParseRole();
+    const ParseUser = CoreManager.getParseUser();
     if (userId instanceof ParseUser) {
       // We would expect the ParseUser to have an ID; we don't have Users without IDs, right?
       userId = userId.id!;
@@ -141,6 +143,7 @@ class ParseACL {
 
   _getAccess(accessType: string, userId: ParseUser | ParseRole | string): boolean {
     const ParseRole = CoreManager.getParseRole();
+    const ParseUser = CoreManager.getParseUser();
     if (userId instanceof ParseUser) {
       // We would expect the ParseUser to have an ID; we don't have Users without IDs, right?
       userId = userId.id!;

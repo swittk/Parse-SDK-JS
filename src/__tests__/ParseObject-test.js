@@ -150,6 +150,7 @@ const ParseFile = require('../ParseFile').default;
 const ParseGeoPoint = require('../ParseGeoPoint').default;
 const ParsePolygon = require('../ParsePolygon').default;
 const ParseObject = require('../ParseObject').default;
+
 const ParseOp = require('../ParseOp');
 const RESTController = require('../RESTController');
 const SingleInstanceStateController = require('../SingleInstanceStateController');
@@ -171,6 +172,7 @@ CoreManager.set('MASTER_KEY', 'C');
 CoreManager.set('VERSION', 'V');
 const spy = jest.spyOn(CoreManager, 'getParseQuery').mockImplementation(() => mockQuery);
 const spy2 = jest.spyOn(CoreManager, 'getEventuallyQueue').mockImplementation(() => EventuallyQueue);
+const spy3 = jest.spyOn(CoreManager, 'getParseUser').mockImplementation(() => require('../ParseUser').default);
 
 const { SetOp, UnsetOp, IncrementOp } = require('../ParseOp');
 
