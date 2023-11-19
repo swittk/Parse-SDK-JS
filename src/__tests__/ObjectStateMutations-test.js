@@ -18,7 +18,7 @@ const ObjectStateMutations = require('../ObjectStateMutations');
 const ParseOps = require('../ParseOp');
 const TaskQueue = require('../TaskQueue');
 
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 // Register our mock
 const spy = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => require('../ParseObject'));
 

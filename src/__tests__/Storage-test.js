@@ -4,7 +4,7 @@ const mockRNStorageInterface = require('./test_helpers/mockRNStorage');
 const mockStorageInterface = require('./test_helpers/mockStorageInteface');
 const mockIndexedDB = require('./test_helpers/mockIndexedDB');
 const mockWeChat = require('./test_helpers/mockWeChat');
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 
 global.wx = mockWeChat;
 global.localStorage = mockStorageInterface;

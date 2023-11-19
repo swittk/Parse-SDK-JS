@@ -5,7 +5,7 @@ jest.mock('../uuid', () => {
   return () => (value++).toString();
 });
 
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 const RESTController = require('../RESTController');
 const flushPromises = require('./test_helpers/flushPromises');
 const mockXHR = require('./test_helpers/mockXHR');

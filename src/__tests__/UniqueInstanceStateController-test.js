@@ -16,7 +16,7 @@ const mockObject = function (className) {
 };
 mockObject.registerSubclass = function () {};
 jest.setMock('../ParseObject', mockObject);
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 CoreManager.setParseObject(mockObject);
 const ParseFile = require('../ParseFile').default;
 const ParseGeoPoint = require('../ParseGeoPoint').default;

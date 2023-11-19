@@ -24,7 +24,7 @@ jest.mock(
 );
 
 const mockEmitter = require('react-native/Libraries/vendor/emitter/EventEmitter').default;
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 
 describe('React Native', () => {
   beforeEach(() => {

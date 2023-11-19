@@ -54,7 +54,7 @@ mockQuery.prototype = {
   },
 };
 jest.setMock('../ParseQuery', mockQuery);
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 // Register our mock
 const spy0 = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => mockObject);
 const spy1 = jest.spyOn(CoreManager, 'getParseQuery').mockImplementation(() => mockQuery);

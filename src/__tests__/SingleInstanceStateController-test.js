@@ -13,7 +13,7 @@ const mockObject = function () { };
 mockObject.registerSubclass = function () { };
 jest.setMock('../ParseObject', mockObject);
 jest.useFakeTimers();
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 CoreManager.setParseObject(mockObject);
 
 const ParseFile = require('../ParseFile').default;

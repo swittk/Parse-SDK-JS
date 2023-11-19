@@ -15,7 +15,7 @@ jest.setMock('../ParseObject', mockObject);
 
 const arrayContainsObject = require('../arrayContainsObject').default;
 const ParseObject = require('../ParseObject');
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 // Register our mock
 const spy = jest.spyOn(CoreManager, 'getParseObject').mockImplementation(() => require('../ParseObject'));
 

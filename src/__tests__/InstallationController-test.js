@@ -7,7 +7,7 @@ jest.mock('../uuid', () => {
   return () => value++ + '';
 });
 
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 const InstallationController = require('../InstallationController');
 const Storage = require('../Storage');
 

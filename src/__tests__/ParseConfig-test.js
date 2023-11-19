@@ -13,7 +13,7 @@ jest.dontMock('../StorageController.default');
 jest.dontMock('./test_helpers/mockAsyncStorage');
 jest.dontMock('../ParseObject');
 
-const CoreManager = require('../CoreManager');
+const CoreManager = require('../CoreManager').default;
 require('../ParseOp');
 const mockAsyncStorage = require('./test_helpers/mockAsyncStorage');
 const ParseConfig = require('../ParseConfig').default;
