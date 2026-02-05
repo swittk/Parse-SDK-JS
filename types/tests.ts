@@ -1858,7 +1858,21 @@ function testQuery() {
       nestedArrayPrimitive: string[];
       complexNestedArrayObj: { field1: { field2: { field3: { field4: number, field5: string, field6: MySubClass }[] } }[] }
     }> {}
+    class A extends Parse.Object<object> {}
+    class B extends Parse.Object<{ a?: A }> {}
+    class C extends Parse.Object<{ b?: B }> {}
+    class D extends Parse.Object<{ c?: C }> {}
     const query = new Parse.Query(MySubClass);
+    const queryDeepInclude = new Parse.Query(D);
+
+    // $ExpectType ParseQuery<D>
+    queryDeepInclude.include('c.b.a');
+    queryDeepInclude.include('c.b.missing');
+
+    class Node extends Parse.Object<{ next?: Node }> {}
+    const recursiveQuery = new Parse.Query(Node);
+    // $ExpectType ParseQuery<Node>
+    recursiveQuery.include('next.next');
 
     // $ExpectType ParseQuery<MySubClass>
     query.addAscending(['attribute1', 'attribute2', 'updatedAt']);

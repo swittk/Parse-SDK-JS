@@ -313,7 +313,7 @@ const LocalDatastore = {
       return;
     }
     const localDatastore = await this._getAllContents();
-    const keys = [];
+    const keys: string[] = [];
     for (const key in localDatastore) {
       if (key.startsWith(OBJECT_PREFIX)) {
         keys.push(key);
@@ -323,7 +323,7 @@ const LocalDatastore = {
       return;
     }
     this.isSyncing = true;
-    const pointersHash = {};
+    const pointersHash: Record<string, Set<string>> = {};
     for (const key of keys) {
       // Ignore the OBJECT_PREFIX
       let [, , className, objectId] = key.split('_');
