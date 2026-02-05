@@ -9,6 +9,10 @@ import { DEFAULT_PIN } from './LocalDatastoreUtils';
 
 import type LiveQuerySubscription from './LiveQuerySubscription';
 import type { RequestOptions, FullOptions } from './RESTController';
+import type ParseACL from './ParseACL';
+import type ParseFile from './ParseFile';
+import type ParsePolygon from './ParsePolygon';
+import type ParseRelation from './ParseRelation';
 import type { Pointer } from './ParseObject';
 
 type BatchOptions = FullOptions & {
@@ -59,6 +63,65 @@ interface BaseAttributes {
   objectId: string;
   updatedAt: Date;
 }
+type Primitive = string | number | boolean | bigint | symbol | null | undefined;
+type NonTraversable =
+  | Primitive
+  | Date
+  | RegExp
+  | Function
+  | ParseObject
+  | ParseGeoPoint
+  | ParseFile
+  | ParsePolygon
+  | ParseRelation
+  | ParseACL;
+type IsAny<T> = 0 extends (1 & T) ? true : false;
+type KeyOf<T> = Extract<keyof T, string>;
+type PrevDepth = [never, 0, 1, 2, 3, 4, 5, 6];
+type DotJoin<K extends string, P extends string> = `${K}.${P}`;
+type DotPath<T, Depth extends number = 5> = IsAny<T> extends true
+  ? string
+  : T extends NonTraversable
+    ? never
+    : T extends ReadonlyArray<infer E>
+      ? DotPath<E, Depth>
+      : T extends object
+        ? {
+            [K in KeyOf<T>]:
+              | K
+              | (Depth extends 0
+                  ? never
+                  : T[K] extends NonTraversable
+                    ? never
+                    : T[K] extends ReadonlyArray<infer E>
+                      ? DotJoin<K, DotPath<E, PrevDepth[Depth]>>
+                      : T[K] extends object
+                        ? DotJoin<K, DotPath<T[K], PrevDepth[Depth]>>
+                        : never);
+          }[KeyOf<T>]
+        : never;
+type PathValue<T, P extends string, Depth extends number = 5> = IsAny<T> extends true
+  ? any
+  : T extends ReadonlyArray<infer E>
+    ? PathValue<E, P, Depth>
+    : P extends `${infer K}.${infer Rest}`
+      ? K extends KeyOf<T>
+        ? T[K] extends ReadonlyArray<infer E>
+          ? PathValue<E, Rest, PrevDepth[Depth]>
+          : T[K] extends object
+            ? PathValue<T[K], Rest, PrevDepth[Depth]>
+            : never
+        : never
+      : P extends KeyOf<T>
+        ? T[P]
+        : never;
+type QueryAttributeKey<T> = DotPath<T>;
+type QueryKey<T> = QueryAttributeKey<T> | keyof BaseAttributes;
+type QueryValue<T, K extends QueryKey<T>> = K extends keyof BaseAttributes
+  ? BaseAttributes[K]
+  : PathValue<T, Extract<K, string>>;
+type EqualToValue<T> = T | (T extends ParseObject ? Pointer : T extends ReadonlyArray<infer E> ? E : never);
+type ContainedInValue<T> = T | (T extends ParseObject ? string : never);
 
 /**
  * Converts a string into a regex that matches it.
@@ -363,7 +426,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param value
    * @returns {Parse.Query}
    */
-  _addCondition<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  _addCondition<K extends QueryKey<T['attributes']>>(
     key: K,
     condition: string,
     value: any
@@ -782,7 +845,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {string} key A field to find distinct values
    * @returns {Promise} A promise that is resolved with the query completes.
    */
-  distinct<K extends keyof T['attributes'], V = T['attributes'][K]>(key: K): Promise<V[]> {
+  distinct<K extends QueryAttributeKey<T['attributes']>, V = PathValue<T['attributes'], K>>(
+    key: K
+  ): Promise<V[]> {
     const distinctOptions = { useMasterKey: true };
     this._setRequestTask(distinctOptions);
     const params = {
@@ -1148,15 +1213,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param value The value that the Parse.Object must contain.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  equalTo<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  equalTo<K extends QueryKey<T['attributes']>>(
     key: K,
-    value:
-      | T['attributes'][K]
-      | (T['attributes'][K] extends ParseObject
-          ? Pointer
-          : T['attributes'][K] extends (infer E)[]
-            ? E
-            : never)
+    value: EqualToValue<QueryValue<T['attributes'], K>>
   ): this {
     if (key && typeof key === 'object') {
       Object.entries(key).forEach(([k, val]) => this.equalTo(k, val as any));
@@ -1177,15 +1236,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param value The value that must not be equalled.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  notEqualTo<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  notEqualTo<K extends QueryKey<T['attributes']>>(
     key: K,
-    value:
-      | T['attributes'][K]
-      | (T['attributes'][K] extends ParseObject
-          ? Pointer
-          : T['attributes'][K] extends (infer E)[]
-            ? E
-            : never)
+    value: EqualToValue<QueryValue<T['attributes'], K>>
   ): this {
     if (key && typeof key === 'object') {
       Object.entries(key).forEach(([k, val]) => this.notEqualTo(k, val as any));
@@ -1202,9 +1255,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param value The value that provides an upper bound.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  lessThan<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  lessThan<K extends QueryKey<T['attributes']>>(
     key: K,
-    value: T['attributes'][K]
+    value: QueryValue<T['attributes'], K>
   ): this {
     return this._addCondition(key, '$lt', value);
   }
@@ -1217,9 +1270,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param value The value that provides an lower bound.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  greaterThan<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  greaterThan<K extends QueryKey<T['attributes']>>(
     key: K,
-    value: T['attributes'][K]
+    value: QueryValue<T['attributes'], K>
   ): this {
     return this._addCondition(key, '$gt', value);
   }
@@ -1232,9 +1285,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param value The value that provides an upper bound.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  lessThanOrEqualTo<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  lessThanOrEqualTo<K extends QueryKey<T['attributes']>>(
     key: K,
-    value: T['attributes'][K]
+    value: QueryValue<T['attributes'], K>
   ): this {
     return this._addCondition(key, '$lte', value);
   }
@@ -1247,9 +1300,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {*} value The value that provides an lower bound.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  greaterThanOrEqualTo<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  greaterThanOrEqualTo<K extends QueryKey<T['attributes']>>(
     key: K,
-    value: T['attributes'][K]
+    value: QueryValue<T['attributes'], K>
   ): this {
     return this._addCondition(key, '$gte', value);
   }
@@ -1262,9 +1315,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {Array<*>} values The values that will match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  containedIn<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  containedIn<K extends QueryKey<T['attributes']>>(
     key: K,
-    values: (T['attributes'][K] | (T['attributes'][K] extends ParseObject ? string : never))[]
+    values: ContainedInValue<QueryValue<T['attributes'], K>>[]
   ): this {
     return this._addCondition(key, '$in', values);
   }
@@ -1277,9 +1330,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {Array<*>} values The values that will not match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  notContainedIn<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  notContainedIn<K extends QueryKey<T['attributes']>>(
     key: K,
-    values: T['attributes'][K][]
+    values: QueryValue<T['attributes'], K>[]
   ): this {
     return this._addCondition(key, '$nin', values);
   }
@@ -1292,9 +1345,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {Array} values The values that will match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  containedBy<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  containedBy<K extends QueryKey<T['attributes']>>(
     key: K,
-    values: (T['attributes'][K] | (T['attributes'][K] extends ParseObject ? string : never))[]
+    values: ContainedInValue<QueryValue<T['attributes'], K>>[]
   ): this {
     return this._addCondition(key, '$containedBy', values);
   }
@@ -1307,7 +1360,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {Array} values The values that will match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  containsAll<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, values: any[]): this {
+  containsAll<K extends QueryKey<T['attributes']>>(key: K, values: any[]): this {
     return this._addCondition(key, '$all', values);
   }
 
@@ -1319,7 +1372,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {Array<string>} values The string values that will match as starting string.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  containsAllStartingWith<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  containsAllStartingWith<K extends QueryKey<T['attributes']>>(
     key: K,
     values: any[]
   ): this {
@@ -1340,7 +1393,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {string} key The key that should exist.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  exists<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K): this {
+  exists<K extends QueryKey<T['attributes']>>(key: K): this {
     return this._addCondition(key, '$exists', true);
   }
 
@@ -1350,7 +1403,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {string} key The key that should not exist
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  doesNotExist<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K): this {
+  doesNotExist<K extends QueryKey<T['attributes']>>(key: K): this {
     return this._addCondition(key, '$exists', false);
   }
 
@@ -1364,7 +1417,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {string} modifiers The regular expression mode.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  matches<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  matches<K extends QueryKey<T['attributes']>>(
     key: K,
     regex: RegExp | string,
     modifiers?: string
@@ -1396,7 +1449,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {Parse.Query} query The query that should match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  matchesQuery<U extends ParseObject, K extends keyof T['attributes']>(
+  matchesQuery<U extends ParseObject, K extends QueryAttributeKey<T['attributes']>>(
     key: K,
     query: ParseQuery<U>
   ): this {
@@ -1414,7 +1467,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {Parse.Query} query The query that should not match.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  doesNotMatchQuery<U extends ParseObject, K extends keyof T['attributes']>(
+  doesNotMatchQuery<U extends ParseObject, K extends QueryAttributeKey<T['attributes']>>(
     key: K,
     query: ParseQuery<U>
   ): this {
@@ -1436,8 +1489,8 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    */
   matchesKeyInQuery<
     U extends ParseObject,
-    K extends keyof T['attributes'],
-    X extends Extract<keyof U['attributes'], string>,
+    K extends QueryAttributeKey<T['attributes']>,
+    X extends QueryAttributeKey<U['attributes']>,
   >(key: K, queryKey: X, query: ParseQuery<U>): this {
     const queryJSON = query.toJSON();
     queryJSON.className = query.className;
@@ -1460,8 +1513,8 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    */
   doesNotMatchKeyInQuery<
     U extends ParseObject,
-    K extends keyof T['attributes'] | keyof BaseAttributes,
-    X extends Extract<keyof U['attributes'], string>,
+    K extends QueryKey<T['attributes']>,
+    X extends QueryAttributeKey<U['attributes']>,
   >(key: K, queryKey: X, query: ParseQuery<U>): this {
     const queryJSON = query.toJSON();
     queryJSON.className = query.className;
@@ -1479,7 +1532,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {string} substring The substring that the value must contain.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  contains<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  contains<K extends QueryKey<T['attributes']>>(
     key: K,
     substring: string
   ): this {
@@ -1518,7 +1571,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {boolean} options.diacriticSensitive A boolean flag to enable or disable diacritic sensitive search.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  fullText<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  fullText<K extends QueryKey<T['attributes']>>(
     key: K,
     value: string,
     options?: FullTextQueryOptions
@@ -1583,7 +1636,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {string} modifiers The regular expression mode.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  startsWith<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  startsWith<K extends QueryKey<T['attributes']>>(
     key: K,
     prefix: string,
     modifiers?: string
@@ -1603,7 +1656,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {string} modifiers The regular expression mode.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  endsWith<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  endsWith<K extends QueryKey<T['attributes']>>(
     key: K,
     suffix: string,
     modifiers?: string
@@ -1622,7 +1675,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {Parse.GeoPoint} point The reference Parse.GeoPoint that is used.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  near<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, point: ParseGeoPoint): this {
+  near<K extends QueryKey<T['attributes']>>(key: K, point: ParseGeoPoint): this {
     if (!(point instanceof ParseGeoPoint)) {
       // Try to cast it as a GeoPoint
       point = new ParseGeoPoint(point);
@@ -1642,7 +1695,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * defaults to true.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  withinRadians<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  withinRadians<K extends QueryKey<T['attributes']>>(
     key: K,
     point: ParseGeoPoint,
     maxDistance: number,
@@ -1671,7 +1724,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * defaults to true.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  withinMiles<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  withinMiles<K extends QueryKey<T['attributes']>>(
     key: K,
     point: ParseGeoPoint,
     maxDistance: number,
@@ -1693,7 +1746,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * defaults to true.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  withinKilometers<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  withinKilometers<K extends QueryKey<T['attributes']>>(
     key: K,
     point: ParseGeoPoint,
     maxDistance: number,
@@ -1714,7 +1767,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    *     The upper-right inclusive corner of the box.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  withinGeoBox<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  withinGeoBox<K extends QueryKey<T['attributes']>>(
     key: K,
     southwest: ParseGeoPoint,
     northeast: ParseGeoPoint
@@ -1740,7 +1793,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {Array} points Array of Coordinates / GeoPoints
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  withinPolygon<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  withinPolygon<K extends QueryKey<T['attributes']>>(
     key: K,
     points: number[][]
   ): this {
@@ -1755,7 +1808,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {Parse.GeoPoint} point
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  polygonContains<K extends keyof T['attributes'] | keyof BaseAttributes>(
+  polygonContains<K extends QueryKey<T['attributes']>>(
     key: K,
     point: ParseGeoPoint
   ): this {
@@ -1898,7 +1951,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {...string|Array<string>} keys The name(s) of the key(s) to include.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  include<K extends keyof T['attributes'] | keyof BaseAttributes>(...keys: (K | K[])[]): this {
+  include<K extends QueryKey<T['attributes']>>(...keys: (K | K[])[]): this {
     keys.forEach(key => {
       if (Array.isArray(key)) {
         this._include = this._include.concat(key as string[]);
@@ -1928,7 +1981,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {...string|Array<string>} keys The name(s) of the key(s) to include.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  select<K extends keyof T['attributes'] | keyof BaseAttributes>(...keys: (K | K[])[]): this {
+  select<K extends QueryKey<T['attributes']>>(...keys: (K | K[])[]): this {
     if (!this._select) {
       this._select = [];
     }
@@ -1951,7 +2004,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {...string|Array<string>} keys The name(s) of the key(s) to exclude.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  exclude<K extends keyof T['attributes'] | keyof BaseAttributes>(...keys: (K | K[])[]): this {
+  exclude<K extends QueryKey<T['attributes']>>(...keys: (K | K[])[]): this {
     keys.forEach(key => {
       if (Array.isArray(key)) {
         this._exclude = this._exclude.concat(key as string[]);
@@ -1970,7 +2023,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @param {...string|Array<string>} keys The name(s) of the key(s) to watch.
    * @returns {Parse.Query} Returns the query, so you can chain this call.
    */
-  watch<K extends keyof T['attributes'] | keyof BaseAttributes>(...keys: (K | K[])[]): this {
+  watch<K extends QueryKey<T['attributes']>>(...keys: (K | K[])[]): this {
     keys.forEach(key => {
       if (Array.isArray(key)) {
         this._watch = this._watch.concat(key as string[]);

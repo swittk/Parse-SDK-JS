@@ -1853,6 +1853,10 @@ function testQuery() {
       attribute2: number;
       attribute3: AnotherSubClass;
       attribute4: string[];
+      nestedObject: { field2: { field3: string } };
+      nestedArray: { field2: string }[];
+      nestedArrayPrimitive: string[];
+      complexNestedArrayObj: { field1: { field2: { field3: { field4: number, field5: string, field6: MySubClass }[] } }[] }
     }> {}
     const query = new Parse.Query(MySubClass);
 
@@ -1977,9 +1981,40 @@ function testQuery() {
     query.notEqualTo('attribute4', [5]);
 
     // $ExpectType ParseQuery<MySubClass>
+    query.equalTo('nestedObject.field2.field3', 'hello');
+    // $ExpectError
+    query.equalTo('nestedObject.field2.field3', 123);
+    // $ExpectError
+    query.equalTo('nestedObject.field2.missing', 'hello');
+
+    // $ExpectType ParseQuery<MySubClass>
+    query.equalTo('nestedArray.field2', 'hello');
+    // $ExpectError
+    query.equalTo('nestedArray.field2', 123);
+    // $ExpectError
+    query.equalTo('nestedArray.missing', 'hello');
+
+    // $ExpectError
+    query.equalTo('nestedArrayPrimitive.field', 'hello');
+
+    // $ExpectType ParseQuery<MySubClass>
     query.exists('attribute1');
     // $ExpectError
     query.exists('nonexistentProp');
+    // $ExpectType ParseQuery<MySubClass>
+    query.exists('nestedObject.field2.field3');
+    // $ExpectError
+    query.exists('nestedObject.field2.missing');
+    // $ExpectType ParseQuery<MySubClass>
+    query.equalTo('complexNestedArrayObj.field1.field2.field3.field4', 2);
+    // $ExpectType ParseQuery<MySubClass>
+    query.equalTo('complexNestedArrayObj.field1.field2.field3.field5', 'hello');
+    // $ExpectType ParseQuery<MySubClass>
+    query.equalTo('complexNestedArrayObj.field1.field2.field3.field6', new MySubClass());
+    // $ExpectError
+    query.equalTo('complexNestedArrayObj.field1.field2.field3.field6', new Parse.User());
+    // $ExpectType ParseQuery<MySubClass>
+    query.include('complexNestedArrayObj.field1.field2.field3.field6');
 
     // $ExpectType ParseQuery<MySubClass>
     query.fullText('attribute1', 'full text');
@@ -2363,4 +2398,3 @@ function testInitialize() {
   // Node - 1 param (should also work since javaScriptKey is optional in node)
   ParseNode.initialize('appId');
 }
-
