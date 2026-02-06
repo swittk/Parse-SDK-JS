@@ -1,24 +1,15 @@
 import ParseGeoPoint from './ParseGeoPoint';
 import ParseObject from './ParseObject';
 import type LiveQuerySubscription from './LiveQuerySubscription';
-import type { FullOptions } from './RESTController';
+import type { BatchSizeOption, ContextOption, FullOptions, RawJSONOptions, ScopeOptions, SuccessFailureOptions } from './Options';
 import type { Pointer } from './ParseObject';
-type BatchOptions = FullOptions & {
-    batchSize?: number;
-    useMasterKey?: boolean;
+export type BatchOptions = FullOptions & BatchSizeOption & ScopeOptions & ContextOption & RawJSONOptions & {
     useMaintenanceKey?: boolean;
-    sessionToken?: string;
-    context?: Record<string, any>;
-    json?: boolean;
 };
 export type WhereClause = Record<string, any>;
-interface QueryOptions {
-    useMasterKey?: boolean;
-    sessionToken?: string;
-    context?: Record<string, any>;
-    json?: boolean;
+export interface QueryOptions extends ScopeOptions, ContextOption, RawJSONOptions {
 }
-interface FullTextQueryOptions {
+export interface FullTextQueryOptions {
     language?: string;
     caseSensitive?: boolean;
     diacriticSensitive?: boolean;
@@ -41,10 +32,58 @@ export interface QueryJSON {
     subqueryReadPreference?: string;
     comment?: string;
 }
-interface BaseAttributes {
+export interface BaseAttributes {
     createdAt: Date;
     objectId: string;
     updatedAt: Date;
+}
+export type FindOptions = QueryOptions & SuccessFailureOptions;
+export type FirstOptions = QueryOptions & SuccessFailureOptions;
+export type GetOptions = QueryOptions & SuccessFailureOptions;
+export type CountOptions = QueryOptions & SuccessFailureOptions;
+export type EachOptions = BatchOptions;
+export type FullTextOptions = FullTextQueryOptions;
+export interface AggregationOptions {
+    group?: (Record<string, any> & {
+        objectId?: string;
+    }) | undefined;
+    match?: Record<string, any> | undefined;
+    project?: Record<string, any> | undefined;
+    limit?: number | undefined;
+    skip?: number | undefined;
+    sort?: Record<string, 1 | -1> | undefined;
+    sample?: {
+        size: number;
+    } | undefined;
+    count?: string | undefined;
+    lookup?: {
+        from: string;
+        localField: string;
+        foreignField: string;
+        as: string;
+    } | {
+        from: string;
+        let?: Record<string, any>;
+        pipeline: Record<string, any>;
+        as: string;
+    } | undefined;
+    graphLookup?: {
+        from: string;
+        startWith?: string;
+        connectFromField: string;
+        connectToField: string;
+        as: string;
+        maxDepth?: number;
+        depthField?: string;
+        restrictSearchWithMatch?: Record<string, any>;
+    } | undefined;
+    facet?: Record<string, Array<Record<string, any>>> | undefined;
+    unwind?: {
+        path: string;
+        includeArrayIndex?: string;
+        preserveNullAndEmptyArrays?: boolean;
+    } | string | undefined;
+    [key: string]: any;
 }
 /**
  * Creates a new parse Parse.Query for the given Parse.Object subclass.
@@ -209,7 +248,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Promise} A promise that is resolved with the result when
      * the query completes.
      */
-    get(objectId: string, options?: QueryOptions): Promise<T>;
+    get(objectId: string, options?: GetOptions): Promise<T>;
     /**
      * Retrieves a list of ParseObjects that satisfy this query.
      *
@@ -225,7 +264,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Promise} A promise that is resolved with the results when
      * the query completes.
      */
-    find(options?: QueryOptions): Promise<T[]>;
+    find(options?: FindOptions): Promise<T[]>;
     /**
      * Retrieves a complete list of ParseObjects that satisfy this query.
      * Using `eachBatch` under the hood to fetch all the valid objects.
@@ -257,10 +296,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Promise} A promise that is resolved with the count when
      * the query completes.
      */
-    count(options?: {
-        useMasterKey?: boolean;
-        sessionToken?: string;
-    }): Promise<number>;
+    count(options?: CountOptions): Promise<number>;
     /**
      * Executes a distinct query and returns unique values
      *
@@ -291,7 +327,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Promise} A promise that is resolved with the object when
      * the query completes.
      */
-    first(options?: QueryOptions): Promise<T | undefined>;
+    first(options?: FirstOptions): Promise<T | undefined>;
     /**
      * Iterates over objects matching a query, calling a callback for each batch.
      * If the callback returns a promise, the iteration will not continue until
@@ -313,7 +349,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Promise} A promise that will be fulfilled once the
      *     iteration has completed.
      */
-    eachBatch(callback: (objs: T[]) => PromiseLike<void> | void, options?: BatchOptions): Promise<void>;
+    eachBatch(callback: (objs: T[]) => PromiseLike<void> | void, options?: EachOptions): Promise<void>;
     /**
      * Iterates over each result of a query, calling a callback for each one. If
      * the callback returns a promise, the iteration will not continue until
@@ -334,7 +370,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Promise} A promise that will be fulfilled once the
      *     iteration has completed.
      */
-    each(callback: (obj: T) => PromiseLike<void> | void, options?: BatchOptions): Promise<void>;
+    each(callback: (obj: T) => PromiseLike<void> | void, options?: EachOptions): Promise<void>;
     /**
      * Adds a hint to force index selection. (https://docs.mongodb.com/manual/reference/operator/meta/hint/)
      *
@@ -625,7 +661,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @param {boolean} options.diacriticSensitive A boolean flag to enable or disable diacritic sensitive search.
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
-    fullText<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, value: string, options?: FullTextQueryOptions): this;
+    fullText<K extends keyof T['attributes'] | keyof BaseAttributes>(key: K, value: string, options?: FullTextOptions): this;
     /**
      * Method to sort the full text search by text score
      *

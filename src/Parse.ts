@@ -33,10 +33,35 @@ import Storage from './Storage';
 import User from './ParseUser';
 import ParseLiveQuery from './ParseLiveQuery';
 import LiveQueryClient from './LiveQueryClient';
+import LiveQuerySubscription from './LiveQuerySubscription';
 import LocalDatastoreController from './LocalDatastoreController';
 import StorageController from './StorageController';
 import WebSocketController from './WebSocketController';
 import type { EventuallyQueue } from './CoreManager';
+import type ParseACLType from './ParseACL';
+import type ParseFileType from './ParseFile';
+import type {
+  FileSaveOptions as ParseFileSaveOptions,
+  FileSource as ParseFileSource,
+} from './ParseFile';
+import type ParseGeoPointType from './ParseGeoPoint';
+import type ParseInstallationType from './ParseInstallation';
+import type ParsePolygonType from './ParsePolygon';
+import type ParseQueryType from './ParseQuery';
+import type ParseRelationType from './ParseRelation';
+import type ParseRoleType from './ParseRole';
+import type ParseSchemaType from './ParseSchema';
+import type ParseSessionType from './ParseSession';
+import type ParseUserType from './ParseUser';
+import type * as CloudCodeTypes from './CloudCode';
+import type * as CloudTypes from './Cloud';
+import type * as CoreManagerTypes from './CoreManager';
+import type * as OptionsTypes from './Options';
+import type * as ParseObjectTypes from './ParseObject';
+import type * as ParseQueryTypes from './ParseQuery';
+import type * as ParseSchemaTypes from './ParseSchema';
+import type * as ParseUserTypes from './ParseUser';
+import type * as PushTypes from './Push';
 
 /**
  * The interface for the Parse SDK.
@@ -77,6 +102,7 @@ export interface Parse {
   Storage: typeof Storage;
   User: typeof User;
   LiveQueryClient: typeof LiveQueryClient;
+  LiveQuerySubscription: typeof LiveQuerySubscription;
   IndexedDB: any;
   Hooks: any;
   Parse: any;
@@ -284,6 +310,7 @@ const Parse: Parse = {
   Storage,
   User,
   LiveQueryClient,
+  LiveQuerySubscription,
   IndexedDB: undefined,
   Hooks: undefined,
   Parse: undefined,
@@ -486,6 +513,187 @@ const Parse: Parse = {
     return this.encryptedUser;
   },
 };
+
+// Re-exported Parse namespace types to preserve historical Parse.* access patterns.
+namespace Parse {
+  // Request/option shapes re-exported for Parse.* access.
+  export type RequestOptions = OptionsTypes.RequestOptions;
+  export type FullOptions = OptionsTypes.FullOptions;
+  export type BatchSizeOption = OptionsTypes.BatchSizeOption;
+  export type CascadeSaveOption = OptionsTypes.CascadeSaveOption;
+  export type ContextOption = OptionsTypes.ContextOption;
+  export type ErrorOption = OptionsTypes.ErrorOption;
+  export type RawJSONOptions = OptionsTypes.RawJSONOptions;
+  export type ScopeOptions = OptionsTypes.ScopeOptions;
+  export type SessionTokenOption = OptionsTypes.SessionTokenOption;
+  export type SilentOption = OptionsTypes.SilentOption;
+  export type SuccessFailureOptions = OptionsTypes.SuccessFailureOptions;
+  export type SuccessOption = OptionsTypes.SuccessOption;
+  export type UseMasterKeyOption = OptionsTypes.UseMasterKeyOption;
+  export type WaitOption = OptionsTypes.WaitOption;
+
+  // Parse.Object helpers re-exported for Parse.* access.
+  export type Attributes = ParseObjectTypes.Attributes;
+  export type AttributeKey<T> = ParseObjectTypes.AttributeKey<T>;
+  export type Pointer = ParseObjectTypes.Pointer;
+  export type JSONBaseAttributes = ParseObjectTypes.JSONBaseAttributes;
+  export type CommonAttributes = ParseObjectTypes.CommonAttributes;
+  export type Encode<T> = ParseObjectTypes.Encode<T>;
+  export type ToJSON<T> = ParseObjectTypes.ToJSON<T>;
+  export type ObjectStatic<T extends ParseObject = ParseObject> = ParseObjectTypes.ObjectStatic<T>;
+  export type ObjectConstructor = ParseObjectTypes.ObjectConstructor;
+
+  // Parse.Query helpers re-exported for Parse.* access.
+  export type WhereClause = ParseQueryTypes.WhereClause;
+  export type QueryOptions = ParseQueryTypes.QueryOptions;
+  export type FullTextQueryOptions = ParseQueryTypes.FullTextQueryOptions;
+  export type QueryJSON = ParseQueryTypes.QueryJSON;
+  export type BaseAttributes = ParseQueryTypes.BaseAttributes;
+  export type BatchOptions = ParseQueryTypes.BatchOptions;
+  export type FindOptions = ParseQueryTypes.FindOptions;
+  export type FirstOptions = ParseQueryTypes.FirstOptions;
+  export type GetOptions = ParseQueryTypes.GetOptions;
+  export type CountOptions = ParseQueryTypes.CountOptions;
+  export type EachOptions = ParseQueryTypes.EachOptions;
+  export type FullTextOptions = ParseQueryTypes.FullTextOptions;
+  export type AggregationOptions = ParseQueryTypes.AggregationOptions;
+
+  // Parse.Schema helpers re-exported for Parse.* access.
+  export type TYPE = ParseSchemaTypes.TYPE;
+  export type AttrType<T extends ParseObject, V> = ParseSchemaTypes.AttrType<T, V>;
+  export type FieldOptions<T extends ParseSchemaTypes.FieldType = any> =
+    ParseSchemaTypes.FieldOptions<T>;
+  export type FieldType = ParseSchemaTypes.FieldType;
+  export type Index = ParseSchemaTypes.Index;
+  export type CLP = ParseSchemaTypes.CLP;
+  export type CLPField = ParseSchemaTypes.CLPField;
+  export type RestSchema = ParseSchemaTypes.RestSchema;
+
+  // Parse.User helpers re-exported for Parse.* access.
+  export type AuthData = ParseUserTypes.AuthData;
+  export type AuthProvider = ParseUserTypes.AuthProvider;
+  export type SignUpOptions = ParseUserTypes.SignUpOptions;
+
+  export interface Object<T extends Attributes = Attributes> extends ParseObject<T> {}
+
+  export namespace Object {
+    // Re-exported for Parse.Object.* access.
+    export type SaveOptions = ParseObjectTypes.SaveOptions;
+    export type FetchOptions = ParseObjectTypes.FetchOptions;
+    export type DestroyOptions = ParseObjectTypes.DestroyOptions;
+    export type DestroyAllOptions = ParseObjectTypes.DestroyAllOptions;
+    export type FetchAllOptions = ParseObjectTypes.FetchAllOptions;
+    export type SaveAllOptions = ParseObjectTypes.SaveAllOptions;
+    export type SetOptions = ParseObjectTypes.SetOptions;
+    export type Encode<T> = ParseObjectTypes.Encode<T>;
+    export type ToJSON<T> = ParseObjectTypes.ToJSON<T>;
+  }
+
+  export interface Query<T extends ParseObject = ParseObject> extends ParseQueryType<T> {}
+
+  export namespace Query {
+    // Re-exported for Parse.Query.* access.
+    export type BatchOptions = ParseQueryTypes.BatchOptions;
+    export type QueryOptions = ParseQueryTypes.QueryOptions;
+    export type FullTextQueryOptions = ParseQueryTypes.FullTextQueryOptions;
+    export type FindOptions = ParseQueryTypes.FindOptions;
+    export type FirstOptions = ParseQueryTypes.FirstOptions;
+    export type GetOptions = ParseQueryTypes.GetOptions;
+    export type CountOptions = ParseQueryTypes.CountOptions;
+    export type EachOptions = ParseQueryTypes.EachOptions;
+    export type FullTextOptions = ParseQueryTypes.FullTextOptions;
+    export type AggregationOptions = ParseQueryTypes.AggregationOptions;
+    export type QueryJSON = ParseQueryTypes.QueryJSON;
+    export type WhereClause = ParseQueryTypes.WhereClause;
+    export type BaseAttributes = ParseQueryTypes.BaseAttributes;
+  }
+
+  export interface Schema<T extends ParseObject = any> extends ParseSchemaType<T> {}
+
+  export namespace Schema {
+    // Re-exported for Parse.Schema.* access.
+    export type TYPE = ParseSchemaTypes.TYPE;
+    export type AttrType<T extends ParseObject, V> = ParseSchemaTypes.AttrType<T, V>;
+    export type FieldOptions<T extends ParseSchemaTypes.FieldType = any> =
+      ParseSchemaTypes.FieldOptions<T>;
+    export type FieldType = ParseSchemaTypes.FieldType;
+    export type Index = ParseSchemaTypes.Index;
+    export type CLP = ParseSchemaTypes.CLP;
+    export type CLPField = ParseSchemaTypes.CLPField;
+    export type RestSchema = ParseSchemaTypes.RestSchema;
+  }
+
+  export interface User<T extends Attributes = Attributes> extends ParseUserType<T> {}
+
+  export namespace User {
+    // Re-exported for Parse.User.* access.
+    export type AuthData = ParseUserTypes.AuthData;
+    export type AuthProvider = ParseUserTypes.AuthProvider;
+    export type SignUpOptions = ParseUserTypes.SignUpOptions;
+  }
+
+  export interface Role<T extends Attributes = Attributes> extends ParseRoleType<T> {}
+  export interface Session<T extends Attributes = Attributes> extends ParseSessionType<T> {}
+  export interface Installation<T extends Attributes = Attributes> extends ParseInstallationType<T> {}
+
+  export type ACL = ParseACLType;
+  export type GeoPoint = ParseGeoPointType;
+  export type Polygon = ParsePolygonType;
+  export type Relation<
+    S extends ParseObject = ParseObject,
+    T extends ParseObject = ParseObject,
+  > = ParseRelationType<S, T>;
+  export interface File extends ParseFileType {}
+
+  export namespace File {
+    // Re-exported for Parse.File.* access.
+    export type FileSaveOptions = ParseFileSaveOptions;
+    export type FileSource = ParseFileSource;
+  }
+
+  export namespace Push {
+    // Re-exported for Parse.Push.* access.
+    export type PushData = PushTypes.PushData;
+    export type SendOptions = PushTypes.SendOptions;
+  }
+
+  export namespace Cloud {
+    // Re-exported for Parse.Cloud.* access.
+    export type RunOptions = CloudTypes.RunOptions;
+    export type FunctionRequest<T = Record<string, any>> = CloudCodeTypes.FunctionRequest<T>;
+    export type FunctionResponse = CloudCodeTypes.FunctionResponse;
+    export type TriggerRequest<T extends ParseObject = ParseObject> =
+      CloudCodeTypes.TriggerRequest<T>;
+    export type BeforeSaveRequest<T extends ParseObject = ParseObject> =
+      CloudCodeTypes.BeforeSaveRequest<T>;
+    export type AfterSaveRequest<T extends ParseObject = ParseObject> =
+      CloudCodeTypes.AfterSaveRequest<T>;
+    export type BeforeDeleteRequest<T extends ParseObject = ParseObject> =
+      CloudCodeTypes.BeforeDeleteRequest<T>;
+    export type AfterDeleteRequest<T extends ParseObject = ParseObject> =
+      CloudCodeTypes.AfterDeleteRequest<T>;
+    export type BeforeFindRequest<T extends ParseObject = ParseObject> =
+      CloudCodeTypes.BeforeFindRequest<T>;
+    export type AfterFindRequest<T extends ParseObject = ParseObject> =
+      CloudCodeTypes.AfterFindRequest<T>;
+    export type FileTriggerRequest = CloudCodeTypes.FileTriggerRequest;
+    export type ConnectTriggerRequest = CloudCodeTypes.ConnectTriggerRequest;
+    export type LiveQueryEventTrigger<T extends ParseObject = ParseObject> =
+      CloudCodeTypes.LiveQueryEventTrigger<T>;
+    export type JobRequest = CloudCodeTypes.JobRequest;
+    export type ValidatorField = CloudCodeTypes.ValidatorField;
+    export type ValidatorObject = CloudCodeTypes.ValidatorObject;
+    export type HTTPOptions = CloudCodeTypes.HTTPOptions;
+    export type HTTPResponse = CloudCodeTypes.HTTPResponse;
+    export type ReadPreferenceOption = CloudCodeTypes.ReadPreferenceOption;
+  }
+
+  export namespace EventuallyQueue {
+    // Re-exported for Parse.EventuallyQueue.* access.
+    export type Queue = CoreManagerTypes.Queue;
+    export type QueueObject = CoreManagerTypes.QueueObject;
+  }
+}
 
 CoreManager.setRESTController(RESTController);
 

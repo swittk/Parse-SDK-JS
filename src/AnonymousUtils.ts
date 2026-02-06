@@ -1,5 +1,5 @@
 import ParseUser from './ParseUser';
-import type { RequestOptions } from './RESTController';
+import type { RequestOptions } from './Options';
 import uuidv4 from './uuid';
 
 let registered = false;

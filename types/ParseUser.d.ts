@@ -1,6 +1,9 @@
 import ParseObject, { Attributes } from './ParseObject';
-import type { RequestOptions, FullOptions } from './RESTController';
+import type { RequestOptions, FullOptions } from './Options';
 export type AuthData = Record<string, any>;
+export type SignUpOptions = FullOptions & {
+    context?: Attributes;
+};
 export interface AuthProvider {
     authenticate?(options: {
         error?: (provider: AuthProvider, error: string | any) => void;
@@ -194,9 +197,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is fulfilled when the signup
      *     finishes.
      */
-    signUp(attrs?: Attributes | null, options?: FullOptions & {
-        context?: Attributes;
-    }): Promise<ParseUser>;
+    signUp(attrs?: Attributes | null, options?: SignUpOptions): Promise<ParseUser>;
     /**
      * Logs in a Parse.User. On success, this saves the session to disk,
      * so you can retrieve the currently logged in user using
@@ -300,7 +301,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is fulfilled with the user when
      *     the signup completes.
      */
-    static signUp<T extends ParseUser>(username: string, password: string, attrs: Attributes, options?: FullOptions): Promise<T>;
+    static signUp<T extends ParseUser>(username: string, password: string, attrs: Attributes, options?: SignUpOptions): Promise<T>;
     /**
      * Logs in a user with a username (or email) and password. On success, this
      * saves the session to disk, so you can retrieve the currently logged in

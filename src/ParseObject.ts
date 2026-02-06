@@ -28,7 +28,17 @@ import * as UniqueInstanceStateController from './UniqueInstanceStateController'
 import unsavedChildren from './unsavedChildren';
 
 import type { AttributeMap, OpsMap } from './ObjectStateMutations';
-import type { RequestOptions, FullOptions } from './RESTController';
+import type {
+  BatchSizeOption,
+  CascadeSaveOption,
+  ContextOption,
+  ErrorOption,
+  FullOptions,
+  RequestOptions,
+  SilentOption,
+  SuccessFailureOptions,
+  WaitOption,
+} from './Options';
 import type ParseGeoPoint from './ParseGeoPoint';
 import type ParsePolygon from './ParsePolygon';
 
@@ -45,21 +55,27 @@ interface SaveParams {
   body: AttributeMap;
 }
 
-export type SaveOptions = FullOptions & {
-  cascadeSave?: boolean;
-  context?: AttributeMap;
-  batchSize?: number;
-  transaction?: boolean;
-};
+// Re-exported for Parse.Object.SaveOptions and Parse.SaveOptions.
+export type SaveOptions = FullOptions &
+  CascadeSaveOption &
+  ContextOption &
+  BatchSizeOption &
+  SilentOption &
+  WaitOption & {
+    transaction?: boolean;
+  };
 
-interface FetchOptions {
-  useMasterKey?: boolean;
-  sessionToken?: string;
-  include?: string | string[];
-  context?: AttributeMap;
-}
+// Re-exported for Parse.Object.FetchOptions and Parse.FetchOptions.
+export type FetchOptions = RequestOptions & SuccessFailureOptions;
 
-export interface SetOptions {
+// Re-exported for Parse.Object.DestroyOptions and Parse.DestroyOptions.
+export type DestroyOptions = RequestOptions & SuccessFailureOptions & WaitOption;
+
+export type DestroyAllOptions = SaveOptions;
+export type FetchAllOptions = FetchOptions;
+export type SaveAllOptions = SaveOptions;
+
+export interface SetOptions extends ErrorOption, SilentOption {
   ignoreValidation?: boolean;
   unset?: boolean;
 }
@@ -68,13 +84,13 @@ export type AttributeKey<T> = Extract<keyof T, string>;
 
 export type Attributes = Record<string, any>;
 
-interface JSONBaseAttributes {
+export interface JSONBaseAttributes {
   objectId: string;
   createdAt: string;
   updatedAt: string;
 }
 
-interface CommonAttributes {
+export interface CommonAttributes {
   ACL: ParseACL;
 }
 
@@ -82,7 +98,8 @@ type AtomicKey<T> = {
   [K in keyof T]: NonNullable<T[K]> extends any[] ? K : never;
 };
 
-type Encode<T> = T extends ParseObject
+// Re-exported for Parse.Object.Encode / Parse.Object.ToJSON.
+export type Encode<T> = T extends ParseObject
   ? ReturnType<T['toJSON']> | Pointer
   : T extends ParseACL | ParseGeoPoint | ParsePolygon | ParseRelation | ParseFile
     ? ReturnType<T['toJSON']>
@@ -96,7 +113,7 @@ type Encode<T> = T extends ParseObject
             ? ToJSON<T>
             : T;
 
-type ToJSON<T> = {
+export type ToJSON<T> = {
   [K in keyof T]: Encode<T[K]>;
 };
 
@@ -2658,3 +2675,9 @@ CoreManager.setParseObject(ParseObject);
 CoreManager.setObjectController(DefaultController);
 
 export default ParseObject;
+
+// Re-exported to keep Parse.ObjectStatic/ObjectConstructor available for consumers.
+export type ObjectStatic<T extends ParseObject = ParseObject> = typeof ParseObject & {
+  new (...args: ConstructorParameters<typeof ParseObject>): T;
+};
+export type ObjectConstructor = ObjectStatic;

@@ -4,32 +4,10 @@ import CoreManager from './CoreManager';
 import ParseError from './ParseError';
 import { resolvingPromise } from './promiseUtils';
 import { polyfillFetch } from './Xhr.weapp';
+import type { FullOptions, RequestOptions } from './Options';
 
-export interface RequestOptions {
-  useMasterKey?: boolean;
-  useMaintenanceKey?: boolean;
-  sessionToken?: string;
-  installationId?: string;
-  returnStatus?: boolean;
-  batchSize?: number;
-  include?: any;
-  progress?: any;
-  context?: any;
-  usePost?: boolean;
-  ignoreEmailVerification?: boolean;
-  transaction?: boolean;
-}
-
-export interface FullOptions {
-  success?: any;
-  error?: any;
-  useMasterKey?: boolean;
-  useMaintenanceKey?: boolean;
-  sessionToken?: string;
-  installationId?: string;
-  progress?: any;
-  usePost?: boolean;
-}
+// Re-exported for compatibility with existing RESTController type imports.
+export type { FullOptions, RequestOptions };
 
 interface PayloadType {
   _context?: any;

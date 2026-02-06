@@ -1,5 +1,6 @@
 import ParseObject from './ParseObject';
-import type { RequestOptions } from './RESTController';
+import type { RequestOptions } from './Options';
+export type RunOptions = RequestOptions;
 /**
  * Contains functions for calling and declaring
  * <a href="/docs/cloud_code_guide#functions">cloud functions</a>.

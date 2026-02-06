@@ -1,4 +1,4 @@
-import type { RequestOptions } from './RESTController';
+import type { RequestOptions } from './Options';
 /**
  * Parse.Config is a local representation of configuration data that
  * can be set from the Parse dashboard.

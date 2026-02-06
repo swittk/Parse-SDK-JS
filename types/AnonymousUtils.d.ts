@@ -1,5 +1,5 @@
 import ParseUser from './ParseUser';
-import type { RequestOptions } from './RESTController';
+import type { RequestOptions } from './Options';
 /**
  * Provides utility functions for working with Anonymously logged-in users. <br />
  * Anonymous users have some unique characteristics:

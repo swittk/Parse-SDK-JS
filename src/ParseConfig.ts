@@ -5,7 +5,7 @@ import escape from './escape';
 import ParseError from './ParseError';
 import Storage from './Storage';
 
-import type { RequestOptions } from './RESTController';
+import type { RequestOptions } from './Options';
 
 /**
  * Parse.Config is a local representation of configuration data that

@@ -1,5 +1,5 @@
 import ParseObject, { Attributes } from './ParseObject';
-import type { FullOptions } from './RESTController';
+import type { FullOptions } from './Options';
 /**
  * <p>A Parse.Session object is a local representation of a revocable session.
  * This class is a subclass of a Parse.Object, and retains the same

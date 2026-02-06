@@ -1,7 +1,7 @@
 import ParseObject from './ParseObject';
 import type { Queue, QueueObject } from './CoreManager';
 import type { SaveOptions } from './ParseObject';
-import type { RequestOptions } from './RESTController';
+import type { RequestOptions } from './Options';
 /**
  * Provides utility functions to queue objects that will be
  * saved to the server at a later date.

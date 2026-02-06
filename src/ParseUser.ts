@@ -5,9 +5,12 @@ import ParseObject, { Attributes } from './ParseObject';
 import Storage from './Storage';
 
 import type { AttributeKey } from './ParseObject';
-import type { RequestOptions, FullOptions } from './RESTController';
+import type { RequestOptions, FullOptions } from './Options';
 
 export type AuthData = Record<string, any>;
+
+// Re-exported for Parse.User.SignUpOptions and Parse.SignUpOptions.
+export type SignUpOptions = FullOptions & { context?: Attributes };
 export interface AuthProvider {
   authenticate?(options: {
     error?: (provider: AuthProvider, error: string | any) => void;
@@ -17,6 +20,7 @@ export interface AuthProvider {
   getAuthType(): string;
   deauthenticate?(): void;
 }
+
 const CURRENT_USER_KEY = 'currentUser';
 let canUseCurrentUser = !CoreManager.get('IS_NODE');
 let currentUserCacheMatchesDisk = false;
@@ -435,10 +439,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * @returns {Promise} A promise that is fulfilled when the signup
    *     finishes.
    */
-  signUp(
-    attrs?: Attributes | null,
-    options?: FullOptions & { context?: Attributes }
-  ): Promise<ParseUser> {
+  signUp(attrs?: Attributes | null, options?: SignUpOptions): Promise<ParseUser> {
     const signupOptions = ParseObject._getRequestOptions(options);
     const controller = CoreManager.getUserController();
     return controller.signUp(this, attrs, signupOptions);
@@ -640,7 +641,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
     username: string,
     password: string,
     attrs: Attributes,
-    options?: FullOptions
+    options?: SignUpOptions
   ): Promise<T> {
     attrs = attrs || {};
     attrs.username = username;

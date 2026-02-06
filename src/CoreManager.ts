@@ -8,7 +8,7 @@ import type { QueryJSON } from './ParseQuery';
 import type ParseUser from './ParseUser';
 import type { AuthData } from './ParseUser';
 import type { PushData } from './Push';
-import type { RequestOptions, FullOptions } from './RESTController';
+import type { RequestOptions, FullOptions } from './Options';
 import type ParseSession from './ParseSession';
 import type { HookDeclaration, HookDeleteArg } from './ParseHooks';
 import type ParseConfig from './ParseConfig';

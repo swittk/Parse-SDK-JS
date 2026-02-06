@@ -219,6 +219,52 @@ async function test_query() {
   const testQuery = Parse.Query.or(query, query);
 }
 
+function test_namespace_exports() {
+  const findOptions: Parse.Query.FindOptions = {};
+  const saveOptions: Parse.Object.SaveOptions = {};
+  const schemaFieldOptions: Parse.Schema.FieldOptions = {};
+  const pushData: Parse.Push.PushData = { data: { hello: 'world' } };
+  const runOptions: Parse.Cloud.RunOptions = {};
+  const httpOptions: Parse.Cloud.HTTPOptions = { url: 'https://example.com' };
+  const queue: Parse.EventuallyQueue.Queue = [];
+  const attributes: Parse.Attributes = { foo: 'bar' };
+  const baseAttributes: Parse.BaseAttributes = {
+    objectId: 'id',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  const restSchema: Parse.RestSchema = {
+    className: 'Test',
+    fields: {},
+    classLevelPermissions: {},
+  };
+  const objectStatic: Parse.ObjectStatic = Parse.Object;
+  const requestOptions: Parse.RequestOptions = { sessionToken: 'token' };
+  const fullOptions: Parse.FullOptions = { useMasterKey: true };
+  const signUpOptions: Parse.SignUpOptions = { context: {} };
+  const userSignUpOptions: Parse.User.SignUpOptions = {};
+  const fileSaveOptions: Parse.File.FileSaveOptions = {};
+  const fileSource: Parse.File.FileSource = { format: 'base64', base64: 'AA', type: 'text/plain' };
+
+  findOptions.json = true;
+  saveOptions.useMasterKey = true;
+  schemaFieldOptions.required = true;
+  pushData.data = { ping: 'pong' };
+  runOptions.sessionToken = 'token';
+  httpOptions.url = 'https://example.com';
+  queue.length;
+  attributes.foo = 'baz';
+  baseAttributes.objectId = 'other';
+  restSchema.fields = {};
+  objectStatic.extend('Other');
+  requestOptions.usePost = true;
+  fullOptions.error = () => {};
+  signUpOptions.context = { ok: true };
+  userSignUpOptions.useMasterKey = true;
+  fileSaveOptions.metadata = { foo: 'bar' };
+  fileSource.type = 'text/plain';
+}
+
 function test_query_exclude() {
   const gameScore = new GameScore();
 
@@ -2363,4 +2409,3 @@ function testInitialize() {
   // Node - 1 param (should also work since javaScriptKey is optional in node)
   ParseNode.initialize('appId');
 }
-

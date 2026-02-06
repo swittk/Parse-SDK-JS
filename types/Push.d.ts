@@ -1,7 +1,7 @@
 import ParseQuery from './ParseQuery';
 import type ParseObject from './ParseObject';
 import type { WhereClause } from './ParseQuery';
-import type { FullOptions } from './RESTController';
+import type { FullOptions, SuccessFailureOptions, UseMasterKeyOption } from './Options';
 export interface PushData {
     where?: WhereClause | ParseQuery;
     push_time?: Date | string;
@@ -9,7 +9,14 @@ export interface PushData {
     expiration_interval?: number;
     data?: any;
     channels?: string[];
+    alert?: string;
+    badge?: string;
+    sound?: string;
+    title?: string;
+    notification?: any;
+    content_available?: any;
 }
+export type SendOptions = FullOptions & SuccessFailureOptions & UseMasterKeyOption;
 /**
  * Contains functions to deal with Push in Parse.
  *
@@ -45,7 +52,7 @@ export interface PushData {
  * @returns {Promise} A promise that is fulfilled when the push request
  *     completes and returns `pushStatusId`.
  */
-export declare function send(data: PushData, options?: FullOptions): Promise<string>;
+export declare function send(data: PushData, options?: SendOptions): Promise<string>;
 /**
  * Gets push status by Id
  *

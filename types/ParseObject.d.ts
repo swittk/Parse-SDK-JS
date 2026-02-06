@@ -4,7 +4,7 @@ import ParseFile from './ParseFile';
 import { Op } from './ParseOp';
 import ParseRelation from './ParseRelation';
 import type { AttributeMap, OpsMap } from './ObjectStateMutations';
-import type { RequestOptions, FullOptions } from './RESTController';
+import type { BatchSizeOption, CascadeSaveOption, ContextOption, ErrorOption, FullOptions, RequestOptions, SilentOption, SuccessFailureOptions, WaitOption } from './Options';
 import type ParseGeoPoint from './ParseGeoPoint';
 import type ParsePolygon from './ParsePolygon';
 export interface Pointer {
@@ -18,40 +18,36 @@ interface SaveParams {
     path: string;
     body: AttributeMap;
 }
-export type SaveOptions = FullOptions & {
-    cascadeSave?: boolean;
-    context?: AttributeMap;
-    batchSize?: number;
+export type SaveOptions = FullOptions & CascadeSaveOption & ContextOption & BatchSizeOption & SilentOption & WaitOption & {
     transaction?: boolean;
 };
-interface FetchOptions {
-    useMasterKey?: boolean;
-    sessionToken?: string;
-    include?: string | string[];
-    context?: AttributeMap;
-}
-export interface SetOptions {
+export type FetchOptions = RequestOptions & SuccessFailureOptions;
+export type DestroyOptions = RequestOptions & SuccessFailureOptions & WaitOption;
+export type DestroyAllOptions = SaveOptions;
+export type FetchAllOptions = FetchOptions;
+export type SaveAllOptions = SaveOptions;
+export interface SetOptions extends ErrorOption, SilentOption {
     ignoreValidation?: boolean;
     unset?: boolean;
 }
 export type AttributeKey<T> = Extract<keyof T, string>;
 export type Attributes = Record<string, any>;
-interface JSONBaseAttributes {
+export interface JSONBaseAttributes {
     objectId: string;
     createdAt: string;
     updatedAt: string;
 }
-interface CommonAttributes {
+export interface CommonAttributes {
     ACL: ParseACL;
 }
 type AtomicKey<T> = {
     [K in keyof T]: NonNullable<T[K]> extends any[] ? K : never;
 };
-type Encode<T> = T extends ParseObject ? ReturnType<T['toJSON']> | Pointer : T extends ParseACL | ParseGeoPoint | ParsePolygon | ParseRelation | ParseFile ? ReturnType<T['toJSON']> : T extends Date ? {
+export type Encode<T> = T extends ParseObject ? ReturnType<T['toJSON']> | Pointer : T extends ParseACL | ParseGeoPoint | ParsePolygon | ParseRelation | ParseFile ? ReturnType<T['toJSON']> : T extends Date ? {
     __type: 'Date';
     iso: string;
 } : T extends RegExp ? string : T extends (infer R)[] ? Encode<R>[] : T extends object ? ToJSON<T> : T;
-type ToJSON<T> = {
+export type ToJSON<T> = {
     [K in keyof T]: Encode<T[K]>;
 };
 /**
@@ -1068,3 +1064,7 @@ declare class ParseObject<T extends Attributes = Attributes> {
     static unPinAllObjectsWithName(name: string): Promise<void>;
 }
 export default ParseObject;
+export type ObjectStatic<T extends ParseObject = ParseObject> = typeof ParseObject & {
+    new (...args: ConstructorParameters<typeof ParseObject>): T;
+};
+export type ObjectConstructor = ObjectStatic;

@@ -14,24 +14,32 @@ import CoreManager from './CoreManager';
 import Config from './ParseConfig';
 import Error from './ParseError';
 import FacebookUtils from './FacebookUtils';
-import File from './ParseFile';
-import GeoPoint from './ParseGeoPoint';
+import ParseFile from './ParseFile';
+import ParseGeoPoint from './ParseGeoPoint';
 import * as Hooks from './ParseHooks';
 import IndexedDB from './IndexedDBStorageController';
-import Polygon from './ParsePolygon';
-import Installation from './ParseInstallation';
-import LiveQuery from './ParseLiveQuery';
+import ParsePolygon from './ParsePolygon';
+import ParseInstallation from './ParseInstallation';
+import ParseLiveQuery from './ParseLiveQuery';
 import LiveQueryClient from './LiveQueryClient';
+import LiveQuerySubscription from './LiveQuerySubscription';
 import LocalDatastore from './LocalDatastore';
-import Object from './ParseObject';
+import ParseObject from './ParseObject';
 import * as Push from './Push';
-import Query from './ParseQuery';
-import Relation from './ParseRelation';
-import Role from './ParseRole';
-import Schema from './ParseSchema';
-import Session from './ParseSession';
+import ParseQuery from './ParseQuery';
+import ParseRelation from './ParseRelation';
+import ParseRole from './ParseRole';
+import ParseSchema from './ParseSchema';
+import ParseSession from './ParseSession';
 import Storage from './Storage';
-import User from './ParseUser';
+import ParseUser from './ParseUser';
+
+export type { default as ParseObject } from './ParseObject';
+export type { default as ParseUser } from './ParseUser';
+export type { default as ParseRole } from './ParseRole';
+export type { default as ParseSession } from './ParseSession';
+export type { default as ParseQuery } from './ParseQuery';
+export type { default as ParseRelation } from './ParseRelation';
 
 export type { AuthProvider, AuthData } from './ParseUser';
 export type { Pointer } from './ParseObject';
@@ -45,22 +53,23 @@ export {
   Config,
   Error,
   FacebookUtils,
-  File,
-  GeoPoint,
-  Polygon,
-  Installation,
-  LiveQuery,
+  ParseFile as File,
+  ParseGeoPoint as GeoPoint,
+  ParsePolygon as Polygon,
+  ParseInstallation as Installation,
+  ParseLiveQuery as LiveQuery,
   LocalDatastore,
-  Object,
+  ParseObject as Object,
   Push,
-  Query,
-  Relation,
-  Role,
-  Schema,
-  Session,
+  ParseQuery as Query,
+  ParseRelation as Relation,
+  ParseRole as Role,
+  ParseSchema as Schema,
+  ParseSession as Session,
   Storage,
-  User,
+  ParseUser as User,
   LiveQueryClient,
+  LiveQuerySubscription,
   IndexedDB,
   Hooks,
 };

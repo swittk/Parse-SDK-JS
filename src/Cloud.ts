@@ -4,7 +4,10 @@ import encode from './encode';
 import ParseError from './ParseError';
 import ParseQuery from './ParseQuery';
 import ParseObject from './ParseObject';
-import type { RequestOptions } from './RESTController';
+import type { RequestOptions } from './Options';
+
+// Re-exported for Parse.Cloud.RunOptions.
+export type RunOptions = RequestOptions;
 
 /**
  * Contains functions for calling and declaring

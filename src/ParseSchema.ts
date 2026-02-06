@@ -10,7 +10,7 @@ import type { Pointer } from './ParseObject';
 
 type Bytes = string;
 
-type TYPE =
+export type TYPE =
   | 'String'
   | 'Number'
   | 'Bytes'
@@ -24,14 +24,14 @@ type TYPE =
   | 'Pointer'
   | 'Relation';
 
-type AttrType<T extends ParseObject, V> = Extract<
+export type AttrType<T extends ParseObject, V> = Extract<
   {
     [K in keyof T['attributes']]: T['attributes'][K] extends V ? K : never;
   }[keyof T['attributes']],
   string
 >;
 
-interface FieldOptions<
+export interface FieldOptions<
   T extends
     | string
     | number
@@ -51,15 +51,15 @@ interface FieldOptions<
   targetClass?: string | undefined;
 }
 
-type Index = Record<string, number | string>;
+export type Index = Record<string, number | string>;
 
-interface CLPField {
+export interface CLPField {
   '*'?: boolean | undefined;
   requiresAuthentication?: boolean | undefined;
   [userIdOrRoleName: string]: boolean | undefined;
 }
 
-interface CLP {
+export interface CLP {
   find?: CLPField | undefined;
   get?: CLPField | undefined;
   count?: CLPField | undefined;
@@ -72,7 +72,7 @@ interface CLP {
   protectedFields?: Record<string, string[]>;
 }
 
-interface RestSchema {
+export interface RestSchema {
   className: string;
   fields: Record<
     string,
@@ -86,6 +86,20 @@ interface RestSchema {
   classLevelPermissions: CLP;
   indexes?: Record<string, Record<string, any>>;
 }
+
+export type FieldType =
+  | string
+  | number
+  | boolean
+  | Bytes
+  | Date
+  | ParseFile
+  | ParseGeoPoint
+  | ParsePolygon
+  | any[]
+  | object
+  | Pointer
+  | ParseRelation;
 
 const FIELD_TYPES = [
   'String',

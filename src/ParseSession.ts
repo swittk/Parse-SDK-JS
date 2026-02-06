@@ -4,7 +4,7 @@ import ParseObject, { Attributes } from './ParseObject';
 import ParseUser from './ParseUser';
 
 import type { AttributeKey } from './ParseObject';
-import type { RequestOptions, FullOptions } from './RESTController';
+import type { RequestOptions, FullOptions } from './Options';
 
 /**
  * <p>A Parse.Session object is a local representation of a revocable session.

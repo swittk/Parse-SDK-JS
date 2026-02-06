@@ -1,6 +1,6 @@
 /* global Blob */
 import CoreManager from './CoreManager';
-import type { FullOptions } from './RESTController';
+import type { FullOptions } from './Options';
 import ParseError from './ParseError';
 
 interface Base64 {

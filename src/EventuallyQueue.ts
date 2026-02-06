@@ -6,7 +6,7 @@ import Storage from './Storage';
 
 import type { Queue, QueueObject } from './CoreManager';
 import type { SaveOptions } from './ParseObject';
-import type { RequestOptions } from './RESTController';
+import type { RequestOptions } from './Options';
 
 const QUEUE_KEY = 'Parse/Eventually/Queue';
 let queueCache: Queue = [];

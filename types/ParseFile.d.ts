@@ -1,4 +1,4 @@
-import type { FullOptions } from './RESTController';
+import type { FullOptions } from './Options';
 interface Base64 {
     base64: string;
 }
