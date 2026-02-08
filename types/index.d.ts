@@ -71,11 +71,8 @@ export {
   Hooks,
 };
 
-// ============================================================================
 // Namespace re-exports for backward compatibility
-// These enable Parse.Object.FetchOptions, Parse.Query.FindOptions etc.
-// ============================================================================
-
+// e.g. for Parse.Object.FetchOptions, Parse.Query.FindOptions etc.
 export namespace Object {
   export type DestroyOptions = import('./ParseObject').DestroyOptions;
   export type DestroyAllOptions = import('./ParseObject').DestroyAllOptions;
