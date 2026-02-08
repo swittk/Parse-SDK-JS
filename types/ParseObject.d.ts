@@ -21,11 +21,17 @@ interface SaveParams {
 export interface SaveOptions extends BaseRequestOptions {
     /** If `false`, nested objects will not be saved (default is `true`). */
     cascadeSave?: boolean;
+    /** How many objects to yield in each batch. */
     batchSize?: number;
+    /** Set to true to enable transactions. */
     transaction?: boolean;
 }
-export interface FetchOptions extends BaseRequestOptions {
-    include?: string | string[];
+export interface FetchOptions<T extends Attributes = Attributes> extends BaseRequestOptions {
+    /**
+     * The name(s) of the key(s) to include. Can be a string or an array of strings.
+     * You can use dot notation to specify which fields in the included object are also fetched.
+     */
+    include?: AttributeKey<T> | AttributeKey<T>[];
 }
 export interface SetOptions {
     ignoreValidation?: boolean;
@@ -35,18 +41,22 @@ export interface DestroyOptions extends BaseRequestOptions {
 }
 /** Options for destroyAll batch operation */
 export interface DestroyAllOptions extends BaseRequestOptions {
+    /** How many objects to yield in each batch (default: 20). */
     batchSize?: number;
+    /** Set to true to enable transactions. */
+    transaction?: boolean;
 }
 /** Options for saveAll batch operation */
 export interface SaveAllOptions extends BaseRequestOptions {
+    /** How many objects to yield in each batch (default: 20). */
     batchSize?: number;
     /** If `false`, nested objects will not be saved (default is `true`). */
     cascadeSave?: boolean;
+    /** Set to true to enable transactions. */
     transaction?: boolean;
 }
 /** Options for fetchAll batch operation */
-export interface FetchAllOptions extends BaseRequestOptions {
-    include?: string | string[];
+export interface FetchAllOptions<T extends Attributes = Attributes> extends FetchOptions<T> {
 }
 export type AttributeKey<T> = Extract<keyof T, string>;
 export type Attributes = Record<string, any>;
@@ -404,7 +414,7 @@ declare class ParseObject<T extends Attributes = Attributes> {
      * </ul>
      * @returns {Promise<boolean>} A boolean promise that is fulfilled if object exists.
      */
-    exists(options?: RequestOptions): Promise<boolean>;
+    exists(options?: BaseRequestOptions): Promise<boolean>;
     /**
      * Checks if the model is currently in a valid state.
      *
@@ -467,7 +477,7 @@ declare class ParseObject<T extends Attributes = Attributes> {
      * @returns {Promise} A promise that is fulfilled when the fetch
      *     completes.
      */
-    fetch(options?: FetchOptions): Promise<this>;
+    fetch(options?: FetchOptions<T>): Promise<this>;
     /**
      * Fetch the model from the server. If the server's representation of the
      * model differs from its current attributes, they will be overriden.
@@ -486,7 +496,7 @@ declare class ParseObject<T extends Attributes = Attributes> {
      * @returns {Promise} A promise that is fulfilled when the fetch
      *     completes.
      */
-    fetchWithInclude(keys: string | (string | string[])[], options?: RequestOptions): Promise<this>;
+    fetchWithInclude(keys: AttributeKey<T> | AttributeKey<T>[], options?: FetchOptions<T>): Promise<this>;
     /**
      * Saves this object to the server at some unspecified time in the future,
      * even if Parse is currently inaccessible.
@@ -598,7 +608,7 @@ declare class ParseObject<T extends Attributes = Attributes> {
      * @returns {Promise} A promise that is fulfilled when the destroy
      *     completes.
      */
-    destroyEventually(options?: RequestOptions): Promise<this>;
+    destroyEventually(options?: DestroyOptions): Promise<this>;
     /**
      * Destroy this model on the server if it was already persisted.
      *
@@ -720,7 +730,7 @@ declare class ParseObject<T extends Attributes = Attributes> {
      * @static
      * @returns {Parse.Object[]}
      */
-    static fetchAll<T extends ParseObject>(list: T[], options?: FetchAllOptions): Promise<T[]>;
+    static fetchAll<T extends ParseObject>(list: T[], options?: FetchAllOptions<T['attributes']>): Promise<T[]>;
     /**
      * Fetches the given list of Parse.Object.
      *
@@ -750,7 +760,7 @@ declare class ParseObject<T extends Attributes = Attributes> {
      * @static
      * @returns {Parse.Object[]}
      */
-    static fetchAllWithInclude<T extends ParseObject>(list: T[], keys: keyof T['attributes'] | (keyof T['attributes'])[], options?: RequestOptions): Promise<T[]>;
+    static fetchAllWithInclude<T extends ParseObject>(list: T[], keys: AttributeKey<T['attributes']> | AttributeKey<T['attributes']>[], options?: FetchAllOptions<T['attributes']>): Promise<T[]>;
     /**
      * Fetches the given list of Parse.Object if needed.
      * If any error is encountered, stops and calls the error handler.
@@ -781,7 +791,7 @@ declare class ParseObject<T extends Attributes = Attributes> {
      * @static
      * @returns {Parse.Object[]}
      */
-    static fetchAllIfNeededWithInclude<T extends ParseObject>(list: T[], keys: keyof T['attributes'] | (keyof T['attributes'])[], options?: RequestOptions): Promise<T[]>;
+    static fetchAllIfNeededWithInclude<T extends ParseObject>(list: T[], keys: AttributeKey<T['attributes']> | AttributeKey<T['attributes']>[], options?: FetchAllOptions<T['attributes']>): Promise<T[]>;
     /**
      * Fetches the given list of Parse.Object if needed.
      * If any error is encountered, stops and calls the error handler.
@@ -809,7 +819,7 @@ declare class ParseObject<T extends Attributes = Attributes> {
      * @static
      * @returns {Parse.Object[]}
      */
-    static fetchAllIfNeeded<T extends ParseObject>(list: T[], options?: FetchAllOptions): Promise<T[]>;
+    static fetchAllIfNeeded<T extends ParseObject>(list: T[], options?: FetchAllOptions<T['attributes']>): Promise<T[]>;
     static handleIncludeOptions(options: {
         include?: string | string[];
     }): any[];

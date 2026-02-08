@@ -48,12 +48,18 @@ interface SaveParams {
 export interface SaveOptions extends BaseRequestOptions {
   /** If `false`, nested objects will not be saved (default is `true`). */
   cascadeSave?: boolean;
+  /** How many objects to yield in each batch. */
   batchSize?: number;
+  /** Set to true to enable transactions. */
   transaction?: boolean;
 }
 
-export interface FetchOptions extends BaseRequestOptions {
-  include?: string | string[];
+export interface FetchOptions<T extends Attributes = Attributes> extends BaseRequestOptions {
+  /**
+   * The name(s) of the key(s) to include. Can be a string or an array of strings.
+   * You can use dot notation to specify which fields in the included object are also fetched.
+   */
+  include?: AttributeKey<T> | AttributeKey<T>[];
 }
 
 export interface SetOptions {
@@ -65,21 +71,24 @@ export interface DestroyOptions extends BaseRequestOptions { }
 
 /** Options for destroyAll batch operation */
 export interface DestroyAllOptions extends BaseRequestOptions {
+  /** How many objects to yield in each batch (default: 20). */
   batchSize?: number;
+  /** Set to true to enable transactions. */
+  transaction?: boolean;
 }
 
 /** Options for saveAll batch operation */
 export interface SaveAllOptions extends BaseRequestOptions {
+  /** How many objects to yield in each batch (default: 20). */
   batchSize?: number;
   /** If `false`, nested objects will not be saved (default is `true`). */
   cascadeSave?: boolean;
+  /** Set to true to enable transactions. */
   transaction?: boolean;
 }
 
 /** Options for fetchAll batch operation */
-export interface FetchAllOptions extends BaseRequestOptions {
-  include?: string | string[];
-}
+export interface FetchAllOptions<T extends Attributes = Attributes> extends FetchOptions<T> { }
 
 export type AttributeKey<T> = Extract<keyof T, string>;
 
@@ -1141,7 +1150,7 @@ class ParseObject<T extends Attributes = Attributes> {
    * </ul>
    * @returns {Promise<boolean>} A boolean promise that is fulfilled if object exists.
    */
-  async exists(options?: RequestOptions): Promise<boolean> {
+  async exists(options?: BaseRequestOptions): Promise<boolean> {
     if (!this.id) {
       return false;
     }
@@ -1272,7 +1281,7 @@ class ParseObject<T extends Attributes = Attributes> {
    * @returns {Promise} A promise that is fulfilled when the fetch
    *     completes.
    */
-  fetch(options?: FetchOptions): Promise<this> {
+  fetch(options?: FetchOptions<T>): Promise<this> {
     const fetchOptions = ParseObject._getRequestOptions(options);
     const controller = CoreManager.getObjectController();
     return controller.fetch(this, true, fetchOptions) as Promise<this>;
@@ -1296,7 +1305,10 @@ class ParseObject<T extends Attributes = Attributes> {
    * @returns {Promise} A promise that is fulfilled when the fetch
    *     completes.
    */
-  fetchWithInclude(keys: string | (string | string[])[], options?: RequestOptions): Promise<this> {
+  fetchWithInclude(
+    keys: AttributeKey<T> | AttributeKey<T>[],
+    options?: FetchOptions<T>
+  ): Promise<this> {
     options = options || {};
     options.include = keys;
     return this.fetch(options);
@@ -1477,7 +1489,7 @@ class ParseObject<T extends Attributes = Attributes> {
    * @returns {Promise} A promise that is fulfilled when the destroy
    *     completes.
    */
-  async destroyEventually(options?: RequestOptions): Promise<this> {
+  async destroyEventually(options?: DestroyOptions): Promise<this> {
     try {
       await this.destroy(options);
     } catch (e) {
@@ -1659,7 +1671,10 @@ class ParseObject<T extends Attributes = Attributes> {
    * @static
    * @returns {Parse.Object[]}
    */
-  static fetchAll<T extends ParseObject>(list: T[], options?: FetchAllOptions): Promise<T[]> {
+  static fetchAll<T extends ParseObject>(
+    list: T[],
+    options?: FetchAllOptions<T['attributes']>
+  ): Promise<T[]> {
     const fetchOptions = ParseObject._getRequestOptions(options);
     return CoreManager.getObjectController().fetch(list, true, fetchOptions) as Promise<T[]>;
   }
@@ -1695,8 +1710,8 @@ class ParseObject<T extends Attributes = Attributes> {
    */
   static fetchAllWithInclude<T extends ParseObject>(
     list: T[],
-    keys: keyof T['attributes'] | (keyof T['attributes'])[],
-    options?: RequestOptions
+    keys: AttributeKey<T['attributes']> | AttributeKey<T['attributes']>[],
+    options?: FetchAllOptions<T['attributes']>
   ): Promise<T[]> {
     options = options || {};
     options.include = keys;
@@ -1735,8 +1750,8 @@ class ParseObject<T extends Attributes = Attributes> {
    */
   static fetchAllIfNeededWithInclude<T extends ParseObject>(
     list: T[],
-    keys: keyof T['attributes'] | (keyof T['attributes'])[],
-    options?: RequestOptions
+    keys: AttributeKey<T['attributes']> | AttributeKey<T['attributes']>[],
+    options?: FetchAllOptions<T['attributes']>
   ): Promise<T[]> {
     options = options || {};
     options.include = keys;
@@ -1770,7 +1785,10 @@ class ParseObject<T extends Attributes = Attributes> {
    * @static
    * @returns {Parse.Object[]}
    */
-  static fetchAllIfNeeded<T extends ParseObject>(list: T[], options?: FetchAllOptions): Promise<T[]> {
+  static fetchAllIfNeeded<T extends ParseObject>(
+    list: T[],
+    options?: FetchAllOptions<T['attributes']>
+  ): Promise<T[]> {
     const fetchOptions = ParseObject._getRequestOptions(options);
     return CoreManager.getObjectController().fetch(list, false, fetchOptions) as Promise<T[]>;
   }

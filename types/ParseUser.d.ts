@@ -1,5 +1,5 @@
-import ParseObject, { Attributes } from './ParseObject';
-import type { RequestOptions, FullOptions } from './RESTController';
+import ParseObject, { Attributes, SaveOptions } from './ParseObject';
+import type { BaseRequestOptions } from './RESTController';
 export type AuthData = Record<string, any>;
 export interface AuthProvider {
     authenticate?(options: {
@@ -10,9 +10,37 @@ export interface AuthProvider {
     getAuthType(): string;
     deauthenticate?(): void;
 }
-export interface SignUpOptions {
-    useMasterKey?: boolean;
-    installationId?: string;
+export interface SignUpOptions extends BaseRequestOptions {
+    /**
+     * Set to `true` to bypass email verification.
+     */
+    ignoreEmailVerification?: boolean;
+}
+export interface LogInOptions extends BaseRequestOptions {
+    /**
+     * Use POST method to make the request (default: true)
+     */
+    usePost?: boolean;
+    /**
+     * Set to `true` to bypass email verification.
+     */
+    ignoreEmailVerification?: boolean;
+}
+export interface BecomeOptions extends BaseRequestOptions {
+}
+export interface LogOutOptions extends BaseRequestOptions {
+}
+export interface MeOptions extends BaseRequestOptions {
+}
+export interface RequestPasswordResetOptions extends BaseRequestOptions {
+}
+export interface RequestEmailVerificationOptions extends BaseRequestOptions {
+}
+export interface VerifyPasswordOptions extends BaseRequestOptions {
+    /**
+     * Set to `true` to bypass email verification and verify the password regardless of whether the email has been verified.
+     */
+    ignoreEmailVerification?: boolean;
 }
 /**
  * <p>A Parse.User object is a local representation of a user persisted to the
@@ -40,7 +68,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is resolved when the replacement
      *   token has been fetched.
      */
-    _upgradeToRevocableSession(options?: RequestOptions): Promise<void>;
+    _upgradeToRevocableSession(options?: BaseRequestOptions): Promise<void>;
     /**
      * Parse allows you to link your users with {@link https://docs.parseplatform.org/parse-server/guide/#oauth-and-3rd-party-authentication 3rd party authentication}, enabling
      * your users to sign up or log into your application using their existing identities.
@@ -59,7 +87,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      */
     linkWith(provider: string | AuthProvider, options: {
         authData?: AuthData;
-    }, saveOpts?: FullOptions): Promise<ParseUser>;
+    }, saveOpts?: SaveOptions): Promise<ParseUser>;
     /**
      * @param provider
      * @param options
@@ -70,7 +98,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      */
     _linkWith(provider: any, options: {
         authData?: AuthData;
-    }, saveOpts?: FullOptions): Promise<ParseUser>;
+    }, saveOpts?: SaveOptions): Promise<ParseUser>;
     /**
      * Synchronizes auth data for a provider (e.g. puts the access token in the
      * right place to be used by the Facebook SDK).
@@ -94,7 +122,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is fulfilled when the unlinking
      *     finishes.
      */
-    _unlinkFrom(provider: any, options?: FullOptions): Promise<ParseUser>;
+    _unlinkFrom(provider: any, options?: SaveOptions): Promise<ParseUser>;
     /**
      * Checks whether a user is linked to a service.
      *
@@ -198,9 +226,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is fulfilled when the signup
      *     finishes.
      */
-    signUp(attrs?: Attributes | null, options?: SignUpOptions & {
-        context?: Attributes;
-    }): Promise<ParseUser>;
+    signUp(attrs?: T | null, options?: SignUpOptions): Promise<ParseUser>;
     /**
      * Logs in a Parse.User. On success, this saves the session to disk,
      * so you can retrieve the currently logged in user using
@@ -219,9 +245,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is fulfilled with the user when
      *     the login is complete.
      */
-    logIn(options?: FullOptions & {
-        context?: Attributes;
-    }): Promise<ParseUser>;
+    logIn(options?: LogInOptions): Promise<ParseUser>;
     /**
      * Wrap the default save behavior with functionality to save to local
      * storage if this is current user.
@@ -263,7 +287,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * the password regardless of whether the email has been verified. This requires the master key.
      * @returns {Promise} A promise that is fulfilled with a user when the password is correct.
      */
-    verifyPassword(password: string, options?: RequestOptions): Promise<ParseUser>;
+    verifyPassword(password: string, options?: VerifyPasswordOptions): Promise<ParseUser>;
     static readOnlyAttributes(): string[];
     /**
      * Adds functionality to the existing Parse.User class.
@@ -304,7 +328,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is fulfilled with the user when
      *     the signup completes.
      */
-    static signUp<T extends ParseUser>(username: string, password: string, attrs: Attributes, options?: FullOptions): Promise<T>;
+    static signUp<T extends ParseUser>(username: string, password: string, attrs: Attributes, options?: SignUpOptions): Promise<T>;
     /**
      * Logs in a user with a username (or email) and password. On success, this
      * saves the session to disk, so you can retrieve the currently logged in
@@ -317,7 +341,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is fulfilled with the user when
      *     the login completes.
      */
-    static logIn<T extends ParseUser>(username: string, password: string, options?: FullOptions): Promise<T>;
+    static logIn<T extends ParseUser>(username: string, password: string, options?: LogInOptions): Promise<T>;
     /**
      * Logs in a user with a username (or email) and password, and authData. On success, this
      * saves the session to disk, so you can retrieve the currently logged in
@@ -331,7 +355,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is fulfilled with the user when
      *     the login completes.
      */
-    static logInWithAdditionalAuth<T extends ParseUser>(username: string, password: string, authData: AuthData, options?: FullOptions): Promise<T>;
+    static logInWithAdditionalAuth<T extends ParseUser>(username: string, password: string, authData: AuthData, options?: LogInOptions): Promise<T>;
     /**
      * Logs in a user with an objectId. On success, this saves the session
      * to disk, so you can retrieve the currently logged in user using
@@ -355,7 +379,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is fulfilled with the user when
      *     the login completes.
      */
-    static become<T extends ParseUser>(sessionToken: string, options?: RequestOptions): Promise<T>;
+    static become<T extends ParseUser>(sessionToken: string, options?: BecomeOptions): Promise<T>;
     /**
      * Retrieves a user with a session token.
      *
@@ -365,7 +389,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @static
      * @returns {Promise} A promise that is fulfilled with the user is fetched.
      */
-    static me<T extends ParseUser>(sessionToken: string, options?: RequestOptions): Promise<T>;
+    static me<T extends ParseUser>(sessionToken: string, options?: MeOptions): Promise<T>;
     /**
      * Logs in a user with a session token. On success, this saves the session
      * to disk, so you can retrieve the currently logged in user using
@@ -389,7 +413,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      */
     static logInWith<T extends ParseUser>(provider: string | AuthProvider, options: {
         authData?: AuthData;
-    }, saveOpts?: FullOptions): Promise<T>;
+    }, saveOpts?: SaveOptions): Promise<T>;
     /**
      * Logs out the currently logged in user session. This will remove the
      * session from disk, log out of linked services, and future calls to
@@ -400,7 +424,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @returns {Promise} A promise that is resolved when the session is
      *   destroyed on the server.
      */
-    static logOut(options?: RequestOptions): Promise<void>;
+    static logOut(options?: LogOutOptions): Promise<void>;
     /**
      * Requests a password reset email to be sent to the specified email address
      * associated with the user account. This email allows the user to securely
@@ -416,7 +440,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @static
      * @returns {Promise}
      */
-    static requestPasswordReset(email: string, options?: RequestOptions): Promise<void>;
+    static requestPasswordReset(email: string, options?: RequestPasswordResetOptions): Promise<void>;
     /**
      * Request an email verification.
      *
@@ -430,7 +454,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * @static
      * @returns {Promise}
      */
-    static requestEmailVerification(email: string, options?: RequestOptions): Promise<void>;
+    static requestEmailVerification(email: string, options?: RequestEmailVerificationOptions): Promise<void>;
     /**
      * Verify whether a given password is the password of the current user.
      * @static
@@ -442,7 +466,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      * the password regardless of whether the email has been verified. This requires the master key.
      * @returns {Promise} A promise that is fulfilled with a user when the password is correct.
      */
-    static verifyPassword<T extends ParseUser>(username: string, password: string, options?: RequestOptions): Promise<T>;
+    static verifyPassword<T extends ParseUser>(username: string, password: string, options?: VerifyPasswordOptions): Promise<T>;
     /**
      * Allow someone to define a custom User class without className
      * being rewritten to _User. The default behavior is to rewrite
@@ -467,7 +491,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      *   completed. If a replacement session token is requested, the promise
      *   will be resolved after a new token has been fetched.
      */
-    static enableRevocableSession(options?: RequestOptions): Promise<void>;
+    static enableRevocableSession(options?: BaseRequestOptions): Promise<void>;
     /**
      * Enables the use of become or the current user in a server
      * environment. These features are disabled by default, since they depend on
@@ -508,7 +532,7 @@ declare class ParseUser<T extends Attributes = Attributes> extends ParseObject<T
      */
     static _logInWith(provider: any, options: {
         authData?: AuthData;
-    }, saveOpts?: FullOptions): Promise<ParseUser<Attributes>>;
+    }, saveOpts?: SaveOptions): Promise<ParseUser<Attributes>>;
     static _clearCache(): void;
     static _setCurrentUserCache(user: ParseUser): void;
 }

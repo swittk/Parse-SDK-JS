@@ -1,11 +1,11 @@
 import CoreManager from './CoreManager';
 import isRevocableSession from './isRevocableSession';
 import ParseError from './ParseError';
-import ParseObject, { Attributes } from './ParseObject';
+import ParseObject, { Attributes, SaveOptions } from './ParseObject';
 import Storage from './Storage';
 
 import type { AttributeKey } from './ParseObject';
-import type { RequestOptions, FullOptions } from './RESTController';
+import type { RequestOptions, FullOptions, BaseRequestOptions } from './RESTController';
 
 export type AuthData = Record<string, any>;
 export interface AuthProvider {
@@ -18,9 +18,39 @@ export interface AuthProvider {
   deauthenticate?(): void;
 }
 
-export interface SignUpOptions {
-  useMasterKey?: boolean;
-  installationId?: string;
+export interface SignUpOptions extends BaseRequestOptions {
+  /**
+   * Set to `true` to bypass email verification.
+   */
+  ignoreEmailVerification?: boolean;
+}
+
+export interface LogInOptions extends BaseRequestOptions {
+  /**
+   * Use POST method to make the request (default: true)
+   */
+  usePost?: boolean;
+  /**
+   * Set to `true` to bypass email verification.
+   */
+  ignoreEmailVerification?: boolean;
+}
+
+export interface BecomeOptions extends BaseRequestOptions { }
+
+export interface LogOutOptions extends BaseRequestOptions { }
+
+export interface MeOptions extends BaseRequestOptions { }
+
+export interface RequestPasswordResetOptions extends BaseRequestOptions { }
+
+export interface RequestEmailVerificationOptions extends BaseRequestOptions { }
+
+export interface VerifyPasswordOptions extends BaseRequestOptions {
+  /**
+   * Set to `true` to bypass email verification and verify the password regardless of whether the email has been verified.
+   */
+  ignoreEmailVerification?: boolean;
 }
 const CURRENT_USER_KEY = 'currentUser';
 let canUseCurrentUser = !CoreManager.get('IS_NODE');
@@ -65,7 +95,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * @returns {Promise} A promise that is resolved when the replacement
    *   token has been fetched.
    */
-  _upgradeToRevocableSession(options?: RequestOptions): Promise<void> {
+  _upgradeToRevocableSession(options?: BaseRequestOptions): Promise<void> {
     const upgradeOptions = ParseObject._getRequestOptions(options);
     const controller = CoreManager.getUserController();
     return controller.upgradeToRevocableSession(this, upgradeOptions);
@@ -90,7 +120,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
   linkWith(
     provider: string | AuthProvider,
     options: { authData?: AuthData },
-    saveOpts: FullOptions = {}
+    saveOpts: SaveOptions = {}
   ): Promise<ParseUser> {
     saveOpts.sessionToken = saveOpts.sessionToken || this.getSessionToken() || '';
     let authType;
@@ -162,7 +192,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
   _linkWith(
     provider: any,
     options: { authData?: AuthData },
-    saveOpts: FullOptions = {}
+    saveOpts: SaveOptions = {}
   ): Promise<ParseUser> {
     return this.linkWith(provider, options, saveOpts);
   }
@@ -235,7 +265,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * @returns {Promise} A promise that is fulfilled when the unlinking
    *     finishes.
    */
-  _unlinkFrom(provider: any, options?: FullOptions): Promise<ParseUser> {
+  _unlinkFrom(provider: any, options?: SaveOptions): Promise<ParseUser> {
     return this.linkWith(provider, { authData: null }, options).then(() => {
       this._synchronizeAuthData(provider);
       return Promise.resolve(this);
@@ -441,8 +471,8 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    *     finishes.
    */
   signUp(
-    attrs?: Attributes | null,
-    options?: SignUpOptions & { context?: Attributes }
+    attrs?: T | null,
+    options?: SignUpOptions
   ): Promise<ParseUser> {
     const signupOptions = ParseObject._getRequestOptions(options);
     const controller = CoreManager.getUserController();
@@ -467,7 +497,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * @returns {Promise} A promise that is fulfilled with the user when
    *     the login is complete.
    */
-  logIn(options: FullOptions & { context?: Attributes } = {}): Promise<ParseUser> {
+  logIn(options: LogInOptions = {}): Promise<ParseUser> {
     const loginOptions = ParseObject._getRequestOptions(options);
     if (!Object.hasOwn(loginOptions, 'usePost')) {
       loginOptions.usePost = true;
@@ -549,7 +579,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * the password regardless of whether the email has been verified. This requires the master key.
    * @returns {Promise} A promise that is fulfilled with a user when the password is correct.
    */
-  verifyPassword(password: string, options?: RequestOptions): Promise<ParseUser> {
+  verifyPassword(password: string, options?: VerifyPasswordOptions): Promise<ParseUser> {
     const username = this.getUsername() || '';
 
     return ParseUser.verifyPassword(username, password, options);
@@ -645,7 +675,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
     username: string,
     password: string,
     attrs: Attributes,
-    options?: FullOptions
+    options?: SignUpOptions
   ): Promise<T> {
     attrs = attrs || {};
     attrs.username = username;
@@ -669,7 +699,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
   static logIn<T extends ParseUser>(
     username: string,
     password: string,
-    options?: FullOptions
+    options?: LogInOptions
   ): Promise<T> {
     if (typeof username !== 'string') {
       return Promise.reject(new ParseError(ParseError.OTHER_CAUSE, 'Username must be a string.'));
@@ -698,7 +728,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
     username: string,
     password: string,
     authData: AuthData,
-    options?: FullOptions
+    options?: LogInOptions
   ): Promise<T> {
     if (typeof username !== 'string') {
       return Promise.reject(new ParseError(ParseError.OTHER_CAUSE, 'Username must be a string.'));
@@ -748,7 +778,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * @returns {Promise} A promise that is fulfilled with the user when
    *     the login completes.
    */
-  static become<T extends ParseUser>(sessionToken: string, options?: RequestOptions): Promise<T> {
+  static become<T extends ParseUser>(sessionToken: string, options?: BecomeOptions): Promise<T> {
     if (!canUseCurrentUser) {
       throw new Error('It is not memory-safe to become a user in a server environment');
     }
@@ -768,7 +798,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * @static
    * @returns {Promise} A promise that is fulfilled with the user is fetched.
    */
-  static me<T extends ParseUser>(sessionToken: string, options?: RequestOptions): Promise<T> {
+  static me<T extends ParseUser>(sessionToken: string, options?: MeOptions): Promise<T> {
     const controller = CoreManager.getUserController();
     const meOptions = ParseObject._getRequestOptions(options);
     meOptions.sessionToken = sessionToken;
@@ -805,7 +835,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
   static logInWith<T extends ParseUser>(
     provider: string | AuthProvider,
     options: { authData?: AuthData },
-    saveOpts?: FullOptions
+    saveOpts?: SaveOptions
   ): Promise<T> {
     const user = new this();
     return user.linkWith(provider, options, saveOpts) as Promise<T>;
@@ -821,7 +851,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * @returns {Promise} A promise that is resolved when the session is
    *   destroyed on the server.
    */
-  static logOut(options?: RequestOptions): Promise<void> {
+  static logOut(options: LogOutOptions = {}): Promise<void> {
     const controller = CoreManager.getUserController();
     return controller.logOut(options);
   }
@@ -841,7 +871,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * @static
    * @returns {Promise}
    */
-  static requestPasswordReset(email: string, options?: RequestOptions): Promise<void> {
+  static requestPasswordReset(email: string, options?: RequestPasswordResetOptions): Promise<void> {
     const requestOptions = ParseObject._getRequestOptions(options);
     const controller = CoreManager.getUserController();
     return controller.requestPasswordReset(email, requestOptions);
@@ -860,7 +890,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * @static
    * @returns {Promise}
    */
-  static requestEmailVerification(email: string, options?: RequestOptions): Promise<void> {
+  static requestEmailVerification(email: string, options?: RequestEmailVerificationOptions): Promise<void> {
     const requestOptions = ParseObject._getRequestOptions(options);
     const controller = CoreManager.getUserController();
     return controller.requestEmailVerification(email, requestOptions);
@@ -880,7 +910,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
   static verifyPassword<T extends ParseUser>(
     username: string,
     password: string,
-    options?: RequestOptions
+    options?: VerifyPasswordOptions
   ): Promise<T> {
     if (typeof username !== 'string') {
       return Promise.reject(new ParseError(ParseError.OTHER_CAUSE, 'Username must be a string.'));
@@ -921,7 +951,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    *   completed. If a replacement session token is requested, the promise
    *   will be resolved after a new token has been fetched.
    */
-  static enableRevocableSession(options?: RequestOptions) {
+  static enableRevocableSession(options?: BaseRequestOptions) {
     options = options || {};
     CoreManager.set('FORCE_REVOCABLE_SESSION', true);
     if (canUseCurrentUser) {
@@ -986,7 +1016,7 @@ class ParseUser<T extends Attributes = Attributes> extends ParseObject<T> {
    * @static
    * @returns {Promise}
    */
-  static _logInWith(provider: any, options: { authData?: AuthData }, saveOpts?: FullOptions) {
+  static _logInWith(provider: any, options: { authData?: AuthData }, saveOpts?: SaveOptions) {
     const user = new this();
     return user.linkWith(provider, options, saveOpts);
   }

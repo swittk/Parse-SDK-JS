@@ -9,27 +9,52 @@ import { DEFAULT_PIN } from './LocalDatastoreUtils';
 
 import type LiveQuerySubscription from './LiveQuerySubscription';
 import type { RequestOptions, BaseRequestOptions } from './RESTController';
-import type { Pointer, BaseAttributes } from './ParseObject';
+import type { Pointer, BaseAttributes, AttributeKey } from './ParseObject';
 
-export interface BatchOptions extends BaseRequestOptions {
+export interface BatchOptions<T extends ParseObject = ParseObject> extends BaseRequestOptions {
+  /**
+   * How many objects to yield in each batch (default: 100).
+   */
   batchSize?: number;
+  /**
+   * Return raw JSON without converting to `Parse.Object`.
+   */
   json?: boolean;
+  /**
+   * The name(s) of the key(s) to include.
+   */
+  include?: AttributeKey<T['attributes']> | AttributeKey<T['attributes']>[];
+  /**
+   * The name(s) of the key(s) to return.
+   */
+  keys?: AttributeKey<T['attributes']> | AttributeKey<T['attributes']>[];
 }
 
 export type WhereClause = Record<string, any>;
 
-export interface QueryOptions extends BaseRequestOptions {
+export interface QueryOptions<T extends ParseObject = ParseObject> extends BaseRequestOptions {
+  /**
+   * Return raw JSON without converting to `Parse.Object`.
+   */
   json?: boolean;
+  /**
+   * The name(s) of the key(s) to include.
+   */
+  include?: AttributeKey<T['attributes']> | AttributeKey<T['attributes']>[];
+  /**
+   * The name(s) of the key(s) to return.
+   */
+  keys?: AttributeKey<T['attributes']> | AttributeKey<T['attributes']>[];
 }
 
-export interface FindOptions extends QueryOptions { }
+export interface FindOptions<T extends ParseObject = ParseObject> extends QueryOptions<T> { }
 
 /** CountOptions - no json since count() returns a number, not objects */
 export interface CountOptions extends BaseRequestOptions { }
 
-export interface GetOptions extends QueryOptions { }
+export interface GetOptions<T extends ParseObject = ParseObject> extends QueryOptions<T> { }
 
-export interface FirstOptions extends QueryOptions { }
+export interface FirstOptions<T extends ParseObject = ParseObject> extends QueryOptions<T> { }
 
 export interface FullTextOptions {
   language?: string;
@@ -643,7 +668,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that is resolved with the result when
    * the query completes.
    */
-  get(objectId: string, options?: GetOptions): Promise<T> {
+  get(objectId: string, options?: GetOptions<T>): Promise<T> {
     this.equalTo('objectId', objectId as any);
 
     const firstOptions = ParseObject._getRequestOptions(options);
@@ -672,7 +697,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that is resolved with the results when
    * the query completes.
    */
-  find(options?: FindOptions): Promise<T[]> {
+  find(options?: FindOptions<T>): Promise<T[]> {
     const findOptions = ParseObject._getRequestOptions(options);
     this._setRequestTask(findOptions);
 
@@ -733,7 +758,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that is resolved with the results when
    * the query completes.
    */
-  async findAll(options?: BatchOptions): Promise<T[]> {
+  async findAll(options?: BatchOptions<T>): Promise<T[]> {
     let result: T[] = [];
     await this.eachBatch((objects: T[]) => {
       result = [...result, ...objects];
@@ -840,7 +865,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that is resolved with the object when
    * the query completes.
    */
-  first(options: FirstOptions = {}): Promise<T | undefined> {
+  first(options: FirstOptions<T> = {}): Promise<T | undefined> {
     const findOptions = ParseObject._getRequestOptions(options);
     this._setRequestTask(findOptions);
 
@@ -906,7 +931,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    */
   eachBatch(
     callback: (objs: T[]) => PromiseLike<void> | void,
-    options?: BatchOptions
+    options?: BatchOptions<T>
   ): Promise<void> {
     options = options || {};
 
@@ -968,7 +993,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that will be fulfilled once the
    *     iteration has completed.
    */
-  each(callback: (obj: T) => PromiseLike<void> | void, options?: BatchOptions): Promise<void> {
+  each(callback: (obj: T) => PromiseLike<void> | void, options?: BatchOptions<T>): Promise<void> {
     return this.eachBatch(results => {
       let callbacksDone = Promise.resolve();
       results.forEach((result: T) => {
@@ -1030,11 +1055,11 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that will be fulfilled once the
    *     iteration has completed.
    */
-  async map(
-    callback: (currentObject: ParseObject, index: number, query: ParseQuery) => any,
-    options?: BatchOptions
-  ): Promise<any[]> {
-    const array: ParseObject[] = [];
+  async map<U>(
+    callback: (currentObject: T, index: number, query: ParseQuery<T>) => U | PromiseLike<U>,
+    options?: BatchOptions<T>
+  ): Promise<U[]> {
+    const array: U[] = [];
     let index = 0;
     await this.each(object => {
       return Promise.resolve(callback(object, index, this)).then(result => {
@@ -1068,18 +1093,18 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that will be fulfilled once the
    *     iteration has completed.
    */
-  async reduce(
-    callback: (accumulator: any, currentObject: ParseObject, index: number) => any,
-    initialValue: any,
-    options?: BatchOptions
-  ): Promise<any[]> {
+  async reduce<U>(
+    callback: (accumulator: U, currentObject: T, index: number) => U | PromiseLike<U>,
+    initialValue: U,
+    options?: BatchOptions<T>
+  ): Promise<U> {
     let accumulator = initialValue;
     let index = 0;
     await this.each(object => {
       // If no initial value was given, we take the first object from the query
       // as the initial value and don't call the callback with it.
       if (index === 0 && initialValue === undefined) {
-        accumulator = object;
+        accumulator = object as unknown as U;
         index += 1;
         return;
       }
@@ -1119,10 +1144,10 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    *     iteration has completed.
    */
   async filter(
-    callback: (currentObject: ParseObject, index: number, query: ParseQuery) => boolean,
-    options?: BatchOptions
-  ): Promise<ParseObject[]> {
-    const array: ParseObject[] = [];
+    callback: (currentObject: T, index: number, query: ParseQuery<T>) => boolean | PromiseLike<boolean>,
+    options?: BatchOptions<T>
+  ): Promise<T[]> {
+    const array: T[] = [];
     let index = 0;
     await this.each(object => {
       return Promise.resolve(callback(object, index, this)).then(flag => {

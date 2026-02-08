@@ -7,10 +7,25 @@ import { polyfillFetch } from './Xhr.weapp';
 
 /** Base options for all Parse requests that go through _getRequestOptions */
 export interface BaseRequestOptions {
+  /**
+   * Causes the Master Key to be used for this request.
+   */
   useMasterKey?: boolean;
+  /**
+   * Causes the Maintenance Key to be used for this request.
+   */
   useMaintenanceKey?: boolean;
+  /**
+   * A valid session token, used for making a request on behalf of a specific user.
+   */
   sessionToken?: string;
+  /**
+   * The installationId which made the request.
+   */
   installationId?: string;
+  /**
+   * A dictionary that is accessible in Cloud Code triggers.
+   */
   context?: Record<string, unknown>;
 }
 
@@ -24,6 +39,9 @@ export interface RequestOptions {
   include?: any;
   progress?: any;
   context?: any;
+  /** 
+   * (defaults to true) Only used by login which uses POST instead of GET for security
+   */
   usePost?: boolean;
   ignoreEmailVerification?: boolean;
   transaction?: boolean;
@@ -37,6 +55,9 @@ export interface FullOptions {
   sessionToken?: string;
   installationId?: string;
   progress?: any;
+  /** 
+   * (defaults to true) Only used by login which uses POST instead of GET for security
+   */
   usePost?: boolean;
 }
 
