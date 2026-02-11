@@ -1,28 +1,26 @@
 import ParseGeoPoint from './ParseGeoPoint';
 import ParseObject from './ParseObject';
 import type LiveQuerySubscription from './LiveQuerySubscription';
-import type { FullOptions } from './RESTController';
+import type { BaseRequestOptions } from './RESTController';
+import type { Pointer, BaseAttributes } from './ParseObject';
 import type ParseACL from './ParseACL';
 import type ParseFile from './ParseFile';
 import type ParsePolygon from './ParsePolygon';
 import type ParseRelation from './ParseRelation';
-import type { Pointer } from './ParseObject';
-type BatchOptions = FullOptions & {
+export interface BatchOptions extends BaseRequestOptions {
     batchSize?: number;
-    useMasterKey?: boolean;
-    useMaintenanceKey?: boolean;
-    sessionToken?: string;
-    context?: Record<string, any>;
-    json?: boolean;
-};
-export type WhereClause = Record<string, any>;
-interface QueryOptions {
-    useMasterKey?: boolean;
-    sessionToken?: string;
-    context?: Record<string, any>;
     json?: boolean;
 }
-interface FullTextQueryOptions {
+export type WhereClause = Record<string, any>;
+export interface QueryOptions extends BaseRequestOptions {
+    json?: boolean;
+}
+export type FindOptions = QueryOptions;
+/** CountOptions - no json since count() returns a number, not objects */
+export type CountOptions = BaseRequestOptions;
+export type GetOptions = QueryOptions;
+export type FirstOptions = QueryOptions;
+export interface FullTextOptions {
     language?: string;
     caseSensitive?: boolean;
     diacriticSensitive?: boolean;
@@ -45,11 +43,6 @@ export interface QueryJSON {
     subqueryReadPreference?: string;
     comment?: string;
 }
-interface BaseAttributes {
-    createdAt: Date;
-    objectId: string;
-    updatedAt: Date;
-}
 type Primitive = string | number | boolean | bigint | symbol | null | undefined;
 type NonTraversable = Primitive | Date | RegExp | Function | ParseGeoPoint | ParseFile | ParsePolygon | ParseRelation | ParseACL;
 type IsAny<T> = 0 extends (1 & T) ? true : false;
@@ -65,10 +58,10 @@ type QueryAttributeKey<T> = DotPath<T, 5, false>;
 type IncludeAttributeKey<T> = DotPath<T, 5, true>;
 type QueryKey<T> = QueryAttributeKey<T> | keyof BaseAttributes;
 type IncludeKey<T> = IncludeAttributeKey<T> | keyof BaseAttributes;
-type NonQueryKey<T, K extends string> = K extends QueryKey<T> ? never : K;
+type WidenedString<K extends string> = string extends K ? K : never;
 type QueryValue<T, K extends QueryKey<T>> = K extends keyof BaseAttributes ? BaseAttributes[K] : PathValue<T, Extract<K, string>>;
-type EqualToValue<T> = T | (T extends ParseObject ? Pointer : T extends ReadonlyArray<infer E> ? E : never);
-type ContainedInValue<T> = T | (T extends ParseObject ? string : never);
+type EqualToValue<T> = T | (NonNullable<T> extends ParseObject ? Pointer : NonNullable<T> extends ReadonlyArray<infer E> ? E : never);
+type ContainedInValue<T> = T | (NonNullable<T> extends ParseObject ? string : never);
 /**
  * Creates a new parse Parse.Query for the given Parse.Object subclass.
  *
@@ -232,7 +225,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Promise} A promise that is resolved with the result when
      * the query completes.
      */
-    get(objectId: string, options?: QueryOptions): Promise<T>;
+    get(objectId: string, options?: GetOptions): Promise<T>;
     /**
      * Retrieves a list of ParseObjects that satisfy this query.
      *
@@ -248,7 +241,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Promise} A promise that is resolved with the results when
      * the query completes.
      */
-    find(options?: QueryOptions): Promise<T[]>;
+    find(options?: FindOptions): Promise<T[]>;
     /**
      * Retrieves a complete list of ParseObjects that satisfy this query.
      * Using `eachBatch` under the hood to fetch all the valid objects.
@@ -280,10 +273,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Promise} A promise that is resolved with the count when
      * the query completes.
      */
-    count(options?: {
-        useMasterKey?: boolean;
-        sessionToken?: string;
-    }): Promise<number>;
+    count(options?: CountOptions): Promise<number>;
     /**
      * Executes a distinct query and returns unique values
      *
@@ -315,7 +305,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Promise} A promise that is resolved with the object when
      * the query completes.
      */
-    first(options?: QueryOptions): Promise<T | undefined>;
+    first(options?: FirstOptions): Promise<T | undefined>;
     /**
      * Iterates over objects matching a query, calling a callback for each batch.
      * If the callback returns a promise, the iteration will not continue until
@@ -452,7 +442,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     equalTo<K extends QueryKey<T['attributes']>>(key: K, value: EqualToValue<QueryValue<T['attributes'], K>>): this;
-    equalTo<K extends string>(key: NonQueryKey<T['attributes'], K>, value: any): this;
+    equalTo<K extends string>(key: WidenedString<K>, value: any): this;
     equalTo(key: Record<string, any>, value: any): this;
     /**
      * Adds a constraint to the query that requires a particular key's value to
@@ -463,7 +453,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     notEqualTo<K extends QueryKey<T['attributes']>>(key: K, value: EqualToValue<QueryValue<T['attributes'], K>>): this;
-    notEqualTo<K extends string>(key: NonQueryKey<T['attributes'], K>, value: any): this;
+    notEqualTo<K extends string>(key: WidenedString<K>, value: any): this;
     notEqualTo(key: Record<string, any>, value: any): this;
     /**
      * Adds a constraint to the query that requires a particular key's value to
@@ -474,7 +464,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     lessThan<K extends QueryKey<T['attributes']>>(key: K, value: QueryValue<T['attributes'], K>): this;
-    lessThan<K extends string>(key: NonQueryKey<T['attributes'], K>, value: any): this;
+    lessThan<K extends string>(key: WidenedString<K>, value: any): this;
     /**
      * Adds a constraint to the query that requires a particular key's value to
      * be greater than the provided value.
@@ -484,7 +474,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     greaterThan<K extends QueryKey<T['attributes']>>(key: K, value: QueryValue<T['attributes'], K>): this;
-    greaterThan<K extends string>(key: NonQueryKey<T['attributes'], K>, value: any): this;
+    greaterThan<K extends string>(key: WidenedString<K>, value: any): this;
     /**
      * Adds a constraint to the query that requires a particular key's value to
      * be less than or equal to the provided value.
@@ -494,7 +484,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     lessThanOrEqualTo<K extends QueryKey<T['attributes']>>(key: K, value: QueryValue<T['attributes'], K>): this;
-    lessThanOrEqualTo<K extends string>(key: NonQueryKey<T['attributes'], K>, value: any): this;
+    lessThanOrEqualTo<K extends string>(key: WidenedString<K>, value: any): this;
     /**
      * Adds a constraint to the query that requires a particular key's value to
      * be greater than or equal to the provided value.
@@ -504,7 +494,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     greaterThanOrEqualTo<K extends QueryKey<T['attributes']>>(key: K, value: QueryValue<T['attributes'], K>): this;
-    greaterThanOrEqualTo<K extends string>(key: NonQueryKey<T['attributes'], K>, value: any): this;
+    greaterThanOrEqualTo<K extends string>(key: WidenedString<K>, value: any): this;
     /**
      * Adds a constraint to the query that requires a particular key's value to
      * be contained in the provided list of values.
@@ -514,7 +504,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     containedIn<K extends QueryKey<T['attributes']>>(key: K, values: ContainedInValue<QueryValue<T['attributes'], K>>[]): this;
-    containedIn<K extends string>(key: NonQueryKey<T['attributes'], K>, values: any[]): this;
+    containedIn<K extends string>(key: WidenedString<K>, values: any[]): this;
     /**
      * Adds a constraint to the query that requires a particular key's value to
      * not be contained in the provided list of values.
@@ -524,7 +514,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     notContainedIn<K extends QueryKey<T['attributes']>>(key: K, values: QueryValue<T['attributes'], K>[]): this;
-    notContainedIn<K extends string>(key: NonQueryKey<T['attributes'], K>, values: any[]): this;
+    notContainedIn<K extends string>(key: WidenedString<K>, values: any[]): this;
     /**
      * Adds a constraint to the query that requires a particular key's value to
      * be contained by the provided list of values. Get objects where all array elements match.
@@ -534,7 +524,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     containedBy<K extends QueryKey<T['attributes']>>(key: K, values: ContainedInValue<QueryValue<T['attributes'], K>>[]): this;
-    containedBy<K extends string>(key: NonQueryKey<T['attributes'], K>, values: any[]): this;
+    containedBy<K extends string>(key: WidenedString<K>, values: any[]): this;
     /**
      * Adds a constraint to the query that requires a particular key's value to
      * contain each one of the provided list of values.
@@ -544,7 +534,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     containsAll<K extends QueryKey<T['attributes']>>(key: K, values: any[]): this;
-    containsAll<K extends string>(key: NonQueryKey<T['attributes'], K>, values: any[]): this;
+    containsAll<K extends string>(key: WidenedString<K>, values: any[]): this;
     /**
      * Adds a constraint to the query that requires a particular key's value to
      * contain each one of the provided list of values starting with given strings.
@@ -554,7 +544,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     containsAllStartingWith<K extends QueryKey<T['attributes']>>(key: K, values: any[]): this;
-    containsAllStartingWith<K extends string>(key: NonQueryKey<T['attributes'], K>, values: any[]): this;
+    containsAllStartingWith<K extends string>(key: WidenedString<K>, values: any[]): this;
     /**
      * Adds a constraint for finding objects that contain the given key.
      *
@@ -562,7 +552,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     exists<K extends QueryKey<T['attributes']>>(key: K): this;
-    exists<K extends string>(key: NonQueryKey<T['attributes'], K>): this;
+    exists<K extends string>(key: WidenedString<K>): this;
     /**
      * Adds a constraint for finding objects that do not contain a given key.
      *
@@ -570,7 +560,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     doesNotExist<K extends QueryKey<T['attributes']>>(key: K): this;
-    doesNotExist<K extends string>(key: NonQueryKey<T['attributes'], K>): this;
+    doesNotExist<K extends string>(key: WidenedString<K>): this;
     /**
      * Adds a regular expression constraint for finding string values that match
      * the provided regular expression.
@@ -582,7 +572,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     matches<K extends QueryKey<T['attributes']>>(key: K, regex: RegExp | string, modifiers?: string): this;
-    matches<K extends string>(key: NonQueryKey<T['attributes'], K>, regex: RegExp | string, modifiers?: string): this;
+    matches<K extends string>(key: WidenedString<K>, regex: RegExp | string, modifiers?: string): this;
     /**
      * Adds a constraint that requires that a key's value matches a Parse.Query
      * constraint.
@@ -593,7 +583,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     matchesQuery<U extends ParseObject, K extends QueryAttributeKey<T['attributes']>>(key: K, query: ParseQuery<U>): this;
-    matchesQuery<K extends string>(key: NonQueryKey<T['attributes'], K>, query: ParseQuery<any>): this;
+    matchesQuery<K extends string>(key: WidenedString<K>, query: ParseQuery<any>): this;
     /**
      * Adds a constraint that requires that a key's value not matches a
      * Parse.Query constraint.
@@ -604,7 +594,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     doesNotMatchQuery<U extends ParseObject, K extends QueryAttributeKey<T['attributes']>>(key: K, query: ParseQuery<U>): this;
-    doesNotMatchQuery<K extends string>(key: NonQueryKey<T['attributes'], K>, query: ParseQuery<any>): this;
+    doesNotMatchQuery<K extends string>(key: WidenedString<K>, query: ParseQuery<any>): this;
     /**
      * Adds a constraint that requires that a key's value matches a value in
      * an object returned by a different Parse.Query.
@@ -617,7 +607,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     matchesKeyInQuery<U extends ParseObject, K extends QueryAttributeKey<T['attributes']>, X extends QueryAttributeKey<U['attributes']>>(key: K, queryKey: X, query: ParseQuery<U>): this;
-    matchesKeyInQuery<K extends string>(key: NonQueryKey<T['attributes'], K>, queryKey: string, query: ParseQuery<any>): this;
+    matchesKeyInQuery<K extends string, X extends string>(key: WidenedString<K>, queryKey: WidenedString<X>, query: ParseQuery<any>): this;
     /**
      * Adds a constraint that requires that a key's value not match a value in
      * an object returned by a different Parse.Query.
@@ -630,7 +620,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     doesNotMatchKeyInQuery<U extends ParseObject, K extends QueryKey<T['attributes']>, X extends QueryAttributeKey<U['attributes']>>(key: K, queryKey: X, query: ParseQuery<U>): this;
-    doesNotMatchKeyInQuery<K extends string>(key: NonQueryKey<T['attributes'], K>, queryKey: string, query: ParseQuery<any>): this;
+    doesNotMatchKeyInQuery<K extends string, X extends string>(key: WidenedString<K>, queryKey: WidenedString<X>, query: ParseQuery<any>): this;
     /**
      * Adds a constraint for finding string values that contain a provided
      * string.  This may be slow for large datasets.
@@ -640,7 +630,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     contains<K extends QueryKey<T['attributes']>>(key: K, substring: string): this;
-    contains<K extends string>(key: NonQueryKey<T['attributes'], K>, substring: string): this;
+    contains<K extends string>(key: WidenedString<K>, substring: string): this;
     /**
      * Adds a constraint for finding string values that contain a provided
      * string. This may be slow for large datasets. Requires Parse-Server > 2.5.0
@@ -670,8 +660,8 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @param {boolean} options.diacriticSensitive A boolean flag to enable or disable diacritic sensitive search.
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
-    fullText<K extends QueryKey<T['attributes']>>(key: K, value: string, options?: FullTextQueryOptions): this;
-    fullText<K extends string>(key: NonQueryKey<T['attributes'], K>, value: string, options?: FullTextQueryOptions): this;
+    fullText<K extends QueryKey<T['attributes']>>(key: K, value: string, options?: FullTextOptions): this;
+    fullText<K extends string>(key: WidenedString<K>, value: string, options?: FullTextOptions): this;
     /**
      * Method to sort the full text search by text score
      *
@@ -689,7 +679,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     startsWith<K extends QueryKey<T['attributes']>>(key: K, prefix: string, modifiers?: string): this;
-    startsWith<K extends string>(key: NonQueryKey<T['attributes'], K>, prefix: string, modifiers?: string): this;
+    startsWith<K extends string>(key: WidenedString<K>, prefix: string, modifiers?: string): this;
     /**
      * Adds a constraint for finding string values that end with a provided
      * string.  This will be slow for large datasets.
@@ -700,7 +690,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     endsWith<K extends QueryKey<T['attributes']>>(key: K, suffix: string, modifiers?: string): this;
-    endsWith<K extends string>(key: NonQueryKey<T['attributes'], K>, suffix: string, modifiers?: string): this;
+    endsWith<K extends string>(key: WidenedString<K>, suffix: string, modifiers?: string): this;
     /**
      * Adds a proximity based constraint for finding objects with key point
      * values near the point given.
@@ -710,7 +700,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     near<K extends QueryKey<T['attributes']>>(key: K, point: ParseGeoPoint): this;
-    near<K extends string>(key: NonQueryKey<T['attributes'], K>, point: ParseGeoPoint): this;
+    near<K extends string>(key: WidenedString<K>, point: ParseGeoPoint): this;
     /**
      * Adds a proximity based constraint for finding objects with key point
      * values near the point given and within the maximum distance given.
@@ -724,7 +714,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     withinRadians<K extends QueryKey<T['attributes']>>(key: K, point: ParseGeoPoint, maxDistance: number, sorted?: boolean): this;
-    withinRadians<K extends string>(key: NonQueryKey<T['attributes'], K>, point: ParseGeoPoint, maxDistance: number, sorted?: boolean): this;
+    withinRadians<K extends string>(key: WidenedString<K>, point: ParseGeoPoint, maxDistance: number, sorted?: boolean): this;
     /**
      * Adds a proximity based constraint for finding objects with key point
      * values near the point given and within the maximum distance given.
@@ -739,7 +729,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     withinMiles<K extends QueryKey<T['attributes']>>(key: K, point: ParseGeoPoint, maxDistance: number, sorted?: boolean): this;
-    withinMiles<K extends string>(key: NonQueryKey<T['attributes'], K>, point: ParseGeoPoint, maxDistance: number, sorted?: boolean): this;
+    withinMiles<K extends string>(key: WidenedString<K>, point: ParseGeoPoint, maxDistance: number, sorted?: boolean): this;
     /**
      * Adds a proximity based constraint for finding objects with key point
      * values near the point given and within the maximum distance given.
@@ -754,7 +744,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     withinKilometers<K extends QueryKey<T['attributes']>>(key: K, point: ParseGeoPoint, maxDistance: number, sorted?: boolean): this;
-    withinKilometers<K extends string>(key: NonQueryKey<T['attributes'], K>, point: ParseGeoPoint, maxDistance: number, sorted?: boolean): this;
+    withinKilometers<K extends string>(key: WidenedString<K>, point: ParseGeoPoint, maxDistance: number, sorted?: boolean): this;
     /**
      * Adds a constraint to the query that requires a particular key's
      * coordinates be contained within a given rectangular geographic bounding
@@ -768,7 +758,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     withinGeoBox<K extends QueryKey<T['attributes']>>(key: K, southwest: ParseGeoPoint, northeast: ParseGeoPoint): this;
-    withinGeoBox<K extends string>(key: NonQueryKey<T['attributes'], K>, southwest: ParseGeoPoint, northeast: ParseGeoPoint): this;
+    withinGeoBox<K extends string>(key: WidenedString<K>, southwest: ParseGeoPoint, northeast: ParseGeoPoint): this;
     /**
      * Adds a constraint to the query that requires a particular key's
      * coordinates be contained within and on the bounds of a given polygon.
@@ -781,7 +771,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     withinPolygon<K extends QueryKey<T['attributes']>>(key: K, points: number[][]): this;
-    withinPolygon<K extends string>(key: NonQueryKey<T['attributes'], K>, points: number[][]): this;
+    withinPolygon<K extends string>(key: WidenedString<K>, points: number[][]): this;
     /**
      * Add a constraint to the query that requires a particular key's
      * coordinates that contains a ParseGeoPoint
@@ -791,7 +781,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     polygonContains<K extends QueryKey<T['attributes']>>(key: K, point: ParseGeoPoint): this;
-    polygonContains<K extends string>(key: NonQueryKey<T['attributes'], K>, point: ParseGeoPoint): this;
+    polygonContains<K extends string>(key: WidenedString<K>, point: ParseGeoPoint): this;
     /**
      * Sorts the results in ascending order by the given key.
      *
@@ -864,7 +854,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     include<K extends IncludeKey<T['attributes']> | '*'>(...keys: (K | K[])[]): this;
-    include(...keys: (string | string[])[]): this;
+    include<K extends string>(...keys: WidenedString<K>[]): this;
     /**
      * Includes all nested Parse.Objects one level deep.
      *
@@ -882,7 +872,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     select<K extends QueryKey<T['attributes']>>(...keys: (K | K[])[]): this;
-    select(...keys: (string | string[])[]): this;
+    select<K extends string>(...keys: WidenedString<K>[]): this;
     /**
      * Restricts the fields of the returned Parse.Objects to all keys except the
      * provided keys. Exclude takes precedence over select and include.
@@ -893,7 +883,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     exclude<K extends QueryKey<T['attributes']>>(...keys: (K | K[])[]): this;
-    exclude(...keys: (string | string[])[]): this;
+    exclude<K extends string>(...keys: WidenedString<K>[]): this;
     /**
      * Restricts live query to trigger only for watched fields.
      *
@@ -903,7 +893,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @returns {Parse.Query} Returns the query, so you can chain this call.
      */
     watch<K extends QueryKey<T['attributes']>>(...keys: (K | K[])[]): this;
-    watch(...keys: (string | string[])[]): this;
+    watch<K extends string>(...keys: WidenedString<K>[]): this;
     /**
      * Changes the read preference that the backend will use when performing the query to the database.
      *
@@ -933,7 +923,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @static
      * @returns {Parse.Query} The query that is the OR of the passed in queries.
      */
-    static or(...queries: ParseQuery[]): ParseQuery;
+    static or<T extends ParseObject>(...queries: ParseQuery<T>[]): ParseQuery<T>;
     /**
      * Constructs a Parse.Query that is the AND of the passed in queries.  For
      * example:
@@ -946,7 +936,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @static
      * @returns {Parse.Query} The query that is the AND of the passed in queries.
      */
-    static and(...queries: ParseQuery[]): ParseQuery;
+    static and<T extends ParseObject>(...queries: ParseQuery<T>[]): ParseQuery<T>;
     /**
      * Constructs a Parse.Query that is the NOR of the passed in queries.  For
      * example:
@@ -959,7 +949,7 @@ declare class ParseQuery<T extends ParseObject = ParseObject> {
      * @static
      * @returns {Parse.Query} The query that is the NOR of the passed in queries.
      */
-    static nor(...queries: ParseQuery[]): ParseQuery;
+    static nor<T extends ParseObject>(...queries: ParseQuery<T>[]): ParseQuery<T>;
     /**
      * Change the source of this query to the server.
      *

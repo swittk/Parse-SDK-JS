@@ -8,32 +8,34 @@ import OfflineQuery from './OfflineQuery';
 import { DEFAULT_PIN } from './LocalDatastoreUtils';
 
 import type LiveQuerySubscription from './LiveQuerySubscription';
-import type { RequestOptions, FullOptions } from './RESTController';
+import type { RequestOptions, BaseRequestOptions } from './RESTController';
+import type { Pointer, BaseAttributes } from './ParseObject';
 import type ParseACL from './ParseACL';
 import type ParseFile from './ParseFile';
 import type ParsePolygon from './ParsePolygon';
 import type ParseRelation from './ParseRelation';
-import type { Pointer } from './ParseObject';
 
-type BatchOptions = FullOptions & {
+export interface BatchOptions extends BaseRequestOptions {
   batchSize?: number;
-  useMasterKey?: boolean;
-  useMaintenanceKey?: boolean;
-  sessionToken?: string;
-  context?: Record<string, any>;
-  json?: boolean;
-};
-
-export type WhereClause = Record<string, any>;
-
-interface QueryOptions {
-  useMasterKey?: boolean;
-  sessionToken?: string;
-  context?: Record<string, any>;
   json?: boolean;
 }
 
-interface FullTextQueryOptions {
+export type WhereClause = Record<string, any>;
+
+export interface QueryOptions extends BaseRequestOptions {
+  json?: boolean;
+}
+
+export type FindOptions = QueryOptions;
+
+/** CountOptions - no json since count() returns a number, not objects */
+export type CountOptions = BaseRequestOptions;
+
+export type GetOptions = QueryOptions;
+
+export type FirstOptions = QueryOptions;
+
+export interface FullTextOptions {
   language?: string;
   caseSensitive?: boolean;
   diacriticSensitive?: boolean;
@@ -58,11 +60,6 @@ export interface QueryJSON {
   comment?: string;
 }
 
-interface BaseAttributes {
-  createdAt: Date;
-  objectId: string;
-  updatedAt: Date;
-}
 type Primitive = string | number | boolean | bigint | symbol | null | undefined;
 type NonTraversable =
   | Primitive
@@ -129,9 +126,14 @@ type WidenedString<K extends string> = string extends K ? K : never;
 type QueryValue<T, K extends QueryKey<T>> = K extends keyof BaseAttributes
   ? BaseAttributes[K]
   : PathValue<T, Extract<K, string>>;
-type EqualToValue<T> = T | (T extends ParseObject ? Pointer : T extends ReadonlyArray<infer E> ? E : never);
-type ContainedInValue<T> = T | (T extends ParseObject ? string : never);
-
+type EqualToValue<T> =
+  | T
+  | (NonNullable<T> extends ParseObject
+      ? Pointer
+      : NonNullable<T> extends ReadonlyArray<infer E>
+        ? E
+        : never);
+type ContainedInValue<T> = T | (NonNullable<T> extends ParseObject ? string : never);
 /**
  * Converts a string into a regex that matches it.
  * Surrounding with \Q .. \E does this, we just need to escape any \E's in
@@ -718,7 +720,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that is resolved with the result when
    * the query completes.
    */
-  get(objectId: string, options?: QueryOptions): Promise<T> {
+  get(objectId: string, options?: GetOptions): Promise<T> {
     this.equalTo('objectId', objectId as any);
 
     const firstOptions = ParseObject._getRequestOptions(options);
@@ -747,7 +749,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that is resolved with the results when
    * the query completes.
    */
-  find(options?: QueryOptions): Promise<T[]> {
+  find(options?: FindOptions): Promise<T[]> {
     const findOptions = ParseObject._getRequestOptions(options);
     this._setRequestTask(findOptions);
 
@@ -831,7 +833,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that is resolved with the count when
    * the query completes.
    */
-  count(options?: { useMasterKey?: boolean; sessionToken?: string }): Promise<number> {
+  count(options?: CountOptions): Promise<number> {
     options = options || {};
 
     const findOptions = ParseObject._getRequestOptions(options);
@@ -919,7 +921,7 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @returns {Promise} A promise that is resolved with the object when
    * the query completes.
    */
-  first(options: QueryOptions = {}): Promise<T | undefined> {
+  first(options: FirstOptions = {}): Promise<T | undefined> {
     const findOptions = ParseObject._getRequestOptions(options);
     this._setRequestTask(findOptions);
 
@@ -1650,14 +1652,14 @@ class ParseQuery<T extends ParseObject = ParseObject> {
   fullText<K extends QueryKey<T['attributes']>>(
     key: K,
     value: string,
-    options?: FullTextQueryOptions
+    options?: FullTextOptions
   ): this;
   fullText<K extends string>(
     key: WidenedString<K>,
     value: string,
-    options?: FullTextQueryOptions
+    options?: FullTextOptions
   ): this;
-  fullText(key: any, value: string, options?: FullTextQueryOptions): this {
+  fullText(key: any, value: string, options?: FullTextOptions): this {
     options = options || {};
 
     if (!key) {
@@ -2239,9 +2241,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @static
    * @returns {Parse.Query} The query that is the OR of the passed in queries.
    */
-  static or(...queries: ParseQuery[]): ParseQuery {
+  static or<T extends ParseObject>(...queries: ParseQuery<T>[]): ParseQuery<T> {
     const className = _getClassNameFromQueries(queries);
-    const query = new ParseQuery(className!);
+    const query = new ParseQuery<T>(className!);
     query._orQuery(queries);
     return query;
   }
@@ -2258,9 +2260,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @static
    * @returns {Parse.Query} The query that is the AND of the passed in queries.
    */
-  static and(...queries: ParseQuery[]): ParseQuery {
+  static and<T extends ParseObject>(...queries: ParseQuery<T>[]): ParseQuery<T> {
     const className = _getClassNameFromQueries(queries);
-    const query = new ParseQuery(className!);
+    const query = new ParseQuery<T>(className!);
     query._andQuery(queries);
     return query;
   }
@@ -2277,9 +2279,9 @@ class ParseQuery<T extends ParseObject = ParseObject> {
    * @static
    * @returns {Parse.Query} The query that is the NOR of the passed in queries.
    */
-  static nor(...queries: ParseQuery[]): ParseQuery {
+  static nor<T extends ParseObject>(...queries: ParseQuery<T>[]): ParseQuery<T> {
     const className = _getClassNameFromQueries(queries);
-    const query = new ParseQuery(className!);
+    const query = new ParseQuery<T>(className!);
     query._norQuery(queries);
     return query;
   }
